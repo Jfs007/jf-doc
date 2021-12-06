@@ -1,4 +1,4 @@
-import Section from '@/components/section';
+import Doc from '@/components/doc';
 
-let section = new Section({ class: 'section' });
-console.log(section)
+let doc = new Doc({ doc: '哈哈收到回复哈哈\n龙泉凤雏就会\n\n' });
+console.log(doc)

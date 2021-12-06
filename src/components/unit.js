@@ -1,7 +1,7 @@
 
 import Node from '../lib/node.js';
 import { guid } from '../util/index';
-import DocStyle from './doc-style';
+// import DocStyle from './doc-style';
 export default class textUnit extends Node {
     constructor(options = {}) {
         super(options);
@@ -20,7 +20,7 @@ export default class textUnit extends Node {
         this.guid = guid();
         // 标注选中时切割的textUnit隶属同一group_id
         this.group_id = options.group_id;
-        this.docStyle = new DocStyle(options.docStyle || {});
+        // this.docStyle = new DocStyle(options.docStyle || {});
         this._copy = [];
         if(!this.isCarousel()) {
             this.comments = this.comments.filter(_ => _);
