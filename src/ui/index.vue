@@ -1,15 +1,34 @@
 <template>
   <div class="doc">
-
+      <div v-for="section in doc.childNodes" :class="[ section.class ]">
+        <div :class="[line.class]" v-for="line in section.childNodes">
+          <Vessel :unit="unit" v-for="unit in line.childNodes"></Vessel>
+        </div>
+      </div>
   </div>
 </template>
 
 <script>
-import test from '@/test';
+// import test from '@/test';
+import Doc from '@/index';
+import Vessel from './vessel';
 export default {
+  
   name: 'Index',
+  data() {
+    return {
+      doc: null
+    }
+  },
+  components: {
+    Vessel
+  },
   methods: {
     // test
+  },
+  created() {
+    let doc = new Doc();
+    this.doc = doc;
   }
 }
 </script>

@@ -2,7 +2,7 @@
 import Node from '../lib/node.js';
 import { guid } from '../util/index';
 // import DocStyle from './doc-style';
-export default class textUnit extends Node {
+export default class Unit extends Node {
     constructor(options = {}) {
         super(options);
         // console.log(options, 'opots')
@@ -17,7 +17,7 @@ export default class textUnit extends Node {
         this.remark = options.remark || '';
         this.linespacing = options.linespacing || ''
 
-        this.guid = guid();
+        
         // 标注选中时切割的textUnit隶属同一group_id
         this.group_id = options.group_id;
         // this.docStyle = new DocStyle(options.docStyle || {});

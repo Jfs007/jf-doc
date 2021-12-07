@@ -1,0 +1,153 @@
+import { getRange } from './index';
+import { getTextNode, isTextNode, getTextNodes } from './dom';
+import { vSplit } from './util';
+
+
+export let computedBounday = (rect, e) => {
+    let startOffset = rect.x;
+    let endOffset = rect.width + startOffset;
+    let topOffset = rect.y;
+    let bottomOffset = topOffset + rect.height;
+    if (e.x >= startOffset && e.x <= endOffset && e.y >= topOffset && e.y <= bottomOffset) {
+        return true;
+    } else {
+        return false;
+    }
+}
+export let boundayIntimateDir = (rect, e) => {
+    let startOffset = rect.x;
+    let offsetMiddle = startOffset + (rect.width / 2);
+    if (e.x < offsetMiddle) return 'left';
+    return 'right';
+}
+
+
+export let getRectNodePos = (textNode, pos) => {
+    let range = getRange();
+    range.setStart(textNode, pos[0]);
+    range.setEnd(textNode, pos[1]);
+    let rect = range.getBoundingClientRect();
+    return rect;
+}
+export let computedLineFeed = (line, callback = () => {}) => {
+    console.time('st')
+    let range = getRange();
+    let textNodes = getTextNodes(line);
+    let LineNumber = 0;
+    let Lines = [textNodes];
+    let base = null;
+    let isLineFeed = (compare) => {
+        if (!base) return false;
+        return compare.rect.left < base.rect.left;
+    }
+    let cut = (cutIdx, textIdx, compare, originTextIdx) => {
+        let _cutIdx = cutIdx;
+        let currentLine = Lines[LineNumber];
+        if (base.node != compare.node) {
+        } else {
+            let [current, cut] = vSplit(base.node.nodeValue, textIdx);
+            let cloneNode = base.node.cloneNode(base.node);
+            let baseClone = base.node.cloneNode(base.node);
+            baseClone.nodeValue = current;
+            currentLine[cutIdx].node = baseClone;
+            cloneNode.nodeValue = cut;
+            cloneNode.textContent = cut;
+            cloneNode.innerText = cut;
+            currentLine.splice(cutIdx + 1, 0, { node: base.node, start: textIdx, copyNode: cloneNode });
+            cutIdx++;
+        }
+        let [current, cut] = vSplit(currentLine, cutIdx);
+        Lines[LineNumber] = current;
+        Lines.push(cut);
+        callback(_cutIdx, originTextIdx, base, compare, textIdx);
+        base = null;
+        // console.log(base, 'vase')
+        LineNumber++;
+    }
+    let SingleLineActuator = (Line) => {
+        let end = false;
+        Line.find(({ node, start, copyNode }, index) => {
+            
+            if (end) return true;
+            let value = node.nodeValue;
+            let originStart = start || 0;
+            // console.log(copyNode, start, value.length, )
+            start = start == undefined ? 0 : start ;
+            for (let i = start; i < value.length; i++) {
+                range.setStart(node, i);
+                range.setEnd(node, i + 1);
+        
+                let rect = range.getBoundingClientRect();
+                let _isLf = isLineFeed({ rect, node });
+                // 是否换行
+                if (_isLf && base) {
+                    console.log(index, 'index');
+                    cut(index, i, { rect, node },  i - originStart);
+                    end = true;
+                    SingleLineActuator(Lines[LineNumber])
+                  
+                    return true;
+                    break;
+                }
+
+                base = {
+                    rect,
+                    node
+                }; 
+            }
+        })
+    }
+    SingleLineActuator(Lines[LineNumber]);
+    console.timeEnd('st')
+    return Lines;
+}
+
+
+
+export let computedRangeBoundary = (e, textNode) => {
+    let range = getRange();
+    let value = textNode.nodeValue;
+    let boundary = {};
+    range.setStart(textNode, 0);
+    range.setEnd(textNode, value.length);
+    let rect = range.getBoundingClientRect();
+    if (!computedBounday(rect, e)) {
+        let dir = boundayIntimateDir(rect, e);
+        boundary = {
+            dir,
+            index: dir == 'left' ? 0 : value.length,
+            textNode,
+            range,
+            rect: {
+                y: rect.y,
+                x: dir == 'left' ? rect.x : rect.x + rect.width,
+                height: rect.height
+            },
+        };
+        return boundary;
+    }
+    for (let i = 0; i < value.length; i++) {
+        range.setStart(textNode, i);
+        range.setEnd(textNode, i + 1);
+        let rect = range.getBoundingClientRect();
+        if (computedBounday(rect, e)) {
+            let dir = boundayIntimateDir(rect, e);
+            boundary = {
+                dir,
+                index: dir == 'left' ? i : i + 1,
+                textNode,
+                range,
+                rect: {
+                    y: rect.y,
+                    x: dir == 'left' ? rect.x : rect.x + rect.width,
+                    height: rect.height
+                }
+
+            };
+            break;
+        }
+    }
+    return boundary;
+}
+
+// export 
