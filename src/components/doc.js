@@ -31,9 +31,9 @@ export default class Doc extends Node {
         this.events = new Events();
 
         
-        this.events.on(document, 'mouseup', () => {
-            console.log('hello');
-            new Range();
+        this.events.on(document, 'mouseup', (e) => {
+            
+            this.range = new Range();
         })
         super.init(config);
         this.registered(config.Components);
