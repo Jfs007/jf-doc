@@ -1,6 +1,6 @@
-import { getRange } from './index';
+import { getRange } from './range';
 import { getTextNode, isTextNode, getTextNodes } from './dom';
-import { vSplit } from './util';
+import { vSplit } from './index';
 
 
 export let computedBounday = (rect, e) => {

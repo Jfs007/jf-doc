@@ -35,7 +35,7 @@ export default class Section extends Node {
                 width: 2 + "px",
             },
         };
-    },
+    }
 
 
 
