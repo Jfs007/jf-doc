@@ -10,7 +10,7 @@ export default {
       },
     },
   },
-  name: "text",
+  name: "ui-text",
   created() {
      
   }

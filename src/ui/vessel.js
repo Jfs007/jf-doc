@@ -1,6 +1,7 @@
 
 import UIs from './ui';
 export default {
+    name: 'vessel',
     props: {
         type: {
             default: 'text'
@@ -19,7 +20,7 @@ export default {
     },
     render(h) {
        let unit = this.unit;
-        return h(UIs[this.type], {
+        return h(UIs['ui-' + this.type], {
             attrs: {
                 'data-id': `${unit.guid}`,
             },

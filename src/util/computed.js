@@ -104,7 +104,7 @@ export let computedLineFeed = (line, callback = () => {}) => {
 
 
 
-export let computedRangeBoundary = (e, textNode) => {
+export let computedRangeClientBoundary = (e, textNode) => {
     let range = getRange();
     let value = textNode.nodeValue;
     let boundary = {};
@@ -115,7 +115,7 @@ export let computedRangeBoundary = (e, textNode) => {
         let dir = boundayIntimateDir(rect, e);
         boundary = {
             dir,
-            index: dir == 'left' ? 0 : value.length,
+            offset: dir == 'left' ? 0 : value.length,
             textNode,
             range,
             rect: {
@@ -134,7 +134,7 @@ export let computedRangeBoundary = (e, textNode) => {
             let dir = boundayIntimateDir(rect, e);
             boundary = {
                 dir,
-                index: dir == 'left' ? i : i + 1,
+                offset: dir == 'left' ? i : i + 1,
                 textNode,
                 range,
                 rect: {

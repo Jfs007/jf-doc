@@ -29,11 +29,25 @@ export default class Doc extends Node {
         // this.sections = [];
         this.cursor = new Cursor();
         this.events = new Events();
+        this.$el = null;
 
         
         this.events.on(document, 'mouseup', (e) => {
-            
-            this.range = new Range();
+            // this.range = new Range();
+            if(this.$el.contains(e.target)) {
+                this.cursor.place(e);
+            }else {
+                this.cursor.empty();
+            }
+           
+        });
+        this.events.on(document, 'scroll', (e) => {
+            this.cursor.update(e);
+        });
+        this.events.on(document, 'keyup', (e) => {
+           
+            console.log(this.cursor.node, this.cursor.input);
+            // this.cursor.node.text =  (this.cursor.input)
         })
         super.init(config);
         this.registered(config.Components);
@@ -95,6 +109,11 @@ export default class Doc extends Node {
         let sections = this.buildSections(doc||[]);
         console.log(sections, 'sections');
         // let sections 
+    }
+
+
+    render(el) {
+        this.$el = el;
     }
 
 

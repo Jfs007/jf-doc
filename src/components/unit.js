@@ -110,6 +110,9 @@ export default class Unit extends Node {
         return 0;
 
     }
+    pushText(text) {
+        this.text = this.text + text;
+    }
 
 
 
