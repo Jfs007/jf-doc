@@ -55,9 +55,16 @@ export default class Doc extends Node {
             let offset = 0;
 
             if(keyCode[e.keyCode] == 'ArrowLeft') {
-
+                let _offset = this.cursor.offset;
+                if(_offset>0) {
+                    offset = -1;
+                }
+                
+                return;
             }
 
+
+            
 
             if (keyCode[e.keyCode] == 'Delete') {
                 offset = -1;
