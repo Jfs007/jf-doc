@@ -29,7 +29,7 @@
 }
 </style>
 <template>
-  <i class="jf-editor__cursor" :style="place" v-if="cursor.offset > -1">
+  <i class="jf-editor__cursor" :style="place" v-show="cursor.offset > -1">
     <input class="jf-editor__cursor--input" ref="input" @input="updateInput"/>
   </i>
 </template>
@@ -43,7 +43,8 @@ export default {
       default() {
         return {}
       }
-    }
+    },
+    doc: {}
   },
   data() {
     return {
@@ -59,6 +60,7 @@ export default {
        
       }
     }
+    
   },
   computed: {
     place() {
@@ -70,6 +72,10 @@ export default {
         top: top + 'px'
       }
     }
+  },
+  mounted() {
+    // console.log(this.$refs['input'])
+    this.doc.cursor.__el__ = this.$refs['input'];
   },
   methods: {
     updateInput(e) {

@@ -6,7 +6,7 @@
 </style>
 <template>
   <div class="jf-doc" id="jf-doc">
-      <ui-cursor :cursor="doc.cursor"></ui-cursor>
+      <ui-cursor :cursor="doc.cursor" :doc="doc"></ui-cursor>
       <div :key="section.guid" v-for="section in doc.childNodes" :class="[ section.class ]">
         <div :key="line.guid" :class="[line.class]" v-for="line in section.childNodes">
           <Vessel :key="unit.guid" :unit="unit" v-for="unit in line.childNodes"></Vessel>

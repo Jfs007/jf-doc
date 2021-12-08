@@ -2,7 +2,7 @@
 import Base from './base';
 import { guid } from '../util/index';
 export default class Node extends Base {
-    constructor(options) {
+    constructor(options, update = false) {
         super();
         this.class = '';
         this.nodeName = '';
@@ -12,8 +12,13 @@ export default class Node extends Base {
         this.nextSibling = null;
         this.previousSibling = null;
         this._dirty = true;
+        // dom渲染的时候会进行绑定真实dom
+        this.__el__ = null;
         this.guid = guid();
         super.init(options);
+        if(update) {
+            this.guid = guid();
+        }
 
     }
     _updateDirty(flag) {
@@ -39,6 +44,17 @@ export default class Node extends Base {
             this.previousSibling.nextSibling = this; 
         }
     }
+
+    cloneNode() {
+
+        return new this.constructor(this, true);
+    }
+
+    insertBefore(newNode, referenceNode) {
+        let idx = this.childNodes.findIndex(node => node == referenceNode);
+        this.childNodes.splice(idx, 0, newNode);
+        return newNode;
+    }
     
 
     appendChild(node) {
@@ -49,12 +65,13 @@ export default class Node extends Base {
     removeChild(dnode) {
         let idx = this.childNodes.findIndex(node => node == dnode);
         if (idx > -1) {
-            let node =  this.childNodes.splice(idex, 1);
+            let node =  this.childNodes.splice(idx, 1);
             this._solveSibling();
             return node;
         }
         this._console.error('不存在该节点');
     }
+    
 
 
 

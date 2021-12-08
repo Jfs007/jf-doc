@@ -3,8 +3,8 @@ import Node from '../lib/node.js';
 import { guid, vSplit } from '../util/index';
 // import DocStyle from './doc-style';
 export default class Unit extends Node {
-    constructor(options = {}) {
-        super(options);
+    constructor(options = {}, update) {
+        super(options, update);
         // console.log(options, 'opots')
         // 评论数组
         this.comments = [...(options.comments || [])];
@@ -112,21 +112,46 @@ export default class Unit extends Node {
         return 0;
 
     }
-    appendText(text) {
-        let { offset } = this.__cursor__;
+    appendText(cursor, text) {
+        let { offset } = cursor;
         let [left, right] = vSplit(this.text, offset);
         let value = left + text + right;
         this.text = value;
         return value;
     }
-    deleteText(num = 1) {
-        let { offset } = this.__cursor__;
+    deleteText(cursor, num = 1) {
+        let { offset } = cursor;
         let [left, right] = vSplit(this.text, offset);
         left = left.slice(0, -1 * num);
         let value = left + right;
         this.text = value;
         return value;
     }
+
+    composition(cursor) {
+        let { offset } = cursor;
+        let [left, right] = vSplit(this.text, offset);
+        // this.parentNode.removeChild(this);
+        
+        let nodeleft = this.cloneNode();
+        nodeleft.text = left
+        let noderight = this.cloneNode();
+        noderight.text = right;
+        let composition = this.cloneNode();
+        composition.text = '';
+        composition.type = 'composition';
+        this.parentNode.insertBefore(nodeleft, this);
+        this.parentNode.insertBefore(composition, this);
+        this.parentNode.insertBefore(noderight, this);
+        this.parentNode.removeChild(this);
+        // this.parentNode.appendChild(composition);
+        // this.parentNode.appendChild(noderight);
+        return composition;
+        // this.parentNode
+    }
+
+
+
 
 
 

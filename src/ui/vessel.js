@@ -14,9 +14,11 @@ export default {
     },
     mounted() {
         this.$el.__unit__ = this.unit;
+        this.unit.__el__ = this.$el;
     },
     beforeDestroy() {
         this.$el.__unit__ = null;
+        this.unit.__el__ = null;
     },
     render(h) {
        let unit = this.unit;

@@ -1,6 +1,6 @@
 
 import Node from '@/lib/node';
-import { computedRangeClientBoundary, computedClientBoundaryByOffset  } from "@/util/computed";
+import { computedRangeClientBoundary, computedClientBoundaryByOffset } from "@/util/computed";
 import { getTextNode, getComputedStyle, getScroll } from "@/util/dom";
 export default class Section extends Node {
     constructor(params) {
@@ -13,19 +13,22 @@ export default class Section extends Node {
         this._boundary = null;
         this.dom = null;
         this.node = null;
+        this.composition = '';
         this.input = '';
         this.oldInput = '';
+        // 绑定的dom
+        this.__el__ = null;
     }
     updateInput(value) {
-        // console.log(value, 'value')
-        // 道格拉斯·凯奇1 道格拉斯·凯奇12
-        // this.oldInput = value;
+        // console.log(value, 'value');
         let oldInput = this.oldInput;
-        if(value.length > oldInput.length) {
+        if (value.length > oldInput.length) {
+            value.map
             oldInput = oldInput.replace(/\\/g, '\\\\')
             let dymReg = new RegExp(`${oldInput}(.*)`);
             let rs = value.match(dymReg);
-            if(rs) {
+            console.log(value, 'value');
+            if (rs) {
                 this.input = rs[1]
             }
         }
@@ -33,13 +36,42 @@ export default class Section extends Node {
     }
 
     update(offset = undefined) {
-        if(typeof offset == 'number') {
+        if (typeof offset == 'number') {
             let textNode = getTextNode(this.dom);
-            this.offset = this.offset + offset
-            this._boundary =  computedClientBoundaryByOffset(textNode, this.offset);
+            // this.offset = this.offset + offset
+            this._boundary = computedClientBoundaryByOffset(textNode, offset);
         }
         this.setCursor(this._boundary);
     }
+    set(dom, offset) {
+        this.empty();
+        let textNode = getTextNode(dom);
+        
+        this.offset = offset;
+        let boundary = computedClientBoundaryByOffset(textNode, offset);
+        this.setByBoundary(boundary);
+    }
+
+
+    setByBoundary(boundary) {
+        let { range } = boundary;
+        if (range) {
+            this.dom = range.startContainer.parentNode;
+            this.node = this.dom.__unit__;
+            this.node.__cursor__ = this;
+
+            this._boundary = boundary;
+
+            let style = getComputedStyle(this.dom);
+            let fontSize = parseInt(style.fontSize);
+            fontSize = isNaN(fontSize) ? undefined : fontSize;
+            let { height } = boundary.rect;
+            let cursor_height = fontSize ? fontSize + 1 : height;
+            this.height = cursor_height;
+            this.setCursor(boundary);
+        }
+    }
+
     empty() {
         this._boundary = null;
         this.height = 30;
@@ -48,11 +80,22 @@ export default class Section extends Node {
         this.top = undefined;
         this.dom = null;
         this.node = null;
+        this.composition = '';
         this.input = '';
+        this.oldInput = '';
+
     }
 
     place(e) {
+        console.log(this.__el__)
+        if(this.__el__) {
+           
+            this.__el__.value = '';
+        }
+        
+        this.empty();
         let textNode = getTextNode(e.target);
+
         let boundary = computedRangeClientBoundary(
             {
                 x: e.clientX,
@@ -60,22 +103,10 @@ export default class Section extends Node {
             },
             textNode
         );
+        this.setByBoundary(boundary)
 
-        let { range } = boundary;
-        if(range) {
-            this.dom = range.startContainer.parentNode;
-            this.node = this.dom.__unit__;
-            this.node.__cursor__ = this;
-        }
-        this._boundary = boundary;
 
-        let style = getComputedStyle(e.target);
-        let fontSize = parseInt(style.fontSize);
-        fontSize = isNaN(fontSize) ? undefined : fontSize;
-        let { height } = boundary.rect;
-        let cursor_height = fontSize ? fontSize + 1 : height;
-        this.height = cursor_height;
-        this.setCursor(boundary);
+
     }
 
 
@@ -88,7 +119,7 @@ export default class Section extends Node {
         this.left = x + scrollLeft;
         this.top = top;
         this.offset = boundary.offset;
-       
+
     }
 
 
