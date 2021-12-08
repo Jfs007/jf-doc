@@ -53,26 +53,31 @@ export default class Doc extends Node {
             // console.log(e, 'ee');
             let { composition } = this.cursor;
             let offset = 0;
+            let KeyCodeName = keyCode[e.keyCode];
 
-            if(keyCode[e.keyCode] == 'ArrowLeft') {
-                let _offset = this.cursor.offset;
-                if(_offset>0) {
-                    offset = -1;
-                }
-                
-                return;
-            }
+           
 
 
-            
 
-            if (keyCode[e.keyCode] == 'Delete') {
+
+            if (KeyCodeName == 'Delete') {
                 offset = -1;
                 this.cursor.node.deleteText(this.cursor, Math.abs(offset))
-            } else if (keyCode[e.keyCode] == 'Enter') {
+            } else if (KeyCodeName == 'Enter') {
 
 
-            } else {
+            } else if (KeyCodeName == 'ArrowLeft' || KeyCodeName == 'ArrowRight') {
+                let _offset = this.cursor.offset;
+                if (_offset > 0 && KeyCodeName == 'ArrowLeft') {
+                    offset = -1;
+                }
+                if (_offset < this.cursor.node.text.length && KeyCodeName == 'ArrowRight') {
+                    offset = 1;
+                }
+               
+            }
+
+            else {
                 offset = this.cursor.input.length;
                 if (composition == 'update') {
                     this.cursor.node.text = this.cursor.oldInput;
@@ -87,11 +92,11 @@ export default class Doc extends Node {
                 this.cursor.composition = '';
                 this.cursor.offset = 0;
                 offset = this.cursor.oldInput.length;
-                this.cursor.closeComposition();   
+                this.cursor.closeComposition();
             }
             this.nextTick(_ => {
                 if (composition == 'update') {
-                    this.cursor.set(this.cursor.node.__el__,  this.cursor.node.text.length);
+                    this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                 } else {
                     this.cursor.update(offset + this.cursor.offset);
                 }
@@ -126,16 +131,16 @@ export default class Doc extends Node {
     buildSections() {
         let section1 = new Section({ class: 'jf-section' })
         let line1 = new Line({ class: 'jf-line' });
-        let unit1 = new Unit({ class: 'jf-unit', text: '烦不烦' });
-        let unit2 = new Unit({ class: 'jf-unit', text: '我还要睡觉呢' });
-        let unit3 = new Unit({ class: 'jf-unit', text: '吵死了' });
+        let unit1 = new Unit({ class: 'jf-unit', text: '这是一个自定义编辑器' });
+        let unit2 = new Unit({ class: 'jf-unit', text: '这个东西包含原生Range' });
+        let unit3 = new Unit({ class: 'jf-unit', text: '富含自定义ui组件' });
 
 
         let section2 = new Section({ class: 'jf-section' })
         let line2 = new Line({ class: 'jf-line' });
         let unit21 = new Unit({ class: 'jf-unit', text: 'JDs 风' });
         let unit22 = new Unit({ class: 'jf-unit', text: '两份cash' });
-        let unit23 = new Unit({ class: 'jf-unit', text: '吵死了' });
+        let unit23 = new Unit({ class: 'jf-unit', text: '吵死撒可代发收款的风景阿斯利康代发价奥斯卡的发酵氨基酸开发举案说法了' });
         line1.appendChild(unit1);
         line1.appendChild(unit2);
         line1.appendChild(unit3);

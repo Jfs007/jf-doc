@@ -1,36 +1,60 @@
 
 <style lang="less" scoped>
 .jf-doc {
+  font-size: 15px;
+  font-family: Arial, "Microsoft YaHei", "微软雅黑", "黑体", Heiti, sans-serif,
+    SimSun, "宋体", serif;
+  color: #333333;
+  background-color: transparent;
+  font-weight: normal;
+  font-style: normal;
+  font-variant: normal;
+  text-decoration: none;
+  vertical-align: baseline;
   user-select: none;
+  word-wrap: break-word;
+  white-space: normal;
+  word-break: break-all;
 }
 </style>
 <template>
   <div class="jf-doc" id="jf-doc">
-      <ui-cursor :cursor="doc.cursor" :doc="doc"></ui-cursor>
-      <div :key="section.guid" v-for="section in doc.childNodes" :class="[ section.class ]">
-        <div :key="line.guid" :class="[line.class]" v-for="line in section.childNodes">
-          <Vessel :key="unit.guid" :unit="unit" v-for="unit in line.childNodes"></Vessel>
-        </div>
+    <ui-cursor :cursor="doc.cursor" :doc="doc"></ui-cursor>
+    <div
+      :key="section.guid"
+      v-for="section in doc.childNodes"
+      :class="[section.class]"
+    >
+      <div
+        :key="line.guid"
+        :class="[line.class]"
+        v-for="line in section.childNodes"
+      >
+        <Vessel
+          :key="unit.guid"
+          :unit="unit"
+          v-for="unit in line.childNodes"
+        ></Vessel>
       </div>
+    </div>
   </div>
 </template>
 
 <script>
 // import test from '@/test';
-import Doc from '@/index';
-import Cursor from './cursor.vue';
-import Vessel from './vessel';
+import Doc from "@/index";
+import Cursor from "./cursor.vue";
+import Vessel from "./vessel";
 export default {
-  
-  name: 'Index',
+  name: "Index",
   data() {
     return {
-      doc: null
-    }
+      doc: null,
+    };
   },
   components: {
     Vessel,
-    uiCursor: Cursor
+    uiCursor: Cursor,
   },
   methods: {
     // test
@@ -40,9 +64,9 @@ export default {
     this.doc = doc;
     this.$nextTick(() => {
       doc.render(this.$el);
-    })
-  }
-}
+    });
+  },
+};
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->

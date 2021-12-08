@@ -75,9 +75,10 @@ export default class Section extends Node {
 
             let style = getComputedStyle(this.dom);
             let fontSize = parseInt(style.fontSize);
+            // console.log(style.lineHeight, 'lineht')
             fontSize = isNaN(fontSize) ? undefined : fontSize;
             let { height } = boundary.rect;
-            let cursor_height = fontSize ? fontSize + 1 : height;
+            let cursor_height = fontSize ? fontSize * (1.2) : height;
             this.height = cursor_height;
             this.setCursor(boundary);
         }
