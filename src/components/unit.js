@@ -1,6 +1,6 @@
 
 import Node from '../lib/node.js';
-import { guid } from '../util/index';
+import { guid, vSplit } from '../util/index';
 // import DocStyle from './doc-style';
 export default class Unit extends Node {
     constructor(options = {}) {
@@ -11,7 +11,7 @@ export default class Unit extends Node {
         // 文本
         this.text = options.text;
         this.isRange = options.isRange;
-        // 类型 img / text
+        // 类型 composition / text composition表示输入法类型
         this.type = options.type || 'text';
         // 标记 delete 
         this.remark = options.remark || '';
@@ -20,6 +20,8 @@ export default class Unit extends Node {
         
         // 标注选中时切割的textUnit隶属同一group_id
         this.group_id = options.group_id;
+        // 光标，在Cursor产生后会被挂载
+        this.__cursor__ = null;
         // this.docStyle = new DocStyle(options.docStyle || {});
         this._copy = [];
         if(!this.isCarousel()) {
@@ -110,9 +112,22 @@ export default class Unit extends Node {
         return 0;
 
     }
-    pushText(text) {
-        this.text = this.text + text;
+    appendText(text) {
+        let { offset } = this.__cursor__;
+        let [left, right] = vSplit(this.text, offset);
+        let value = left + text + right;
+        this.text = value;
+        return value;
     }
+    deleteText(num = 1) {
+        let { offset } = this.__cursor__;
+        let [left, right] = vSplit(this.text, offset);
+        left = left.slice(0, -1 * num);
+        let value = left + right;
+        this.text = value;
+        return value;
+    }
+
 
 
 

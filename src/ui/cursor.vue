@@ -24,6 +24,7 @@
     position: relative;
     left: 200px;
     width: 2px;
+    color: transparent;
   }
 }
 </style>
@@ -73,7 +74,6 @@ export default {
   methods: {
     updateInput(e) {
       let value = e.target.value;
-      console.log(value, 'val');
       this.cursor.updateInput(value);
     }
    

@@ -1,6 +1,6 @@
 
 import Node from '@/lib/node';
-import { computedRangeClientBoundary } from "@/util/computed";
+import { computedRangeClientBoundary, computedClientBoundaryByOffset  } from "@/util/computed";
 import { getTextNode, getComputedStyle, getScroll } from "@/util/dom";
 export default class Section extends Node {
     constructor(params) {
@@ -13,13 +13,31 @@ export default class Section extends Node {
         this._boundary = null;
         this.dom = null;
         this.node = null;
-        this.input = ''
+        this.input = '';
+        this.oldInput = '';
     }
     updateInput(value) {
-        this.input = value;
+        // console.log(value, 'value')
+        // 道格拉斯·凯奇1 道格拉斯·凯奇12
+        // this.oldInput = value;
+        let oldInput = this.oldInput;
+        if(value.length > oldInput.length) {
+            oldInput = oldInput.replace(/\\/g, '\\\\')
+            let dymReg = new RegExp(`${oldInput}(.*)`);
+            let rs = value.match(dymReg);
+            if(rs) {
+                this.input = rs[1]
+            }
+        }
+        this.oldInput = value;
     }
 
-    update(e) {
+    update(offset = undefined) {
+        if(typeof offset == 'number') {
+            let textNode = getTextNode(this.dom);
+            this.offset = this.offset + offset
+            this._boundary =  computedClientBoundaryByOffset(textNode, this.offset);
+        }
         this.setCursor(this._boundary);
     }
     empty() {
@@ -47,6 +65,7 @@ export default class Section extends Node {
         if(range) {
             this.dom = range.startContainer.parentNode;
             this.node = this.dom.__unit__;
+            this.node.__cursor__ = this;
         }
         this._boundary = boundary;
 

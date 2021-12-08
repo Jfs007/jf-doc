@@ -8,6 +8,7 @@ import Events from '@/lib/events';
 import Unit from './unit';
 import Line from './line';
 import { isTextNode } from '@/util/dom';
+import keyCode from '@/lib/keyCode';
 
 /**
  * [{  s: '', lid: 1  }]
@@ -42,16 +43,36 @@ export default class Doc extends Node {
            
         });
         this.events.on(document, 'scroll', (e) => {
-            this.cursor.update(e);
+            this.cursor.update();
         });
         this.events.on(document, 'keyup', (e) => {
+            let offset = 0;
+            if(keyCode[e.keyCode] == 'Delete') {
+                offset = -1;
+                this.cursor.node.deleteText(Math.abs(offset))
+            }else {
+                offset = this.cursor.input.length;
+                this.cursor.node.appendText(this.cursor.input);
+            }
            
-            console.log(this.cursor.node, this.cursor.input);
-            // this.cursor.node.text =  (this.cursor.input)
+            
+            this.nextTick(_ => {
+                this.cursor.update(offset);
+            })
+        });
+        this.events.on(document, 'compositionstart', (e) => {
+            console.log(e.target, 'start');
+        })
+        this.events.on(document, 'compositionend', (e) => {
+            console.log(e.target, 'end');
         })
         super.init(config);
         this.registered(config.Components);
         this.init(config);
+    }
+
+    nextTick(callback = () => {}) {
+        setTimeout(callback, 0)
     }
 
     registered() {
@@ -107,7 +128,6 @@ export default class Doc extends Node {
     init(config) {
         let { doc } = config;
         let sections = this.buildSections(doc||[]);
-        console.log(sections, 'sections');
         // let sections 
     }
 

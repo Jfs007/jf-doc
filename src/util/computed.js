@@ -104,6 +104,27 @@ export let computedLineFeed = (line, callback = () => {}) => {
 
 
 
+export let computedClientBoundaryByOffset = (textNode, offset, dir = 'right') => {
+    let range = getRange();
+    range.setStart(textNode, offset);
+    range.setEnd(textNode, offset);
+    let rect = range.getBoundingClientRect();
+    let boundary = {
+        dir,
+        offset: offset,
+        textNode,
+        range,
+        rect: {
+            y: rect.y,
+            x: rect.x,
+            height: rect.height
+        }
+
+    };
+    return boundary;
+}
+
+
 export let computedRangeClientBoundary = (e, textNode) => {
     let range = getRange();
     let value = textNode.nodeValue;

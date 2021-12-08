@@ -39,6 +39,8 @@ export default class Node extends Base {
             this.previousSibling.nextSibling = this; 
         }
     }
+    
+
     appendChild(node) {
         node._setParentNode(this);
         this.childNodes.push(node);
@@ -53,6 +55,7 @@ export default class Node extends Base {
         }
         this._console.error('不存在该节点');
     }
+
 
 
 }
