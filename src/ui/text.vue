@@ -1,7 +1,8 @@
 
 <style lang="less" scoped>
 .jf-unit--composition {
-  border-bottom: 1px solid #0c63fa;
+  border-bottom: 1px solid rgba(0, 255, 182);
+  // background: rgba(0, 255, 182, 0.2);
 }
 </style>
 <template>

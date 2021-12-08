@@ -34,15 +34,14 @@ export default class Doc extends Node {
 
 
         this.events.on(document, 'mouseup', (e) => {
-            if (this.cursor.composition == 'start') {
+            if (this.cursor.composition) {
                 this.cursor.node.parentNode.removeChild(this.cursor.node);
                 this.cursor.empty();
-
             }
-            // this.range = new Range();
             if (this.$el.contains(e.target)) {
                 this.cursor.place(e);
             } else {
+                this.cursor.closeComposition();
                 this.cursor.empty();
             }
 
@@ -64,8 +63,7 @@ export default class Doc extends Node {
                 offset = this.cursor.input.length;
                 if (composition == 'update') {
                     this.cursor.node.text = this.cursor.oldInput;
-                    this.cursor.offset = 0;
-                    offset = this.cursor.oldInput.length;
+                    offset = 0;
                 } else {
                     this.cursor.node.appendText(this.cursor, this.cursor.input);
                 }
@@ -76,11 +74,11 @@ export default class Doc extends Node {
                 this.cursor.composition = '';
                 this.cursor.offset = 0;
                 offset = this.cursor.oldInput.length;
-                // this.empty();
+                this.cursor.closeComposition();   
             }
             this.nextTick(_ => {
                 if (composition == 'update') {
-                    this.cursor.set(this.cursor.node.__el__, offset + this.cursor.offset);
+                    this.cursor.set(this.cursor.node.__el__,  this.cursor.node.text.length);
                 } else {
                     this.cursor.update(offset + this.cursor.offset);
                 }
@@ -99,10 +97,6 @@ export default class Doc extends Node {
         })
         this.events.on(document, 'compositionend', (e) => {
             this.cursor.composition = 'end';
-            // this.cursor.node.type = 'text';
-            // this.cursor.
-            // this.cursor.node.type = 'text';
-            // this.cursor.empty();
         })
         super.init(config);
         this.registered(config.Components);
@@ -142,24 +136,6 @@ export default class Doc extends Node {
         this.appendChild(section2);
         this.appendChild(section1);
         return section1;
-        // for (let index = doc.length - 1; index >= 0; index--) {
-        //     let unit = new textUnit(doc[index]);
-        //     if (unit.isLineFeed()) {
-        //         unit.line_feed = 1;
-        //         this.paragragh.unshift(unit);
-        //         lineFeedIndex = this.number;
-        //         this.number++;
-        //         if (prevUnit.isLineFeed()) {
-        //             this.spans.unshift([unit]);
-        //         }
-        //     } else {
-        //         if (!this.spans[lineFeedIndex]) {
-        //             this.spans.unshift([])
-        //         }
-        //         this.spans[0].unshift(unit);
-        //     }
-        //     prevUnit = unit;
-        // }
 
     }
 
@@ -182,20 +158,6 @@ export default class Doc extends Node {
 
     getNodeByDom(dom) {
 
-
-
-
-        // if(!isTextNode(dom)) {
-
-        // }
-        // let node = dom.parentNode;
-        // while(node) {
-        //     if(isTextNode(node)) {
-
-        //     } 
-        // }
-
-        // console.log(dom.__unit__, '__unit__')
 
     }
 

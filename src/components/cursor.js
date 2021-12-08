@@ -19,15 +19,27 @@ export default class Section extends Node {
         // 绑定的dom
         this.__el__ = null;
     }
+    closeComposition() {
+        this.composition = '';
+        if (this.__el__) {
+            this.__el__.value = '';
+        }
+        this.oldInput = '';
+        this.input = '';
+
+    }
     updateInput(value) {
         // console.log(value, 'value');
+        if(!this.composition) {
+            value = value.replace(/\s/g, '\u00a0')
+        }
         let oldInput = this.oldInput;
+
         if (value.length > oldInput.length) {
-            value.map
             oldInput = oldInput.replace(/\\/g, '\\\\')
             let dymReg = new RegExp(`${oldInput}(.*)`);
             let rs = value.match(dymReg);
-            console.log(value, 'value');
+
             if (rs) {
                 this.input = rs[1]
             }
@@ -38,6 +50,8 @@ export default class Section extends Node {
     update(offset = undefined) {
         if (typeof offset == 'number') {
             let textNode = getTextNode(this.dom);
+            console.log(textNode.textContent, offset, textNode.textContent.length)
+            // window.text = textNode;
             // this.offset = this.offset + offset
             this._boundary = computedClientBoundaryByOffset(textNode, offset);
         }
@@ -46,7 +60,7 @@ export default class Section extends Node {
     set(dom, offset) {
         this.empty();
         let textNode = getTextNode(dom);
-        
+
         this.offset = offset;
         let boundary = computedClientBoundaryByOffset(textNode, offset);
         this.setByBoundary(boundary);
@@ -87,12 +101,10 @@ export default class Section extends Node {
     }
 
     place(e) {
-        console.log(this.__el__)
-        if(this.__el__) {
-           
+        if (this.__el__) {
             this.__el__.value = '';
         }
-        
+
         this.empty();
         let textNode = getTextNode(e.target);
 

@@ -1,0 +1,3 @@
+let tab = {
+    'space': '&nbsp;'
+}
