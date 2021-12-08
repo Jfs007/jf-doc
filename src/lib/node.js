@@ -52,7 +52,10 @@ export default class Node extends Base {
 
     insertBefore(newNode, referenceNode) {
         let idx = this.childNodes.findIndex(node => node == referenceNode);
+        newNode._setParentNode(this)
         this.childNodes.splice(idx, 0, newNode);
+        referenceNode._solveSibling();
+ 
         return newNode;
     }
     
@@ -66,7 +69,15 @@ export default class Node extends Base {
         let idx = this.childNodes.findIndex(node => node == dnode);
         if (idx > -1) {
             let node =  this.childNodes.splice(idx, 1);
-            this._solveSibling();
+            let previousSibling = dnode.previousSibling;
+            let nextSibling = dnode.nextSibling;
+            if(previousSibling) {
+                previousSibling._solveSibling();
+            }
+            if(nextSibling) {
+                nextSibling._solveSibling();
+            }
+            
             return node;
         }
         this._console.error('不存在该节点');

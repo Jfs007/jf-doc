@@ -19,7 +19,7 @@
 </style>
 <template>
   <div class="jf-doc" id="jf-doc">
-    <ui-cursor :cursor="doc.cursor" :doc="doc"></ui-cursor>
+    <ui-cursor :cursor="doc.cursor" :doc="doc" ref="cursor"></ui-cursor>
     <div
       :key="section.guid"
       v-for="section in doc.childNodes"
@@ -63,7 +63,7 @@ export default {
     let doc = new Doc();
     this.doc = doc;
     this.$nextTick(() => {
-      doc.render(this.$el);
+      doc.render({ doc: this.$el, cursor: this.$refs['cursor'].getInput() });
     });
   },
 };

@@ -121,7 +121,9 @@ export default class Unit extends Node {
     }
     deleteText(cursor, num = 1) {
         let { offset } = cursor;
+        console.log(this.text, 'text==');
         let [left, right] = vSplit(this.text, offset);
+        console.log(this.text, left, offset, right, 'offset')
         left = left.slice(0, -1 * num);
         let value = left + right;
         this.text = value;
@@ -148,6 +150,20 @@ export default class Unit extends Node {
         // this.parentNode.appendChild(noderight);
         return composition;
         // this.parentNode
+    }
+
+    compositionEnd(cursor) {
+        let nextSibling = this.nextSibling;
+        let previousSibling = this.previousSibling;
+        let leftText = previousSibling ? previousSibling.text : '';
+        let rightText = nextSibling ? nextSibling.text : '';
+        let text = this.text;
+        this.parentNode.removeChild(previousSibling);
+        this.parentNode.removeChild(nextSibling);
+        this.text = leftText + text + rightText;
+        // this.type = 'text';
+        // console.log(nextSibling.text, this.parentNode)
+        return this;
     }
 
 

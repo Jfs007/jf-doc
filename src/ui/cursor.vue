@@ -81,6 +81,9 @@ export default {
     updateInput(e) {
       let value = e.target.value;
       this.cursor.updateInput(value);
+    },
+    getInput() {
+      return this.$refs['input'];
     }
    
   },
