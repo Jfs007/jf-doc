@@ -50,9 +50,6 @@ export default class Section extends Node {
     update(offset = undefined) {
         if (typeof offset == 'number') {
             let textNode = getTextNode(this.dom);
-            console.log(textNode.textContent, offset, textNode.textContent.length)
-            // window.text = textNode;
-            // this.offset = this.offset + offset
             this._boundary = computedClientBoundaryByOffset(textNode, offset);
         }
         this.setCursor(this._boundary);

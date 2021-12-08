@@ -50,9 +50,15 @@ export default class Doc extends Node {
             this.cursor.update();
         });
         this.events.on(document, 'keyup', (e) => {
-
+            // console.log(e, 'ee');
             let { composition } = this.cursor;
             let offset = 0;
+
+            if(keyCode[e.keyCode] == 'ArrowLeft') {
+
+            }
+
+
             if (keyCode[e.keyCode] == 'Delete') {
                 offset = -1;
                 this.cursor.node.deleteText(this.cursor, Math.abs(offset))
