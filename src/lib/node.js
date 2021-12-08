@@ -37,6 +37,7 @@ export default class Node extends Base {
         // console.log(childNodes, 'childrem');
         this.nextSibling = childNodes[idx + 1];
         this.previousSibling = childNodes[idx - 1];
+
         if (this.nextSibling) {
             this.nextSibling.previousSibling = this;
         }
@@ -55,6 +56,7 @@ export default class Node extends Base {
         newNode._setParentNode(this)
         this.childNodes.splice(idx, 0, newNode);
         referenceNode._solveSibling();
+        newNode._solveSibling()
  
         return newNode;
     }

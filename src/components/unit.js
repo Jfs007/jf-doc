@@ -146,8 +146,7 @@ export default class Unit extends Node {
         this.parentNode.insertBefore(composition, this);
         this.parentNode.insertBefore(noderight, this);
         this.parentNode.removeChild(this);
-        // this.parentNode.appendChild(composition);
-        // this.parentNode.appendChild(noderight);
+        console.log(composition)
         return composition;
         // this.parentNode
     }
@@ -155,14 +154,15 @@ export default class Unit extends Node {
     compositionEnd(cursor) {
         let nextSibling = this.nextSibling;
         let previousSibling = this.previousSibling;
+
         let leftText = previousSibling ? previousSibling.text : '';
         let rightText = nextSibling ? nextSibling.text : '';
-        let text = this.text;
+        let text = cursor.oldInput;
         this.parentNode.removeChild(previousSibling);
         this.parentNode.removeChild(nextSibling);
         this.text = leftText + text + rightText;
-        // this.type = 'text';
-        // console.log(nextSibling.text, this.parentNode)
+        this.type = 'text';
+        console.log(nextSibling.text, text)
         return this;
     }
 
