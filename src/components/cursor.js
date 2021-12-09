@@ -2,7 +2,7 @@
 import Node from '@/lib/node';
 import { computedRangeClientBoundary, computedClientBoundaryByOffset } from "@/util/computed";
 import { getTextNode, getComputedStyle, getScroll } from "@/util/dom";
-export default class Section extends Node {
+export default class Cursor extends Node {
     constructor(params) {
         super(params);
         this.offset = -1;
@@ -51,7 +51,9 @@ export default class Section extends Node {
     update(offset = undefined) {
         if (typeof offset == 'number') {
             let textNode = getTextNode(this.dom);
+            
             this._boundary = computedClientBoundaryByOffset(textNode, offset);
+            console.log(offset, this._boundary)
         }
         this.setCursor(this._boundary);
     }

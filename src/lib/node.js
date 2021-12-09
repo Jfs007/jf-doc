@@ -5,6 +5,7 @@ import { getTextNode } from "@/util/dom";
 import { getRange } from '@/util/range';
 export default class Node extends Base {
     constructor(options, update = false) {
+        console.log(options, update)
         super();
         this.class = '';
         this.nodeName = '';

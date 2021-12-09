@@ -42,8 +42,7 @@ export default class Doc extends Node {
             }
             if (this.__el__.contains(e.target)) {
                 this.cursor.place(e);
-                let Line = this.cursor.node.parentNode;
-                console.log(Line.isOverflow(), 'line');
+               
 
             } else {
                 this.cursor.closeComposition();
@@ -218,9 +217,8 @@ export default class Doc extends Node {
                 composition
             } = this.cursor;
             let offset = 0;
-
             offset = this.cursor.input.length;
-            console.log('input')
+            console.log('input', offset, this.cursor.offset)
             if (composition == 'update') {
                 this.cursor.node.text = this.cursor.oldInput;
                 offset = 0;
@@ -228,25 +226,49 @@ export default class Doc extends Node {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
             }
 
-            if (composition == 'end') {
-                // let previousSibling = this.cursor.node.previousSibling;
-                // this.cursor.composition = '';
-                // this.cursor.offset = 0;
-                // offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
-                // this.cursor.node.compositionEnd(this.cursor);
-                // this.cursor.closeComposition();
-            }
             this.nextTick(_ => {
                 if (composition == 'update') {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                 } else {
+                    console.log(offset, this.cursor.offset, offset + this.cursor.offset)
                     this.cursor.update(offset + this.cursor.offset);
                 }
+               
+
+                // let Line = this.cursor.node.parentNode;
+                // console.log(this.cursor.node.__el__)
+                // let overUnits = Line.getOverFlowUnits();
+                // let newLine = Line.nextSibling ? Line.nextSibling : Line.cloneNode();
+                // console.log(Line, 'next')
+                
+                // if(!Line.nextSibling) {
+                //     newLine.childNodes = [];
+                //     Line.parentNode.appendChild(newLine);
+                //     console.log(Line.nextSibling, '--')
+                // }
+                
+                // overUnits.map(unit => {
+                //     Line.removeChild(unit);
+                //     if(!newLine.childNodes.length) {
+                //         newLine.appendChild(unit);
+                //     }else {
+                //         newLine.insertBefore(newLine.childNodes[0], unit);
+                //     }
+                // });
+                // let _offset = overUnits[0].__offset__;
+                // let clone1 = overUnits[0].cloneNode();
+                // clone1.guid = overUnits[0].guid
+                // clone1.text = clone1.text.slice(0, _offset);
+                // newLine.childNodes[0].text = newLine.childNodes[0].text.slice(offset)
+                // Line.appendChild(clone1);
+                // console.log(this.cursor)
+
             })
 
 
         });
         this.events.on(cursor, 'compositionstart', (e) => {
+            this.cursor.emptyInput()
             let composition = this.cursor.node.composition(this.cursor);
             this.cursor.composition = 'start';
             this.cursor.node = composition;
