@@ -16,30 +16,31 @@ export default class Section extends Node {
         this.composition = '';
         this.input = '';
         this.oldInput = '';
+        this.keyCode = '';
         // 绑定的dom
         this.__el__ = null;
     }
     closeComposition() {
         this.composition = '';
+        this.emptyInput();
+
+    }
+    emptyInput() {
         if (this.__el__) {
             this.__el__.value = '';
         }
         this.oldInput = '';
         this.input = '';
-
     }
     updateInput(value) {
-        // console.log(value, 'value');
-        if(!this.composition) {
+        if (!this.composition) {
             value = value.replace(/\s/g, '\u00a0')
         }
         let oldInput = this.oldInput;
-
         if (value.length > oldInput.length) {
             oldInput = oldInput.replace(/\\/g, '\\\\')
             let dymReg = new RegExp(`${oldInput}(.*)`);
             let rs = value.match(dymReg);
-
             if (rs) {
                 this.input = rs[1]
             }

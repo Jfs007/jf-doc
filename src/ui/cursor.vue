@@ -30,7 +30,7 @@
 </style>
 <template>
   <i class="jf-editor__cursor" :style="place" v-show="cursor.offset > -1">
-    <input class="jf-editor__cursor--input" ref="input" @input="updateInput"/>
+    <input class="jf-editor__cursor--input" ref="input" @input="updateInput" @keydown="keyDown"/>
   </i>
 </template>
 <script>
@@ -82,9 +82,14 @@ export default {
       let value = e.target.value;
       this.cursor.updateInput(value);
     },
+    keyDown(e) {
+      this.cursor.keyCode = e.keyCode;
+      // console.log(value, 'e');
+    },
     getInput() {
       return this.$refs['input'];
-    }
+    },
+    
    
   },
 };

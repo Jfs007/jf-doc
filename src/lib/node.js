@@ -101,6 +101,18 @@ export default class Node extends Base {
         this._console.error('不存在该节点');
     }
 
+    replaceChild(newChild, oldChild) {
+        let idx = this.childNodes.findIndex(node => node == oldChild);
+        newChild._setParentNode(this);
+        if(idx>-1) {
+            let node = this.childNodes.splice(idx, 1);
+            this.childNodes.splice(idx, 0, newChild);
+            newChild._solveSibling();
+            return node;
+        }
+        this._console.error('不存在该节点');
+    }
+
 
 
 

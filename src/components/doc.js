@@ -44,7 +44,7 @@ export default class Doc extends Node {
                 this.cursor.place(e);
                 let Line = this.cursor.node.parentNode;
                 console.log(Line.isOverflow(), 'line');
-                
+
             } else {
                 this.cursor.closeComposition();
                 this.cursor.empty();
@@ -60,7 +60,7 @@ export default class Doc extends Node {
         this.init(config);
     }
 
-    nextTick(callback = () => {}) {
+    nextTick(callback = () => { }) {
         setTimeout(callback, 0)
     }
 
@@ -141,57 +141,93 @@ export default class Doc extends Node {
     }
     bind() {
         let cursor = this.cursor.__el__;
-        this.events.on(cursor, 'keyup', (e) => {
+
+        // 
+        this.events.on(cursor, 'keydown', (e) => {
+           
             let {
                 composition
             } = this.cursor;
             let offset = 0;
+
             let KeyCodeName = keyCode[e.keyCode];
-
-
-            // 229 window系统会产生的中文输入
-          
-            if(composition && (KeyCodeName == 'Delete' || e.keyCode == 229)) {
-                KeyCodeName = undefined;
-            }
-
-
+            let previousSibling = this.cursor.node.previousSibling;
+            let nextSibling = this.cursor.node.nextSibling;
+            console.log('keydown')
             if (KeyCodeName == 'Delete') {
+                this.cursor.emptyInput();
                 offset = -1;
                 if (!composition) {
-
-                    this.cursor.node.deleteText(this.cursor, Math.abs(offset))
+                    if (this.cursor.offset == 0) {
+                        if (previousSibling) {
+                            if (this.cursor.node.text == '') {
+                                this.cursor.node.parentNode.removeChild(this.cursor.node);
+                            }
+                            this.cursor.set(previousSibling.__el__, previousSibling.text.length);
+                        }
+                    }
+                    this.cursor.node.deleteText(this.cursor, Math.abs(offset));
                 }
 
             } else if (KeyCodeName == 'Enter') {
 
 
             } else if (KeyCodeName == 'ArrowLeft' || KeyCodeName == 'ArrowRight') {
+                this.cursor.emptyInput();
                 let _offset = this.cursor.offset;
-                if (_offset > 0 && KeyCodeName == 'ArrowLeft') {
-                    offset = -1;
+                if (KeyCodeName == 'ArrowLeft') {
+                    if (_offset > 0) {
+                        offset = -1;
+                    } else {
+                        if (previousSibling) {
+                            this.cursor.set(previousSibling.__el__, previousSibling.text.length - 1);
+                        }
+                    }
+
                 }
-                if (_offset < this.cursor.node.text.length && KeyCodeName == 'ArrowRight') {
-                    offset = 1;
+                if (KeyCodeName == 'ArrowRight') {
+                    if (_offset < this.cursor.node.text.length) {
+                        offset = 1;
+                    } else {
+                        if (nextSibling) {
+                            this.cursor.set(nextSibling.__el__, 1)
+                        }
+                    }
+
                 }
 
-            } else {
-                offset = this.cursor.input.length;
-                if (composition == 'update') {
-                    this.cursor.node.text = this.cursor.oldInput;
-                    offset = 0;
-                } else {
-                    this.cursor.node.appendText(this.cursor, this.cursor.input);
-                }
             }
+
+            this.nextTick(_ => {
+                if (composition == 'update') {
+                    this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
+                } else {
+                    this.cursor.update(offset + this.cursor.offset);
+                }
+            })
+        })
+        this.events.on(cursor, 'input', (e) => {
+            let {
+                composition
+            } = this.cursor;
+            let offset = 0;
+
+            offset = this.cursor.input.length;
+            console.log('input')
+            if (composition == 'update') {
+                this.cursor.node.text = this.cursor.oldInput;
+                offset = 0;
+            } else {
+                this.cursor.node.appendText(this.cursor, this.cursor.input);
+            }
+
             if (composition == 'end') {
-                let previousSibling = this.cursor.node.previousSibling;
-                this.cursor.composition = '';
-                this.cursor.offset = 0;
-                offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
-                this.cursor.node.compositionEnd(this.cursor);
-                this.cursor.closeComposition();
-                
+                // let previousSibling = this.cursor.node.previousSibling;
+                // this.cursor.composition = '';
+                // this.cursor.offset = 0;
+                // offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
+                // this.cursor.node.compositionEnd(this.cursor);
+                // this.cursor.closeComposition();
             }
             this.nextTick(_ => {
                 if (composition == 'update') {
@@ -204,7 +240,6 @@ export default class Doc extends Node {
 
         });
         this.events.on(cursor, 'compositionstart', (e) => {
-            console.log('start5')
             let composition = this.cursor.node.composition(this.cursor);
             this.cursor.composition = 'start';
             this.cursor.node = composition;
@@ -214,7 +249,17 @@ export default class Doc extends Node {
             this.cursor.composition = 'update';
         })
         this.events.on(cursor, 'compositionend', (e) => {
+            console.log('compositionend')
             this.cursor.composition = 'end';
+            let previousSibling = this.cursor.node.previousSibling;
+            this.cursor.composition = '';
+            this.cursor.offset = 0;
+            let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
+            this.cursor.node.compositionEnd(this.cursor);
+            this.cursor.closeComposition();
+            this.nextTick(_ => {
+                this.cursor.update(offset);
+            })
         })
 
     }
