@@ -158,15 +158,22 @@ export default class Doc extends Node {
                 this.cursor.emptyInput();
                 offset = -1;
                 if (!composition) {
+                    console.log(this.cursor.offset)
                     if (this.cursor.offset == 0) {
                         if (previousSibling) {
                             if (this.cursor.node.text == '') {
                                 this.cursor.node.parentNode.removeChild(this.cursor.node);
                             }
                             this.cursor.set(previousSibling.__el__, previousSibling.text.length);
+                        }else {
+                            // return;
                         }
                     }
+                    
                     this.cursor.node.deleteText(this.cursor, Math.abs(offset));
+                    if(this.cursor.offset == 0 && !previousSibling) {
+                        return;
+                    }
                 }
 
             } else if (KeyCodeName == 'Enter') {

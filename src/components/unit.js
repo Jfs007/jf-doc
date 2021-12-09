@@ -63,12 +63,6 @@ export default class Unit extends Node {
             this.comments.push(id);
         }
 
-        // if (index != undefined) {
-        //     this.comments[index] = id;
-        // } else {
-        //     this.comments.push(id);
-        // }
-
     }
     getFissionModal(start, end, text) {
         // let text = this.text || text;
@@ -121,9 +115,7 @@ export default class Unit extends Node {
     }
     deleteText(cursor, num = 1) {
         let { offset } = cursor;
-        console.log(this.text, 'text==');
         let [left, right] = vSplit(this.text, offset);
-        console.log(this.text, left, offset, right, 'offset')
         left = left.slice(0, -1 * num);
         let value = left + right;
         this.text = value;
@@ -146,7 +138,6 @@ export default class Unit extends Node {
         this.parentNode.insertBefore(composition, this);
         this.parentNode.insertBefore(noderight, this);
         this.parentNode.removeChild(this);
-        console.log(composition)
         return composition;
         // this.parentNode
     }
@@ -162,7 +153,6 @@ export default class Unit extends Node {
         this.parentNode.removeChild(nextSibling);
         this.text = leftText + text + rightText;
         this.type = 'text';
-        console.log(nextSibling.text, text)
         return this;
     }
 
