@@ -42,6 +42,9 @@ export default class Doc extends Node {
             }
             if (this.__el__.contains(e.target)) {
                 this.cursor.place(e);
+                let Line = this.cursor.node.parentNode;
+                console.log(Line.isOverflow(), 'line');
+                
             } else {
                 this.cursor.closeComposition();
                 this.cursor.empty();
@@ -101,7 +104,7 @@ export default class Doc extends Node {
         });
         let unit23 = new Unit({
             class: 'jf-unit',
-            text: '吵死撒可代发收款的风景阿斯利康代发价奥斯卡的发酵氨基酸开发举案说法了'
+            text: '吵死撒可代发收款的风景阿斯利康代发价奥斯卡的发安防监控是的发酵是的圣诞afaf是的发酵安抚巾节饭卡健身房发酵撒旦法卡萨丁解放军酵氨基酸开发举案说法了'
         });
         line1.appendChild(unit1);
         line1.appendChild(unit2);
@@ -146,9 +149,11 @@ export default class Doc extends Node {
             let KeyCodeName = keyCode[e.keyCode];
 
 
-            // 忽略229 中文输入退格事件
-            console.log(e)
-            // if(e.keyCode == 229 ) return;
+            // 229 window系统会产生的中文输入
+          
+            if(composition && (KeyCodeName == 'Delete' || e.keyCode == 229)) {
+                KeyCodeName = undefined;
+            }
 
 
             if (KeyCodeName == 'Delete') {
@@ -173,7 +178,6 @@ export default class Doc extends Node {
             } else {
                 offset = this.cursor.input.length;
                 if (composition == 'update') {
-
                     this.cursor.node.text = this.cursor.oldInput;
                     offset = 0;
                 } else {
@@ -182,7 +186,6 @@ export default class Doc extends Node {
             }
             if (composition == 'end') {
                 let previousSibling = this.cursor.node.previousSibling;
-
                 this.cursor.composition = '';
                 this.cursor.offset = 0;
                 offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);

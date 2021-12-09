@@ -104,6 +104,27 @@ export let computedLineFeed = (line, callback = () => {}) => {
 
 
 
+
+/**
+ * 
+ * @param {*} line 
+ * @param {*} callback 
+ * 
+ * ||||||||||||||||||||||a||||||||||||||a||||||||||||||
+ * 
+ * 
+ * ||||||||||||||||||
+ * |||a|||||||||||||a
+ * ||||||||||||||||||
+ * 
+ * 
+ */
+export let computedLineFeed2 = (line, callback = () => {}) => {
+    // let Line
+    
+}
+
+
 export let computedClientBoundaryByOffset = (textNode, offset, dir = 'right') => {
     let range = getRange();
     range.setStart(textNode, offset);

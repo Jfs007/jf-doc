@@ -26,12 +26,12 @@ export default {
             attrs: {
                 'data-id': `${unit.guid}`,
             },
-            class: 'jf-unit',
+            class: unit.class,
             props: {
                 type: this.type,
                 unit
             }
-        })
+        }, this.$slots.default)
 
     }
 

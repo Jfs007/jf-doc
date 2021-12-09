@@ -12,9 +12,12 @@
   text-decoration: none;
   vertical-align: baseline;
   user-select: none;
-  word-wrap: break-word;
-  white-space: normal;
-  word-break: break-all;
+  // word-wrap: break-word;
+  // white-space: normal;
+  // word-break: break-all;
+  white-space: nowrap;
+  width: 100%;
+  overflow: hidden;
 }
 </style>
 <template>
@@ -25,9 +28,10 @@
       v-for="section in doc.childNodes"
       :class="[section.class]"
     >
-      <div
+      <Vessel
         :key="line.guid"
-        :class="[line.class]"
+        type="line"
+        :unit="line"
         v-for="line in section.childNodes"
       >
         <Vessel
@@ -35,7 +39,7 @@
           :unit="unit"
           v-for="unit in line.childNodes"
         ></Vessel>
-      </div>
+      </Vessel>
     </div>
   </div>
 </template>
@@ -63,7 +67,7 @@ export default {
     let doc = new Doc();
     this.doc = doc;
     this.$nextTick(() => {
-      doc.render({ doc: this.$el, cursor: this.$refs['cursor'].getInput() });
+      doc.render({ doc: this.$el, cursor: this.$refs["cursor"].getInput() });
     });
   },
 };

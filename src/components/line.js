@@ -12,6 +12,16 @@ export default class Line extends Node {
     }
 
 
+    // 判断是否存在换行
+    isOverflow() {
+        let el = this.__el__;
+        let clientWidth = el.clientWidth;
+        let scrollWidth = el.scrollWidth;
+        return scrollWidth >= clientWidth;
+       
+    }
+
+
 
     
 }

@@ -1,6 +1,8 @@
 
 import Base from './base';
 import { guid } from '../util/index';
+import { getTextNode } from "@/util/dom";
+import { getRange } from '@/util/range';
 export default class Node extends Base {
     constructor(options, update = false) {
         super();
@@ -16,7 +18,7 @@ export default class Node extends Base {
         this.__el__ = null;
         this.guid = guid();
         super.init(options);
-        if(update) {
+        if (update) {
             this.guid = guid();
         }
 
@@ -31,7 +33,7 @@ export default class Node extends Base {
         this.childNodes = childs;
     }
     _solveSibling() {
-        if(!this.parentNode) return;
+        if (!this.parentNode) return;
         let { childNodes } = this.parentNode;
         let idx = childNodes.findIndex(node => node == this);
         // console.log(childNodes, 'childrem');
@@ -42,9 +44,23 @@ export default class Node extends Base {
             this.nextSibling.previousSibling = this;
         }
         if (this.previousSibling) {
-            this.previousSibling.nextSibling = this; 
+            this.previousSibling.nextSibling = this;
         }
     }
+
+    getTextNodeHeight(node) {
+        let textNode = getTextNode(node);
+        let height = 0;
+        let range = getRange();
+        range.selectNodeContents(textNode);
+        if (range.getBoundingClientRect) {
+            var rect = range.getBoundingClientRect();
+            if (rect) {
+                height = rect.bottom - rect.top;
+            }
+        }
+        return height;
+    };
 
     cloneNode() {
 
@@ -57,10 +73,10 @@ export default class Node extends Base {
         this.childNodes.splice(idx, 0, newNode);
         referenceNode._solveSibling();
         newNode._solveSibling()
- 
+
         return newNode;
     }
-    
+
 
     appendChild(node) {
         node._setParentNode(this);
@@ -70,21 +86,21 @@ export default class Node extends Base {
     removeChild(dnode) {
         let idx = this.childNodes.findIndex(node => node == dnode);
         if (idx > -1) {
-            let node =  this.childNodes.splice(idx, 1);
+            let node = this.childNodes.splice(idx, 1);
             let previousSibling = dnode.previousSibling;
             let nextSibling = dnode.nextSibling;
-            if(previousSibling) {
+            if (previousSibling) {
                 previousSibling._solveSibling();
             }
-            if(nextSibling) {
+            if (nextSibling) {
                 nextSibling._solveSibling();
             }
-            
+
             return node;
         }
         this._console.error('不存在该节点');
     }
-    
+
 
 
 
