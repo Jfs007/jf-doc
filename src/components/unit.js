@@ -5,6 +5,9 @@ import { guid, vSplit } from '../util/index';
 export default class Unit extends Node {
     constructor(options = {}, update) {
         super(options, update);
+        
+        this.nodeType = 'unit';
+        this.class="jf-unit";
         // console.log(options, 'opots')
         // 评论数组
         this.comments = [...(options.comments || [])];
@@ -24,6 +27,8 @@ export default class Unit extends Node {
         this.__cursor__ = null;
         // this.docStyle = new DocStyle(options.docStyle || {});
         this._copy = [];
+
+        super.init(options, update);
         if(!this.isCarousel()) {
             this.comments = this.comments.filter(_ => _);
         }
@@ -43,18 +48,23 @@ export default class Unit extends Node {
     isText() {
         return this.type == 'text';
     }
+    isComposition() {
+        return this.type == 'composition';
+    }
     isImage() {
         return this.type == 'image';
     }
     isCarousel() {
         return this.type == 'carousel'
     }
+    isBlank() {
+        return this.text == '';
+    }
     setComments(id, index) {
         if (this.isCarousel() && index!=undefined) {
             if(this.comments[index] !=id) {
                 this.comments[index] = id;
                 this.comments = [...this.comments];
-                // console.log(this.comments)
             }
 
         } else {
@@ -106,7 +116,7 @@ export default class Unit extends Node {
     }
 
     getTextLength() {
-        if (this.isText()) {
+        if (this.isText() || this.isComposition()) {
             return +this.text.length;
         }
         return 0;
@@ -124,9 +134,7 @@ export default class Unit extends Node {
     }
     deleteText(cursor, num = 1) {
         let { offset } = cursor;
-        console.log(this.text, 'text==');
         let [left, right] = vSplit(this.text, offset);
-        console.log(this.text, left, offset, right, 'offset')
         left = left.slice(0, -1 * num);
         let value = left + right;
         this.text = value;
@@ -149,7 +157,6 @@ export default class Unit extends Node {
         this.parentNode.insertBefore(composition, this);
         this.parentNode.insertBefore(noderight, this);
         this.parentNode.removeChild(this);
-        console.log(composition)
         return composition;
         // this.parentNode
     }
@@ -165,7 +172,6 @@ export default class Unit extends Node {
         this.parentNode.removeChild(nextSibling);
         this.text = leftText + text + rightText;
         this.type = 'text';
-        console.log(nextSibling.text, text)
         return this;
     }
 

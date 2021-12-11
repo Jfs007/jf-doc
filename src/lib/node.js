@@ -1,11 +1,15 @@
-
 import Base from './base';
-import { guid } from '../util/index';
-import { getTextNode } from "@/util/dom";
-import { getRange } from '@/util/range';
+import {
+    guid
+} from '../util/index';
+import {
+    getTextNode
+} from "@/util/dom";
+import {
+    getRange
+} from '@/util/range';
 export default class Node extends Base {
     constructor(options, update = false) {
-        console.log(options, update)
         super();
         this.class = '';
         this.nodeName = '';
@@ -14,14 +18,19 @@ export default class Node extends Base {
         this.childNodes = [];
         this.nextSibling = null;
         this.previousSibling = null;
+        this.lastChild = null;
+        this.firstChild = null;
         this._dirty = true;
         // dom渲染的时候会进行绑定真实dom
         this.__el__ = null;
+        // 是否处于虚拟节点阶段
+        // this.__virtual__ = false;
         this.guid = guid();
         super.init(options);
         if (update) {
             this.guid = guid();
         }
+
 
     }
     _updateDirty(flag) {
@@ -35,7 +44,9 @@ export default class Node extends Base {
     }
     _solveSibling() {
         if (!this.parentNode) return;
-        let { childNodes } = this.parentNode;
+        let {
+            childNodes
+        } = this.parentNode;
         let idx = childNodes.findIndex(node => node == this);
         // console.log(childNodes, 'childrem');
         this.nextSibling = childNodes[idx + 1];
@@ -47,6 +58,12 @@ export default class Node extends Base {
         if (this.previousSibling) {
             this.previousSibling.nextSibling = this;
         }
+    }
+    _solveLastChild() {
+        this.lastChild = this.childNodes[this.childNodes.length-1];
+    }
+    _solveFirstChild() {
+        this.firstChild = this.childNodes[0];
     }
 
     getTextNodeHeight(node) {
@@ -65,7 +82,9 @@ export default class Node extends Base {
 
     cloneNode() {
 
-        return new this.constructor(this, true);
+        let node = new this.constructor(this, true);
+        node.guid = guid();
+        return node;
     }
 
     insertBefore(newNode, referenceNode) {
@@ -73,7 +92,9 @@ export default class Node extends Base {
         newNode._setParentNode(this)
         this.childNodes.splice(idx, 0, newNode);
         referenceNode._solveSibling();
-        newNode._solveSibling()
+        newNode._solveSibling();
+        this._solveLastChild();
+        this._solveFirstChild();
 
         return newNode;
     }
@@ -83,6 +104,8 @@ export default class Node extends Base {
         node._setParentNode(this);
         this.childNodes.push(node);
         node._solveSibling();
+        this._solveLastChild();
+        this._solveFirstChild();
     }
     removeChild(dnode) {
         let idx = this.childNodes.findIndex(node => node == dnode);
@@ -96,8 +119,10 @@ export default class Node extends Base {
             if (nextSibling) {
                 nextSibling._solveSibling();
             }
+            this._solveLastChild();
+            this._solveFirstChild();
 
-            return node;
+            return dnode;
         }
         this._console.error('不存在该节点');
     }
@@ -105,14 +130,17 @@ export default class Node extends Base {
     replaceChild(newChild, oldChild) {
         let idx = this.childNodes.findIndex(node => node == oldChild);
         newChild._setParentNode(this);
-        if(idx>-1) {
+        if (idx > -1) {
             let node = this.childNodes.splice(idx, 1);
             this.childNodes.splice(idx, 0, newChild);
             newChild._solveSibling();
-            return node;
+            this._solveLastChild();
+            this._solveFirstChild();
+            return oldChild;
         }
         this._console.error('不存在该节点');
     }
+
 
 
 

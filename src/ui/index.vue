@@ -18,6 +18,7 @@
   white-space: nowrap;
   width: 100%;
   overflow: hidden;
+  cursor: text;
 }
 </style>
 <template>

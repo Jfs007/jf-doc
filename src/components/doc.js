@@ -6,9 +6,6 @@ import Cursor from './cursor';
 import Events from '@/lib/events';
 import Unit from './unit';
 import Line from './line';
-import {
-    isTextNode
-} from '@/util/dom';
 import keyCode from '@/lib/keyCode';
 
 /**
@@ -28,6 +25,7 @@ export default class Doc extends Node {
         super();
         this.history = new History();
         this.range = null;
+        this.nodeType = 'doc';
         // this.sections = [];
         this.cursor = new Cursor();
 
@@ -42,7 +40,7 @@ export default class Doc extends Node {
             }
             if (this.__el__.contains(e.target)) {
                 this.cursor.place(e);
-               
+
 
             } else {
                 this.cursor.closeComposition();
@@ -59,7 +57,7 @@ export default class Doc extends Node {
         this.init(config);
     }
 
-    nextTick(callback = () => { }) {
+    nextTick(callback = () => {}) {
         setTimeout(callback, 0)
     }
 
@@ -68,21 +66,21 @@ export default class Doc extends Node {
     }
     buildSections() {
         let section1 = new Section({
-            class: 'jf-section'
+
         })
         let line1 = new Line({
-            class: 'jf-line'
+
         });
         let unit1 = new Unit({
-            class: 'jf-unit',
+
             text: '这是一个自定义编辑器'
         });
         let unit2 = new Unit({
-            class: 'jf-unit',
+
             text: '这个东西包含原生Range'
         });
         let unit3 = new Unit({
-            class: 'jf-unit',
+
             text: '富含自定义ui组件'
         });
 
@@ -91,19 +89,19 @@ export default class Doc extends Node {
             class: 'jf-section'
         })
         let line2 = new Line({
-            class: 'jf-line'
+
         });
         let unit21 = new Unit({
-            class: 'jf-unit',
+
             text: 'JDs 风'
         });
         let unit22 = new Unit({
-            class: 'jf-unit',
+
             text: '两份cash'
         });
         let unit23 = new Unit({
-            class: 'jf-unit',
-            text: '吵死撒可代发收款的风景阿斯利康代发价奥斯卡的发安防监控是的发酵是的圣诞afaf是的发酵安抚巾节饭卡健身房发酵撒旦法卡萨丁解放军酵氨基酸开发举案说法了'
+
+            text: '吵董小姐，你从没忘记你的微笑，就算你和我一样，渴望着衰老，所以那些可能都不是真的，董小姐，你才不是一个没有故事的女同学'
         });
         line1.appendChild(unit1);
         line1.appendChild(unit2);
@@ -143,7 +141,7 @@ export default class Doc extends Node {
 
         // 
         this.events.on(cursor, 'keydown', (e) => {
-           
+
             let {
                 composition
             } = this.cursor;
@@ -152,25 +150,23 @@ export default class Doc extends Node {
             let KeyCodeName = keyCode[e.keyCode];
             let previousSibling = this.cursor.node.previousSibling;
             let nextSibling = this.cursor.node.nextSibling;
-            console.log('keydown')
             if (KeyCodeName == 'Delete') {
                 this.cursor.emptyInput();
                 offset = -1;
                 if (!composition) {
-                    console.log(this.cursor.offset)
                     if (this.cursor.offset == 0) {
                         if (previousSibling) {
                             if (this.cursor.node.text == '') {
                                 this.cursor.node.parentNode.removeChild(this.cursor.node);
                             }
                             this.cursor.set(previousSibling.__el__, previousSibling.text.length);
-                        }else {
+                        } else {
                             // return;
                         }
                     }
-                    
+
                     this.cursor.node.deleteText(this.cursor, Math.abs(offset));
-                    if(this.cursor.offset == 0 && !previousSibling) {
+                    if (this.cursor.offset == 0 && !previousSibling) {
                         return;
                     }
                 }
@@ -210,6 +206,7 @@ export default class Doc extends Node {
                 } else {
                     this.cursor.update(offset + this.cursor.offset);
                 }
+                this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
             })
         })
         this.events.on(cursor, 'input', (e) => {
@@ -218,7 +215,6 @@ export default class Doc extends Node {
             } = this.cursor;
             let offset = 0;
             offset = this.cursor.input.length;
-            console.log('input', offset, this.cursor.offset)
             if (composition == 'update') {
                 this.cursor.node.text = this.cursor.oldInput;
                 offset = 0;
@@ -230,37 +226,45 @@ export default class Doc extends Node {
                 if (composition == 'update') {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                 } else {
-                    console.log(offset, this.cursor.offset, offset + this.cursor.offset)
                     this.cursor.update(offset + this.cursor.offset);
                 }
-               
 
-                // let Line = this.cursor.node.parentNode;
-                // console.log(this.cursor.node.__el__)
-                // let overUnits = Line.getOverFlowUnits();
-                // let newLine = Line.nextSibling ? Line.nextSibling : Line.cloneNode();
-                // console.log(Line, 'next')
+                // this.cursor.node.parentNode.parentNode.breakWord(this.cursor);
                 
-                // if(!Line.nextSibling) {
-                //     newLine.childNodes = [];
-                //     Line.parentNode.appendChild(newLine);
-                //     console.log(Line.nextSibling, '--')
-                // }
-                
-                // overUnits.map(unit => {
-                //     Line.removeChild(unit);
-                //     if(!newLine.childNodes.length) {
-                //         newLine.appendChild(unit);
-                //     }else {
-                //         newLine.insertBefore(newLine.childNodes[0], unit);
-                //     }
-                // });
-                // let _offset = overUnits[0].__offset__;
-                // let clone1 = overUnits[0].cloneNode();
-                // clone1.guid = overUnits[0].guid
-                // clone1.text = clone1.text.slice(0, _offset);
-                // newLine.childNodes[0].text = newLine.childNodes[0].text.slice(offset)
-                // Line.appendChild(clone1);
+                this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
+                return;
+                let Line = this.cursor.node.parentNode;
+                let overUnits = Line.getOverFlowUnits();
+                let hasNext = Line.nextSibling;
+                let newLine = Line.nextSibling ? Line.nextSibling : Line.cloneNode();
+                if (!Line.nextSibling) {
+                    newLine.childNodes = [];
+                    Line.parentNode.appendChild(newLine);
+                }
+                let _offset = overUnits[0].__offset__;
+                overUnits.map(unit => {
+                    Line.removeChild(unit);
+                    let clone = unit.cloneNode();
+                    clone.guid = unit.guid;
+                    if (!newLine.childNodes.length) {
+                        newLine.appendChild(clone);
+                    } else {
+                        if (newLine.childNodes[0].guid == clone.guid) {
+                            newLine.childNodes[0].text = clone.text.slice(_offset) + newLine.childNodes[0].text;
+                        } else {
+                            newLine.insertBefore(newLine.childNodes[0], clone);
+                        }
+
+                    }
+                });
+
+                let clone1 = overUnits[0];
+                clone1.text = clone1.text.slice(0, _offset);
+                if (!hasNext) {
+                    newLine.childNodes[0].text = newLine.childNodes[0].text.slice(_offset)
+                }
+
+                Line.appendChild(clone1);
                 // console.log(this.cursor)
 
             })
@@ -278,7 +282,6 @@ export default class Doc extends Node {
             this.cursor.composition = 'update';
         })
         this.events.on(cursor, 'compositionend', (e) => {
-            console.log('compositionend')
             this.cursor.composition = 'end';
             let previousSibling = this.cursor.node.previousSibling;
             this.cursor.composition = '';
