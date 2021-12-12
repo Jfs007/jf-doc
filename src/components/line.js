@@ -22,6 +22,7 @@ export default class Line extends Node {
     appendUnits(units) {
         let lastChild = this.lastChild
         units.map(unit => {
+            if(unit.isBlank()) return;
             if (lastChild) {
                 if (lastChild.guid == unit.guid) {
                     lastChild.text = lastChild.text + unit.text;
@@ -35,8 +36,9 @@ export default class Line extends Node {
     }
     startInsertUnits(units) {
         let firstChild = this.firstChild;
-
+        console.log(firstChild, units, 'units')
         units.map(unit => {
+            if(unit.isBlank()) return;
             if (firstChild) {
                 if (firstChild.guid == unit.guid) {
                     firstChild.text = unit.text + firstChild.text;
@@ -47,7 +49,8 @@ export default class Line extends Node {
             } else {
                 this.appendChild(unit)
             }
-        })
+        });
+        console.log(this, '___this___')
     }
 
 
@@ -111,14 +114,18 @@ export default class Line extends Node {
             let text = node.getText();
             let textLength = node.getTextLength();
             abountNodes[isAsc ? 'push' : 'unshift'](node);
+            if(node.isBlank()) {
+                continue;
+            }
             for (let offset = isAsc ? 0 : textLength;
                 (isAsc ? offset <= textLength : offset >= 0);
                 (isAsc ? offset++ : offset--)) {
-
+                    console.log(text, 'text')
                 let _boundary = computedClientBoundaryByOffset(getTextNode(node.__el__), offset, isAsc ? 'left' : 'right', range);
 
 
                 let x = _boundary.rect.x - lineRect.x;
+                
                 let exec = callback({
                     x: Math.abs(x),
                     clientWidth,

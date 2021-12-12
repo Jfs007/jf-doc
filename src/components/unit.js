@@ -141,6 +141,28 @@ export default class Unit extends Node {
         return value;
     }
 
+    compositionOtherEmpty(cursor) {
+        let { node } = cursor;
+        let line = node.parentNode;
+        let nextSibling = line.nextSibling;
+        while(nextSibling) {
+           
+            nextSibling.childNodes.map(unit => {
+                if(unit.isComposition()) {
+                    nextSibling.removeChild(unit);
+                    console.log(unit, 'unit----')
+                }
+            });
+            
+            // if(nextSibling.childNodes.length) {
+            //     line.parentNode.removeChild(nextSibling);
+            // }
+            nextSibling = nextSibling.nextSibling;
+           
+        }
+       
+    }
+
     composition(cursor) {
         let { offset } = cursor;
         let [left, right] = vSplit(this.text, offset);

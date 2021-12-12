@@ -81,7 +81,6 @@ export let computedLineFeed = (line, callback = () => {}) => {
                 let _isLf = isLineFeed({ rect, node });
                 // 是否换行
                 if (_isLf && base) {
-                    console.log(index, 'index');
                     cut(index, i, { rect, node },  i - originStart);
                     end = true;
                     SingleLineActuator(Lines[LineNumber])

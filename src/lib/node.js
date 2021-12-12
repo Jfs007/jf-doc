@@ -80,6 +80,12 @@ export default class Node extends Base {
         return height;
     };
 
+    emptyChildNodes() {
+        this.childNodes = [];
+        this.firstChild = null;
+        this.lastChild = null;
+    }
+
     cloneNode() {
 
         let node = new this.constructor(this, true);

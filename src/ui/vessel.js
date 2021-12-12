@@ -15,8 +15,10 @@ export default {
     mounted() {
         this.$el.__unit__ = this.unit;
         this.unit.__el__ = this.$el;
+        console.log(this.$el, '绑定', this.unit)
     },
     beforeDestroy() {
+        console.log(this.$el, '解绑', this.unit)
         this.$el.__unit__ = null;
         this.unit.__el__ = null;
     },

@@ -9,6 +9,21 @@ import {
 import {
     getTextNode
 } from '@/util/dom';
+import Base from '../lib/base';
+
+class breakWord extends Base {
+    constructor(options) {
+        super(options);
+        this.breaks = [];
+        // overflow / blank
+        this.type = '';
+        super.init(options);
+    }
+    push(_break) {
+        this.breaks.push(_break);
+    }
+
+}
 export default class Section extends Node {
     constructor(options, update) {
         // super(params);
@@ -21,115 +36,6 @@ export default class Section extends Node {
     insetLine() {
 
     }
-
-    /**
-     * 
-     * @param {*} cursor 
-     * 
-     * |||||||||||||||||
-     * |||||||||||||||||
-     * 
-     * 如果编辑行 > 行宽 
-     * 多余的文本编辑到下一行
-     * 如果编辑行 < 行款
-     * 缺失的文本从下一行补充
-     * 
-     */
-    // breakWord2(cursor) {
-    //     let range = getRange();
-    //     let node = cursor ? cursor.node : this.childNodes[0].childNodes[0];
-    //     let Line = node.parentNode;
-    //     let lineRect = Line.__el__.getBoundingClientRect();
-    //     let clientWidth = Line.__el__.clientWidth;
-    //     let Section = Line.parentNode;
-    //     let nextLine = Line.nextSibling;
-    //     // 没有换行
-    //     if (!Line.isOverflow()) {
-    //         if (nextLine) {
-    //             let lastChild = Line.lastChild;
-    //             let offset = lastChild ? lastChild.getTextLength() : 0;
-    //             let {
-    //                 rect
-    //             } = computedClientBoundaryByOffset(getTextNode(lastChild.__el__), offset, 'right', range);
-    //             let blank = clientWidth - (rect.x - lineRect.x);
-    //             let content = nextLine.getAccordWithContentRect(({
-    //                 x
-    //             }) => {
-    //                 if (x > blank) {
-    //                     return true;
-    //                 }
-    //             });
-    //             let prev = content.prev;
-    //             let content_offset = prev.offset;
-    //             let nodes = prev.nodes.map((node, index) => {
-    //                 if (index == prev.nodes.length - 1) {
-    //                     if (content_offset == node.getTextLength()) {
-    //                         nextLine.removeChild(node);
-    //                         return node;
-    //                     } else {
-    //                         let text = node.text;
-    //                         node.text = text.slice(content_offset);
-    //                         let clone = node.cloneNode();
-    //                         clone.guid = node.guid;
-    //                         clone.text = text.slice(0, content_offset);
-
-    //                         return clone;
-    //                     }
-    //                 } else {
-    //                     nextLine.removeChild(node);
-    //                     return node;
-    //                 }
-    //             });
-    //             if (!nextLine.childNodes.length) {
-    //                 Section.removeChild(nextLine);
-    //             }
-    //             Line.appendUnits(nodes);
-    //         }
-    //     } else {
-
-    //         let content = Line.getAccordWithContentRect(({
-    //             x,
-    //         }) => {
-    //             if (x < clientWidth) {
-    //                 return true;
-    //             }
-    //         }, 'desc');
-    //         let prev = content;
-    //         let content_offset = prev.offset;
-    //         let nodes = prev.nodes.map((node, index) => {
-    //             if (index == 0) {
-    //                 if (content_offset == 0) {
-    //                     Line.removeChild(node);
-    //                     return node;
-    //                 } else {
-    //                     let text = node.text;
-    //                     node.text = text.slice(0, content_offset);
-    //                     let clone = node.cloneNode();
-    //                     clone.guid = node.guid;
-    //                     clone.text = text.slice(content_offset);
-    //                     return clone;
-    //                 }
-    //             } else {
-    //                 Line.removeChild(node);
-    //                 return node;
-    //             }
-    //         });
-    //         let newLine = Line.cloneNode();
-    //         newLine.childNodes = [];
-    //         if (!nextLine) {
-    //             Section.appendChild(newLine);
-    //             newLine.startInsertUnits(nodes);
-
-    //         } else {
-    //             nextLine.startInsertUnits(nodes);
-    //         }
-
-
-    //     }
-
-
-    // }
-
     breakWord2(cursor) {
         let overOrBlankWidth = 0;
         let isOverflow = true;
@@ -139,11 +45,13 @@ export default class Section extends Node {
         let lineRect = Line.__el__.getBoundingClientRect();
         let clientWidth = Line.__el__.clientWidth;
         let Section = Line.parentNode;
-        let nextLine = Line.nextSibling;
+        let breakword = new breakWord();
         let renderQueue = [];
         // while(Line. )
-
+        // console.log('overflow::', Line.isOverflow(), 'line', Line)
         if (!Line.isOverflow()) {
+            breakword.type = 'blank'
+            let nextLine = Line.nextSibling;
             if (nextLine) {
                 let lastChild = Line.lastChild;
                 let offset = lastChild ? lastChild.getTextLength() : 0;
@@ -159,6 +67,8 @@ export default class Section extends Node {
                     }
                 });
                 let prev = content.prev;
+                if(!prev) return;
+                console.log('blank')
                 let content_offset = prev.offset;
                 let nodes = prev.nodes.map((node, index) => {
                     if (index == prev.nodes.length - 1) {
@@ -168,6 +78,9 @@ export default class Section extends Node {
                         } else {
                             let text = node.text;
                             node.text = text.slice(content_offset);
+                            if(node.isBlank()) {
+                                Line.removeChild(node);
+                            }
                             let clone = node.cloneNode();
                             clone.guid = node.guid;
                             clone.text = text.slice(0, content_offset);
@@ -184,27 +97,29 @@ export default class Section extends Node {
                 }
                 Line.appendUnits(nodes);
             }
+            return breakword;
         } else {
-
+            breakword.type = 'overflow';
             while (isOverflow) {
-
+                let nextLine = Line.nextSibling;
 
                 let content = Line.getAccordWithContentRect(({
                     x,
-                    text,
-                    offset
                 }) => {
                     if (x + overOrBlankWidth < clientWidth) {
                         return true;
                     }
                 }, 'desc');
                 // 说明没有发生overflow
+                console.log('over');
                 if (!content.prev) {
-                    console.log(isOverflow, 'isO----', overOrBlankWidth)
                     isOverflow = false;
                     break;
                 }
+                breakword.push(content);
+                
                 overOrBlankWidth = content.first.x - content.x;
+                // console.log(content, 'conten')
                 let prev = content;
                 let content_offset = prev.offset;
                 let nodes = prev.nodes.map((node, index) => {
@@ -215,9 +130,13 @@ export default class Section extends Node {
                         } else {
                             let text = node.text;
                             node.text = text.slice(0, content_offset);
+                            if(node.isBlank()) {
+                                Line.removeChild(node);
+                            }
                             let clone = node.cloneNode();
                             clone.guid = node.guid;
                             clone.text = text.slice(content_offset);
+                            console.log('clone: ', clone.text, 'text: ',  node.text, 'origin_text: ', text, 'offset: ', content_offset)
                             return clone;
                         }
                     } else {
@@ -225,10 +144,10 @@ export default class Section extends Node {
                         return node;
                     }
                 });
-
+                // isOverflow = false;
                 if (!nextLine) {
                     let newLine = Line.cloneNode();
-                    newLine.childNodes = [];
+                    newLine.emptyChildNodes();
                     Section.appendChild(newLine);
                     newLine.startInsertUnits(nodes);
                     nextLine = newLine;
@@ -237,121 +156,18 @@ export default class Section extends Node {
                 } else {
                     renderQueue.push(() => {
                         nextLine.startInsertUnits(nodes);
-                    })
-                   
+                    })     
                 }
-
                 Line = nextLine;
             }
 
-            renderQueue.map(queue => queue())
+            renderQueue.map(queue => queue());
+            return breakword;
 
         }
 
     }
 
-    breakWord(cursor) {
-        return;
-        let node = cursor ? cursor.node : this.childNodes[0].childNodes[0];
-        let offset = cursor ? cursor.offset : 0;
-        let Line = node.parentNode;
-        let Section = Line.parentNode;
-        let doc = Section.parentNode;
-        let next = Line;
-        let LineNexts = [];
-        while (next) {
-            next = next.nextSibling;
-            if (next) {
-
-                LineNexts.push(Section.removeChild(next));
-            }
-        }
-        let prevUnit = node;
-        LineNexts.map(LineNext => {
-            LineNext.childNodes.map(Unit => {
-                // 做一个guid的缓存 保证渲染性能
-                Unit.__cache__Line_guid = LineNext.guid;
-                if (prevUnit.guid == node.guid) {
-                    prevUnit.text = prevUnit.text + Unit.text;
-                } else {
-                    Line.appendChild(Unit);
-                }
-                prevUnit = Unit;
-
-            });
-        });
-        console.log([].concat([], LineNexts), 'lineNext')
-        doc.nextTick(_ => {
-            let range = getRange();
-            let Units = Line.childNodes || [];
-            let lineRect = Line.__el__.getBoundingClientRect();
-            let clientWidth = Line.__el__.clientWidth;
-            let overUnits = [];
-            let lineNum = -1;
-            for (let i = Units.length - 1; i >= 0; i--) {
-                let Unit = Units[i];
-                let textNode = getTextNode(Unit.__el__);
-                let text = Unit.getText();
-                overUnits.unshift(Unit);
-                if (!text.length) {
-                    // console.log('continue')
-                    continue;
-                }
-                for (let offset = text.length; offset >= 0; offset--) {
-
-                    let {
-                        rect
-                    } = computedClientBoundaryByOffset(textNode, offset, 'right', range);
-
-                    let x = rect.x - lineRect.x;
-
-                    Unit.__offset__ = offset;
-                    let _lineNum = Math.floor(x / clientWidth);
-                    console.log(Unit.text, offset, text[offset], rect.x)
-                    if (lineNum != -1 && _lineNum != lineNum) {
-                        console.log(text[offset], '----切换的文本')
-                        if (!Line.nextSibling) {
-                            let newLine = Line.cloneNode();
-                            newLine.childNodes = [];
-                            Section.appendChild(newLine);
-                            overUnits.map((unit, index) => {
-                                let cloneUnit = unit.cloneNode();
-                                cloneUnit.guid = unit.guid;
-                                if (index == 0) {
-                                    cloneUnit.text = cloneUnit.text.slice(offset);
-                                    unit.text = unit.text.slice(0, offset)
-                                } else {
-                                    Line.removeChild(unit);
-                                }
-                                if (cloneUnit.__cache__Line_guid) {
-                                    newLine.guid = cloneUnit.__cache__Line_guid;
-                                }
-                                newLine.guid = Line.guid;
-                                // ----oicloneUnit.__cache__Line_guid = undefined;
-                                newLine.appendChild(cloneUnit)
-                            });
-
-
-                        }
-                        overUnits = [];
-                    } {
-
-
-                    }
-                    lineNum = _lineNum;
-
-                    //    console.log(value, 'value');
-                    //    if(x <= clientWidth) {
-                    //     overUnits.unshift(Unit);
-                    //     return overUnits;
-                    //    }
-
-                }
-                // overUnits.unshift(Unit);
-            }
-        })
-
-    }
 
 
 

@@ -97,11 +97,11 @@ export default class Doc extends Node {
         });
         let unit22 = new Unit({
 
-            text: '两份cash'
+            text: '两份一样，渴望着'
         });
         let unit23 = new Unit({
 
-            text: '吵董小姐，你从没忘记你的微笑，就算你和我一样，渴望着衰老，所以那些可能都不是真的，董小姐，你才不是一个没有故事的女同学'
+            text: '吵董小姐，你从没忘记你的微'
         });
         line1.appendChild(unit1);
         line1.appendChild(unit2);
@@ -150,7 +150,9 @@ export default class Doc extends Node {
             let KeyCodeName = keyCode[e.keyCode];
             let previousSibling = this.cursor.node.previousSibling;
             let nextSibling = this.cursor.node.nextSibling;
+            let accord = false;
             if (KeyCodeName == 'Delete') {
+                accord = true;
                 this.cursor.emptyInput();
                 offset = -1;
                 if (!composition) {
@@ -172,9 +174,10 @@ export default class Doc extends Node {
                 }
 
             } else if (KeyCodeName == 'Enter') {
-
+                accord = true;
 
             } else if (KeyCodeName == 'ArrowLeft' || KeyCodeName == 'ArrowRight') {
+                accord = true;
                 this.cursor.emptyInput();
                 let _offset = this.cursor.offset;
                 if (KeyCodeName == 'ArrowLeft') {
@@ -201,6 +204,8 @@ export default class Doc extends Node {
             }
 
             this.nextTick(_ => {
+                if(!accord) return;
+                console.log('keycode:')
                 if (composition == 'update') {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                 } else {
@@ -218,6 +223,10 @@ export default class Doc extends Node {
             if (composition == 'update') {
                 this.cursor.node.text = this.cursor.oldInput;
                 offset = 0;
+
+                // 清空其余的composition 文档只允许存在一个composition
+                // this.cursor.node.compositionOtherEmpty(this.cursor)
+
             } else {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
             }
@@ -227,45 +236,20 @@ export default class Doc extends Node {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                 } else {
                     this.cursor.update(offset + this.cursor.offset);
-                }
-
-                // this.cursor.node.parentNode.parentNode.breakWord(this.cursor);
-                
-                this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
-                return;
-                let Line = this.cursor.node.parentNode;
-                let overUnits = Line.getOverFlowUnits();
-                let hasNext = Line.nextSibling;
-                let newLine = Line.nextSibling ? Line.nextSibling : Line.cloneNode();
-                if (!Line.nextSibling) {
-                    newLine.childNodes = [];
-                    Line.parentNode.appendChild(newLine);
-                }
-                let _offset = overUnits[0].__offset__;
-                overUnits.map(unit => {
-                    Line.removeChild(unit);
-                    let clone = unit.cloneNode();
-                    clone.guid = unit.guid;
-                    if (!newLine.childNodes.length) {
-                        newLine.appendChild(clone);
-                    } else {
-                        if (newLine.childNodes[0].guid == clone.guid) {
-                            newLine.childNodes[0].text = clone.text.slice(_offset) + newLine.childNodes[0].text;
-                        } else {
-                            newLine.insertBefore(newLine.childNodes[0], clone);
-                        }
-
+                }   
+                console.log('input:')
+                let breakword = this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
+                console.log(breakword, 'breakword');
+                if(breakword.breaks.length) {
+                    let _break = breakword.breaks[0];
+                    if(_break.offset == this.cursor.offset -1) {
+                        this.nextTick(() => {
+                            this.cursor.set(this.cursor.node.parentNode.nextSibling.childNodes[0].__el__, 0)
+                        })
+                       
                     }
-                });
-
-                let clone1 = overUnits[0];
-                clone1.text = clone1.text.slice(0, _offset);
-                if (!hasNext) {
-                    newLine.childNodes[0].text = newLine.childNodes[0].text.slice(_offset)
+                    console.log(_break.offset, this.cursor.offset - 1)
                 }
-
-                Line.appendChild(clone1);
-                // console.log(this.cursor)
 
             })
 
