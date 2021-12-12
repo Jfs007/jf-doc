@@ -98,7 +98,6 @@ export default class Cursor extends Node {
         this.composition = '';
         this.input = '';
         this.oldInput = '';
-        this.emptyInput();
 
     }
 

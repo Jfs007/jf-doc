@@ -38,7 +38,7 @@ export default class Section extends Node {
     }
     breakWord2(cursor) {
         let overOrBlankWidth = 0;
-        let isOverflow = true;
+
         let range = getRange();
         let node = cursor ? cursor.node : this.childNodes[0].childNodes[0];
         let Line = node.parentNode;
@@ -50,56 +50,68 @@ export default class Section extends Node {
         // while(Line. )
         // console.log('overflow::', Line.isOverflow(), 'line', Line)
         if (!Line.isOverflow()) {
+            let isBlank = true;
             breakword.type = 'blank'
-            let nextLine = Line.nextSibling;
-            if (nextLine) {
-                let lastChild = Line.lastChild;
-                let offset = lastChild ? lastChild.getTextLength() : 0;
-                let {
-                    rect
-                } = computedClientBoundaryByOffset(getTextNode(lastChild.__el__), offset, 'right', range);
-                let blank = clientWidth - (rect.x - lineRect.x);
-                let content = nextLine.getAccordWithContentRect(({
-                    x
-                }) => {
-                    if (x > blank) {
-                        return true;
-                    }
-                });
-                let prev = content.prev;
-                if(!prev) return;
-                console.log('blank')
-                let content_offset = prev.offset;
-                let nodes = prev.nodes.map((node, index) => {
-                    if (index == prev.nodes.length - 1) {
-                        if (content_offset == node.getTextLength()) {
+           
+            while (isBlank && Line) {
+                let nextLine = Line.nextSibling;
+                if (nextLine) {
+                    let lastChild = Line.lastChild;
+                    let offset = lastChild ? lastChild.getTextLength() : 0;
+                    let {
+                        rect
+                    } = computedClientBoundaryByOffset(getTextNode(lastChild.__el__), offset, 'right', range);
+                    let blank = clientWidth - (rect.x - lineRect.x);
+                    // overOrBlankWidth = blank;
+                    let content = nextLine.getAccordWithContentRect(({
+                        x
+                    }) => {
+                        if (x > blank) {
+                            return true;
+                        }
+                    });
+                    let prev = content.prev;
+                    if (!prev) {
+                        isBlank = false;
+                        break;
+                    };
+                    breakword.push(prev);
+                    let content_offset = prev.offset;
+                    let nodes = prev.nodes.map((node, index) => {
+                        if (index == prev.nodes.length - 1) {
+                            if (content_offset == node.getTextLength()) {
+                                nextLine.removeChild(node);
+                                return node;
+                            } else {
+                                let text = node.text;
+                                node.text = text.slice(content_offset);
+                                if (node.isBlank()) {
+                                    Line.removeChild(node);
+                                }
+                                let clone = node.cloneNode();
+                                clone.guid = node.guid;
+                                clone.text = text.slice(0, content_offset);
+
+                                return clone;
+                            }
+                        } else {
                             nextLine.removeChild(node);
                             return node;
-                        } else {
-                            let text = node.text;
-                            node.text = text.slice(content_offset);
-                            if(node.isBlank()) {
-                                Line.removeChild(node);
-                            }
-                            let clone = node.cloneNode();
-                            clone.guid = node.guid;
-                            clone.text = text.slice(0, content_offset);
-
-                            return clone;
                         }
-                    } else {
-                        nextLine.removeChild(node);
-                        return node;
+                    });
+                    if (!nextLine.childNodes.length) {
+                        Section.removeChild(nextLine);
                     }
-                });
-                if (!nextLine.childNodes.length) {
-                    Section.removeChild(nextLine);
+                    Line.appendUnits(nodes);
+                    Line = Line.nextSibling;
+                } else {
+                    isBlank = false;
                 }
-                Line.appendUnits(nodes);
             }
             return breakword;
         } else {
             breakword.type = 'overflow';
+            let isOverflow = true;
             while (isOverflow) {
                 let nextLine = Line.nextSibling;
 
@@ -117,7 +129,7 @@ export default class Section extends Node {
                     break;
                 }
                 breakword.push(content);
-                
+
                 overOrBlankWidth = content.first.x - content.x;
                 // console.log(content, 'conten')
                 let prev = content;
@@ -130,13 +142,12 @@ export default class Section extends Node {
                         } else {
                             let text = node.text;
                             node.text = text.slice(0, content_offset);
-                            if(node.isBlank()) {
+                            if (node.isBlank()) {
                                 Line.removeChild(node);
                             }
                             let clone = node.cloneNode();
                             clone.guid = node.guid;
                             clone.text = text.slice(content_offset);
-                            console.log('clone: ', clone.text, 'text: ',  node.text, 'origin_text: ', text, 'offset: ', content_offset)
                             return clone;
                         }
                     } else {
@@ -156,7 +167,7 @@ export default class Section extends Node {
                 } else {
                     renderQueue.push(() => {
                         nextLine.startInsertUnits(nodes);
-                    })     
+                    })
                 }
                 Line = nextLine;
             }
