@@ -126,7 +126,8 @@ export default class Cursor extends Node {
             },
             textNode
         );
-        this.setByBoundary(boundary)
+        this.setByBoundary(boundary);
+        this.__el__.focus();
 
 
 

@@ -168,7 +168,7 @@ export default class Unit extends Node {
             });
             
             if(nextSibling.childNodes.length) {
-                // line.parentNode.removeChild(nextSibling);
+                line.parentNode.removeChild(nextSibling);
             }
             nextSibling = nextSibling.nextSibling;
            

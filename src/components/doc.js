@@ -39,11 +39,25 @@ export default class Doc extends Node {
                 this.cursor.empty();
             }
             if (this.__el__.contains(e.target)) {
-                this.cursor.place(e);
+                let __unit__ = e.target.__unit__;
+                if(__unit__&&__unit__.nodeType != 'unit') {
+                    let unit = __unit__.lastChild;
+                    if(unit.nodeType == 'unit') {
+                        this.cursor.set(unit.__el__, unit.getTextLength())
+                    }
+                    
+                    // let nodeType = 
+                    // this.cursor.set(e.target.__unit__)
+                }else {
+                    console.log('eee')
+                    this.cursor.place(e);
+                }
+                
 
 
             } else {
                 this.cursor.closeComposition();
+                this.cursor.emptyInput();
                 this.cursor.empty();
             }
 
