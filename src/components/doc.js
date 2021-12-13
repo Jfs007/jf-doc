@@ -287,9 +287,9 @@ export default class Doc extends Node {
             if (composition == 'update') {
                 this.cursor.node.text = this.cursor.oldInput;
                 offset = 0;
-                
+                console.log('hello')
                 // 清空其余的composition 文档只允许存在一个composition?
-                // this.cursor.node.compositionOtherEmpty(this.cursor)
+                this.cursor.node.compositionOtherEmpty(this.cursor)
 
             } else {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
