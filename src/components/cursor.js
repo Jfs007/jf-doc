@@ -2,6 +2,11 @@
 import Node from '@/lib/node';
 import { computedRangeClientBoundary, computedClientBoundaryByOffset } from "@/util/computed";
 import { getTextNode, getComputedStyle, getScroll } from "@/util/dom";
+
+import {
+    getRange
+} from '@/util/range';
+
 export default class Cursor extends Node {
     constructor(params) {
         super(params);
@@ -53,7 +58,6 @@ export default class Cursor extends Node {
             let textNode = getTextNode(this.dom);
             
             this._boundary = computedClientBoundaryByOffset(textNode, offset);
-            console.log(offset, this._boundary)
         }
         this.setCursor(this._boundary);
     }
@@ -95,7 +99,7 @@ export default class Cursor extends Node {
         this.top = undefined;
         this.dom = null;
         this.node = null;
-        this.composition = '';
+        // this.composition = '';
         this.input = '';
         this.oldInput = '';
 
@@ -133,7 +137,49 @@ export default class Cursor extends Node {
         this.top = top;
         this.offset = boundary.offset;
 
+
+
     }
+
+    setCursorAccordWithCursor(cursor, referenceLine) {
+       
+        let range = getRange();
+        let scrollLeft = document.body.scrollLeft || 0;
+        let isSet = false;
+        let _cursor = null;
+        referenceLine.childNodes.find(Unit => {
+            if(isSet) return true;
+            for(let offset = 0; offset <= Unit.getTextLength(); offset++) {
+                let textNode = getTextNode(Unit.__el__);
+                let {
+                    rect
+                } = computedClientBoundaryByOffset(textNode, offset, 'right', range);
+                let x = rect.x + scrollLeft;
+
+                if(x >= cursor.left) {
+                    isSet = true;
+
+                    if(_cursor && (_cursor.diff < x - cursor.left)) {
+                        offset = offset - 1 < 0 ? 0 : offset - 1
+                    }
+                    this.set(Unit.__el__, offset)
+                    break;
+                }
+                _cursor = {
+                    x,
+                    unit: Unit,
+                    offset,
+                    diff: Math.abs(x-cursor.left)
+                }
+            }
+            // computedClientBoundaryByOffset(Unit.)
+        })
+        if(!isSet) {
+            let lastChild = referenceLine.lastChild;
+            this.set(lastChild.__el__, lastChild.getTextLength());
+        }
+       
+    }  
 
 
 

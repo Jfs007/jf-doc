@@ -150,10 +150,12 @@ export default class Doc extends Node {
             let KeyCodeName = keyCode[e.keyCode];
             let previousSibling = this.cursor.node.previousSibling;
             let nextSibling = this.cursor.node.nextSibling;
-            let accord = false;
+            let stopBreakWord = false;
             if (KeyCodeName == 'Delete') {
-                accord = true;
-                this.cursor.emptyInput();
+                if(composition) {
+                    stopBreakWord = true;
+                }
+                
                 offset = -1;
                 if (!composition) {
                     if (this.cursor.offset == 0) {
@@ -174,10 +176,10 @@ export default class Doc extends Node {
                 }
 
             } else if (KeyCodeName == 'Enter') {
-                accord = true;
+                
 
             } else if (KeyCodeName == 'ArrowLeft' || KeyCodeName == 'ArrowRight') {
-                accord = true;
+                stopBreakWord = true;
                 this.cursor.emptyInput();
                 let _offset = this.cursor.offset;
                 if (KeyCodeName == 'ArrowLeft') {
@@ -188,7 +190,6 @@ export default class Doc extends Node {
                             this.cursor.set(previousSibling.__el__, previousSibling.text.length - 1);
                         }
                     }
-
                 }
                 if (KeyCodeName == 'ArrowRight') {
                     if (_offset < this.cursor.node.text.length) {
@@ -201,17 +202,45 @@ export default class Doc extends Node {
 
                 }
 
+            } else if(KeyCodeName == 'ArrowUp' || KeyCodeName == 'ArrowDown') {
+                stopBreakWord = true;
+               
+                if(KeyCodeName == 'ArrowUp') {
+                    let Line = this.cursor.node.parentNode;
+                   
+                    if(!Line.previousSibling) {
+                        let Section = Line.parentNode;
+                        let Line = Section.previousSibling.firstChild;
+                    }else {
+                        Line = Line.previousSibling;
+                    };
+                    this.cursor.setCursorAccordWithCursor(this.cursor, Line);
+                    // this.cursor.set(_cursor.node.__el__, _cursor.offset)
+
+                }
+                if(KeyCodeName == 'ArrowDown') {
+                    let Line = this.cursor.node.parentNode;
+                   
+                    if(!Line.nextSibling) {
+                        let Section = Line.parentNode;
+                        let Line = Section.nextSibling.firstChild;
+                    }else {
+                        Line = Line.nextSibling;
+                    };
+                   this.cursor.setCursorAccordWithCursor(this.cursor, Line);
+                    // this.cursor.set(_cursor.node.__el__, _cursor.offset)
+                }
+                // let textoff = 
             }
 
             this.nextTick(_ => {
-                if(!accord) return;
-                console.log('keycode:')
-                if (composition == 'update') {
-                    this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
-                } else {
+                if (composition != 'update') {
                     this.cursor.update(offset + this.cursor.offset);
+                } 
+                if(!stopBreakWord) {
+                    this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
                 }
-                this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
+                
             })
         })
         this.events.on(cursor, 'input', (e) => {
@@ -232,8 +261,10 @@ export default class Doc extends Node {
             }
 
             this.nextTick(_ => {
+                
                 if (composition == 'update') {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
+                    // this.cursor.
                 } else {
                     this.cursor.update(offset + this.cursor.offset);
                 }   
@@ -247,7 +278,7 @@ export default class Doc extends Node {
                         })
                        
                     }
-                    console.log(_break.offset, this.cursor.offset - 1)
+            
                 }
 
             })

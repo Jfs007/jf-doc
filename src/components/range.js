@@ -11,7 +11,6 @@ export default class Range extends Base {
         if (selection) {
             let range = selection.getRangeAt(0);
             let { startContainer } = range;
-            console.log(startContainer, 'range');
         }
 
     }

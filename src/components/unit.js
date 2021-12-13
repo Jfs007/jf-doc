@@ -125,6 +125,20 @@ export default class Unit extends Node {
     getText() {
         return this.text;
     }
+
+    getOffsetInLine(offset) {
+        let Line = this.parentNode;
+        let _offset = 0;
+        Line.childNodes.find(Unit => {
+            if(Unit == this) {
+                _offset+=offset;
+                return true;
+            }
+            _offset+=Unit.getTextLength();
+        });
+        return _offset;
+    }
+
     appendText(cursor, text) {
         let { offset } = cursor;
         let [left, right] = vSplit(this.text, offset);
@@ -150,7 +164,6 @@ export default class Unit extends Node {
             nextSibling.childNodes.map(unit => {
                 if(unit.isComposition()) {
                     nextSibling.removeChild(unit);
-                    console.log(unit, 'unit----')
                 }
             });
             

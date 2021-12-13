@@ -36,7 +36,6 @@ export default class Line extends Node {
     }
     startInsertUnits(units) {
         let firstChild = this.firstChild;
-        console.log(firstChild, units, 'units')
         units.map(unit => {
             if(unit.isBlank()) return;
             if (firstChild) {
@@ -50,7 +49,6 @@ export default class Line extends Node {
                 this.appendChild(unit)
             }
         });
-        console.log(this, '___this___')
     }
 
 
@@ -62,6 +60,7 @@ export default class Line extends Node {
         return scrollWidth > clientWidth;
 
     }
+ 
     getOverFlowUnits() {
         let range = getRange();
         let Units = this.childNodes;
@@ -120,7 +119,6 @@ export default class Line extends Node {
             for (let offset = isAsc ? 0 : textLength;
                 (isAsc ? offset <= textLength : offset >= 0);
                 (isAsc ? offset++ : offset--)) {
-                    console.log(text, 'text')
                 let _boundary = computedClientBoundaryByOffset(getTextNode(node.__el__), offset, isAsc ? 'left' : 'right', range);
 
 
