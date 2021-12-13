@@ -25,6 +25,24 @@ export default class Cursor extends Node {
         // 绑定的dom
         this.__el__ = null;
     }
+    reset() {
+        this.empty();
+        this.emptyInput();
+        this.closeComposition();
+    }
+    empty() {
+        this._boundary = null;
+        this.height = 30;
+        this.offset = -1;
+        this.left = undefined;
+        this.top = undefined;
+        this.dom = null;
+        this.node = null;
+        // this.composition = '';
+        this.input = '';
+        this.oldInput = '';
+
+    }
     closeComposition() {
         this.composition = '';
         this.emptyInput();
@@ -64,6 +82,7 @@ export default class Cursor extends Node {
     set(dom, offset) {
         this.empty();
         let textNode = getTextNode(dom);
+       
 
         this.offset = offset;
         let boundary = computedClientBoundaryByOffset(textNode, offset);
@@ -91,19 +110,7 @@ export default class Cursor extends Node {
         }
     }
 
-    empty() {
-        this._boundary = null;
-        this.height = 30;
-        this.offset = -1;
-        this.left = undefined;
-        this.top = undefined;
-        this.dom = null;
-        this.node = null;
-        // this.composition = '';
-        this.input = '';
-        this.oldInput = '';
-
-    }
+   
 
     place(e) {
         if (this.__el__) {
@@ -112,7 +119,6 @@ export default class Cursor extends Node {
 
         this.empty();
         let textNode = getTextNode(e.target);
-
         let boundary = computedRangeClientBoundary(
             {
                 x: e.clientX,
@@ -150,6 +156,7 @@ export default class Cursor extends Node {
         referenceLine.childNodes.find(Unit => {
             if(isSet) return true;
             for(let offset = 0; offset <= Unit.getTextLength(); offset++) {
+               
                 let textNode = getTextNode(Unit.__el__);
                 let {
                     rect
@@ -162,6 +169,7 @@ export default class Cursor extends Node {
                     if(_cursor && (_cursor.diff < x - cursor.left)) {
                         offset = offset - 1 < 0 ? 0 : offset - 1
                     }
+                    this.reset();
                     this.set(Unit.__el__, offset)
                     break;
                 }
@@ -176,8 +184,10 @@ export default class Cursor extends Node {
         })
         if(!isSet) {
             let lastChild = referenceLine.lastChild;
+            this.reset();
             this.set(lastChild.__el__, lastChild.getTextLength());
         }
+        
        
     }  
 

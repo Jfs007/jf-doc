@@ -1,5 +1,6 @@
 
 import UIs from './ui';
+
 export default {
     name: 'vessel',
     props: {
@@ -13,14 +14,17 @@ export default {
         }
     },
     mounted() {
+        console.log(this.$el, '绑定', this.unit.parentNode);
         this.$el.__unit__ = this.unit;
         this.unit.__el__ = this.$el;
-        // console.log(this.$el, '绑定', this.unit)
+        
+        
+        
     },
     beforeDestroy() {
-        // console.log(this.$el, '解绑', this.unit)
-        this.$el.__unit__ = null;
-        this.unit.__el__ = null;
+        console.log(this.$el, '解绑', this.$el.__unit__ == this.unit)
+        // this.$el.__unit__ = null;
+        // this.unit.__el__ = null;
     },
     render(h) {
        let unit = this.unit;

@@ -26,6 +26,7 @@ export default class Node extends Base {
         // 是否处于虚拟节点阶段
         // this.__virtual__ = false;
         this.guid = guid();
+        // this.render_id = guid();
         super.init(options);
         if (update) {
             this.guid = guid();
@@ -119,12 +120,15 @@ export default class Node extends Base {
             let node = this.childNodes.splice(idx, 1);
             let previousSibling = dnode.previousSibling;
             let nextSibling = dnode.nextSibling;
+            // console.log(previousSibling&&previousSibling.text, nextSibling&&nextSibling.text, 'vw', dnode.nextSibling.text)
             if (previousSibling) {
+                // pr
                 previousSibling._solveSibling();
             }
             if (nextSibling) {
                 nextSibling._solveSibling();
             }
+            // console.log('vw1', dnode.nextSibling.text)
             this._solveLastChild();
             this._solveFirstChild();
 

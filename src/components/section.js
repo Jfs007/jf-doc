@@ -11,6 +11,7 @@ import {
 } from '@/util/dom';
 import Base from '../lib/base';
 
+
 class breakWord extends Base {
     constructor(options) {
         super(options);
@@ -36,6 +37,76 @@ export default class Section extends Node {
     insetLine() {
 
     }
+    insetSection(cursor) {
+        let { offset, node } = cursor;
+        let Line = node.parentNode;
+        // console.log(Line, 'el');
+        let cloneSection = this.cloneNode();
+        cloneSection.emptyChildNodes();
+        let doc = this.parentNode;
+
+        let cloneLine = Line.cloneNode();
+        cloneLine.emptyChildNodes();
+
+        if (offset == 0) {
+            Line.removeChild(node);
+            let cloneNode = node.cloneNode();
+            cloneNode.guid = node.guid;
+            cloneLine.appendChild(cloneNode);
+
+        }else {
+            let text = node.text;
+            node.text = text.slice(0, offset);
+            let cloneNode = node.cloneNode();
+            cloneNode.guid = node.guid;
+            cloneNode.text = text.slice(offset);  
+            // node = cloneNode;
+            cloneLine.appendChild(cloneNode);
+        }
+        node = node.nextSibling;
+        while(!!node) {
+            let _node_ = node;
+            node = node.nextSibling;
+            Line.removeChild(_node_);
+            cloneLine.appendChild(_node_.cloneNode());
+        }
+        if(cloneLine.childNodes.length == 1 && cloneLine.childNodes[0].isBlank()) {
+            cloneLine.childNodes[0].text = '\u00a0'
+        }
+        if(Line.childNodes.length == 0) {
+          
+            let clone = cursor.node.cloneNode();
+            clone.text = '\u00a0';
+            Line.appendChild(clone)
+        }
+        cloneSection.appendChild(cloneLine);
+        let cLine = Line.nextSibling;
+        // console.log(cLine.nextSibling, 'cLine')
+        while(!!cLine) {
+            let _cline_ = cLine;
+            cLine = cLine.nextSibling; 
+            this.removeChild(_cline_);
+            cloneSection.appendChild(_cline_);
+        }
+        if(!this.nextSibling) {
+            doc.appendChild(cloneSection);
+        }else {
+            doc.insertBefore(cloneSection, this.nextSibling);
+        }
+
+        return cloneLine;
+       
+       
+
+
+
+
+
+
+        // let 
+
+
+    }
     breakWord2(cursor) {
         let overOrBlankWidth = 0;
 
@@ -52,11 +123,12 @@ export default class Section extends Node {
         if (!Line.isOverflow()) {
             let isBlank = true;
             breakword.type = 'blank'
-           
+
             while (isBlank && Line) {
                 let nextLine = Line.nextSibling;
                 if (nextLine) {
                     let lastChild = Line.lastChild;
+                    // console.log(lastChild, 'lastChild', lastChild.__el__, Line.guid, 'Line')
                     let offset = lastChild ? lastChild.getTextLength() : 0;
                     let {
                         rect
@@ -104,6 +176,7 @@ export default class Section extends Node {
                     }
                     Line.appendUnits(nodes);
                     Line = Line.nextSibling;
+                    // console.log(Line.childNodes[0].guid, 'text', Line.lastChild.guid, Line.guid, Line.nextSibling);
                 } else {
                     isBlank = false;
                 }

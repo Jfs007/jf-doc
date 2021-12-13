@@ -151,7 +151,9 @@ export default class Doc extends Node {
             let previousSibling = this.cursor.node.previousSibling;
             let nextSibling = this.cursor.node.nextSibling;
             let stopBreakWord = false;
+            let accord = false;
             if (KeyCodeName == 'Delete') {
+                accord = true;
                 if(composition) {
                     stopBreakWord = true;
                 }
@@ -176,10 +178,21 @@ export default class Doc extends Node {
                 }
 
             } else if (KeyCodeName == 'Enter') {
-                
+                accord = false;
+                stopBreakWord = true;
+                let Line = this.cursor.node.parentNode.parentNode.insetSection(this.cursor);
+                this.nextTick(_ => {
+                    this.cursor.reset();
+                    this.cursor.set(Line.childNodes[0].__el__, 0);
+                    console.log(this.cursor, 'cursor');
+                    
+                   
+                    this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
+                })
 
             } else if (KeyCodeName == 'ArrowLeft' || KeyCodeName == 'ArrowRight') {
                 stopBreakWord = true;
+                accord = true;
                 this.cursor.emptyInput();
                 let _offset = this.cursor.offset;
                 if (KeyCodeName == 'ArrowLeft') {
@@ -204,13 +217,14 @@ export default class Doc extends Node {
 
             } else if(KeyCodeName == 'ArrowUp' || KeyCodeName == 'ArrowDown') {
                 stopBreakWord = true;
-               
+                accord = true;
                 if(KeyCodeName == 'ArrowUp') {
-                    let Line = this.cursor.node.parentNode;
                    
+                    let Line = this.cursor.node.parentNode;
+                    // console.log(Line.previousSibling, 'nnode', Line);
                     if(!Line.previousSibling) {
                         let Section = Line.parentNode;
-                        let Line = Section.previousSibling.firstChild;
+                        Line = Section.previousSibling ? Section.previousSibling.lastChild : null;
                     }else {
                         Line = Line.previousSibling;
                     };
@@ -223,17 +237,26 @@ export default class Doc extends Node {
                    
                     if(!Line.nextSibling) {
                         let Section = Line.parentNode;
-                        let Line = Section.nextSibling.firstChild;
+                        if(Section.nextSibling) {
+                            Line = Section.nextSibling ? Section.nextSibling.firstChild : null;
+                        }
+                        
                     }else {
                         Line = Line.nextSibling;
                     };
-                   this.cursor.setCursorAccordWithCursor(this.cursor, Line);
+                    if(Line) {
+                        this.cursor.setCursorAccordWithCursor(this.cursor, Line);
+                    }
+                   
+                   
                     // this.cursor.set(_cursor.node.__el__, _cursor.offset)
                 }
                 // let textoff = 
             }
 
             this.nextTick(_ => {
+                console.log(accord, 'open')
+                if(!accord) return;
                 if (composition != 'update') {
                     this.cursor.update(offset + this.cursor.offset);
                 } 
@@ -252,7 +275,7 @@ export default class Doc extends Node {
             if (composition == 'update') {
                 this.cursor.node.text = this.cursor.oldInput;
                 offset = 0;
-                console.log('empty')
+                
                 // 清空其余的composition 文档只允许存在一个composition?
                 // this.cursor.node.compositionOtherEmpty(this.cursor)
 
