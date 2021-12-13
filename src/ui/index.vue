@@ -65,6 +65,7 @@ export default {
     // test
   },
   created() {
+
     let doc = new Doc();
     this.doc = doc;
     this.$nextTick(() => {

@@ -153,11 +153,11 @@ export default class Doc extends Node {
             let stopBreakWord = false;
             let accord = false;
             if (KeyCodeName == 'Delete') {
+                this.cursor.emptyInput();
                 accord = true;
                 if(composition) {
                     stopBreakWord = true;
                 }
-                
                 offset = -1;
                 if (!composition) {
                     if (this.cursor.offset == 0) {
@@ -170,7 +170,6 @@ export default class Doc extends Node {
                             // return;
                         }
                     }
-
                     this.cursor.node.deleteText(this.cursor, Math.abs(offset));
                     if (this.cursor.offset == 0 && !previousSibling) {
                         return;
@@ -184,8 +183,6 @@ export default class Doc extends Node {
                 this.nextTick(_ => {
                     this.cursor.reset();
                     this.cursor.set(Line.childNodes[0].__el__, 0);
-                    console.log(this.cursor, 'cursor');
-                    
                    
                     this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
                 })
@@ -255,7 +252,7 @@ export default class Doc extends Node {
             }
 
             this.nextTick(_ => {
-                console.log(accord, 'open')
+              
                 if(!accord) return;
                 if (composition != 'update') {
                     this.cursor.update(offset + this.cursor.offset);
@@ -270,6 +267,7 @@ export default class Doc extends Node {
             let {
                 composition
             } = this.cursor;
+            console.log('input')
             let offset = 0;
             offset = this.cursor.input.length;
             if (composition == 'update') {
