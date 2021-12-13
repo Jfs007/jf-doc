@@ -289,7 +289,7 @@ export default class Doc extends Node {
                 offset = 0;
                 console.log('hello')
                 // 清空其余的composition 文档只允许存在一个composition?
-                this.cursor.node.compositionOtherEmpty(this.cursor)
+                // this.cursor.node.compositionOtherEmpty(this.cursor)
 
             } else {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
@@ -298,7 +298,9 @@ export default class Doc extends Node {
             this.nextTick(_ => {
                 
                 if (composition == 'update') {
+                   
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
+                    console.log(this.cursor.offset, this.cursor.node.text.length)
                     // this.cursor.
                 } else {
                     this.cursor.update(offset + this.cursor.offset);
@@ -306,7 +308,9 @@ export default class Doc extends Node {
                 let breakword = this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
                 if(breakword.breaks.length) {
                     let _break = breakword.breaks[0];
-                    if(_break.offset == this.cursor.offset -1) {
+                    console.log(_break, this.cursor.offset)
+                    let first = _break.nodes[0];
+                    if(_break.offset == this.cursor.offset -1 && first == this.cursor.node) {
                         this.nextTick(() => {
                             this.cursor.emptyInput();
                             this.cursor.set(this.cursor.node.parentNode.nextSibling.childNodes[0].__el__, 1)
