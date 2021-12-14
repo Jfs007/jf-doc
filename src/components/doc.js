@@ -271,7 +271,7 @@ export default class Doc extends Node {
             if (e.keyCode == 229 && e.code == 'ArrowLeft') {
                 
                 let offset = this.cursor.offset - 1;
-                this.cursor.update(offset);
+                // this.cursor.update(offset);
                 this.cursor.lock();
                 return;
 
@@ -320,7 +320,7 @@ export default class Doc extends Node {
 
                 if (composition == 'update') {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
-                    this.cursor.unlock();
+                    // this.cursor.unlock();
                 } else {
                     this.cursor.update(offset + this.cursor.offset);
 
