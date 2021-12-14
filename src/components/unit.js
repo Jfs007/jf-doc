@@ -155,25 +155,32 @@ export default class Unit extends Node {
         return value;
     }
 
+
+
+
+
+
+
     compositionOtherEmpty(cursor) {
         let { node } = cursor;
-        let line = node.parentNode;
-        let nextSibling = line.nextSibling;
-        while(nextSibling) {
-           
-            nextSibling.childNodes.map(unit => {
-                if(unit.isComposition()) {
-                    nextSibling.removeChild(unit);
-                }
-            });
-            
-            if(nextSibling.childNodes.length) {
-                line.parentNode.removeChild(nextSibling);
+        // 当前编辑的上一个node
+        let firstCompositionPrev = node.previousSibling;
+        // node.parentNode.removeChild(node);
+        node.getPreviousSameNodeTypeNodes(node => {
+            if(node.isComposition()) {
+                firstCompositionPrev = node.previousSibling;
+                node.parentNode.removeChild(node);
             }
-            nextSibling = nextSibling.nextSibling;
-           
-        }
-       
+        })
+        node.getNextSameNodeTypeNodes(node => {
+            if(node.isComposition()) {
+                node.parentNode.removeChild(node);
+            }
+        });
+        
+        
+        return firstCompositionPrev;
+
     }
 
     composition(cursor) {

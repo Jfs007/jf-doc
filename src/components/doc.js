@@ -40,19 +40,19 @@ export default class Doc extends Node {
             }
             if (this.__el__.contains(e.target)) {
                 let __unit__ = e.target.__unit__;
-                if(__unit__&&__unit__.nodeType != 'unit') {
+                if (__unit__ && __unit__.nodeType != 'unit') {
                     let unit = __unit__.lastChild;
-                    if(unit.nodeType == 'unit') {
+                    if (unit.nodeType == 'unit') {
                         this.cursor.set(unit.__el__, unit.getTextLength())
                     }
-                    
+
                     // let nodeType = 
                     // this.cursor.set(e.target.__unit__)
-                }else {
+                } else {
                     console.log('eee')
                     this.cursor.place(e);
                 }
-                
+
 
 
             } else {
@@ -71,7 +71,7 @@ export default class Doc extends Node {
         this.init(config);
     }
 
-    nextTick(callback = () => {}) {
+    nextTick(callback = () => { }) {
         setTimeout(callback, 0)
     }
 
@@ -121,15 +121,16 @@ export default class Doc extends Node {
         line1.appendChild(unit2);
         line1.appendChild(unit3);
         section1.appendChild(line1);
+        console.log(section1, 'secetion1')
 
 
         line2.appendChild(unit21);
         line2.appendChild(unit22);
         line2.appendChild(unit23);
         section1.appendChild(line2);
-        this.appendChild(section2);
         this.appendChild(section1);
-        return section1;
+        // this.appendChild(section1);
+        // return section1;
 
     }
 
@@ -160,7 +161,7 @@ export default class Doc extends Node {
                 composition
             } = this.cursor;
             let offset = 0;
-
+            console.log('keycode')
             let KeyCodeName = keyCode[e.keyCode];
             let previousSibling = this.cursor.node.previousSibling;
             let nextSibling = this.cursor.node.nextSibling;
@@ -169,7 +170,7 @@ export default class Doc extends Node {
             if (KeyCodeName == 'Delete') {
                 this.cursor.emptyInput();
                 accord = true;
-                if(composition) {
+                if (composition) {
                     stopBreakWord = true;
                 }
                 offset = -1;
@@ -197,16 +198,18 @@ export default class Doc extends Node {
                 this.nextTick(_ => {
                     this.cursor.reset();
                     this.cursor.set(Line.childNodes[0].__el__, 0);
-                   
+
                     this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
                 })
 
             } else if (KeyCodeName == 'ArrowLeft' || KeyCodeName == 'ArrowRight') {
                 stopBreakWord = true;
                 accord = true;
+                console.log('left');
                 this.cursor.emptyInput();
                 let _offset = this.cursor.offset;
                 if (KeyCodeName == 'ArrowLeft') {
+
                     if (_offset > 0) {
                         offset = -1;
                     } else {
@@ -226,55 +229,73 @@ export default class Doc extends Node {
 
                 }
 
-            } else if(KeyCodeName == 'ArrowUp' || KeyCodeName == 'ArrowDown') {
+            } else if (KeyCodeName == 'ArrowUp' || KeyCodeName == 'ArrowDown') {
                 stopBreakWord = true;
                 accord = true;
-                if(KeyCodeName == 'ArrowUp') {
-                   
+                if (KeyCodeName == 'ArrowUp') {
+
                     let Line = this.cursor.node.parentNode;
                     // console.log(Line.previousSibling, 'nnode', Line);
-                    if(!Line.previousSibling) {
+                    if (!Line.previousSibling) {
                         let Section = Line.parentNode;
                         Line = Section.previousSibling ? Section.previousSibling.lastChild : null;
-                    }else {
+                    } else {
                         Line = Line.previousSibling;
                     };
                     this.cursor.setCursorAccordWithCursor(this.cursor, Line);
                     // this.cursor.set(_cursor.node.__el__, _cursor.offset)
 
                 }
-                if(KeyCodeName == 'ArrowDown') {
+                if (KeyCodeName == 'ArrowDown') {
                     let Line = this.cursor.node.parentNode;
-                   
-                    if(!Line.nextSibling) {
+
+                    if (!Line.nextSibling) {
                         let Section = Line.parentNode;
-                        if(Section.nextSibling) {
+                        if (Section.nextSibling) {
                             Line = Section.nextSibling ? Section.nextSibling.firstChild : null;
                         }
-                        
-                    }else {
+
+                    } else {
                         Line = Line.nextSibling;
                     };
-                    if(Line) {
+                    if (Line) {
                         this.cursor.setCursorAccordWithCursor(this.cursor, Line);
                     }
-                   
-                   
+
+
                     // this.cursor.set(_cursor.node.__el__, _cursor.offset)
                 }
                 // let textoff = 
             }
+            // console.log(e, 'e...')
+            if (e.keyCode == 229 && e.code == 'ArrowLeft') {
+                
+                let offset = this.cursor.offset - 1;
+                this.cursor.update(offset);
+                this.cursor.lock();
+                return;
+
+            }
+            if (e.keyCode == 229 && e.code == 'ArrowRight') {
+                
+                let offset = this.cursor.offset + 1;
+                
+                this.cursor.update(offset);
+                this.cursor.lock();
+                return;
+
+            }
 
             this.nextTick(_ => {
-              
-                if(!accord) return;
+
+                if (!accord) return;
                 if (composition != 'update') {
                     this.cursor.update(offset + this.cursor.offset);
-                } 
-                if(!stopBreakWord) {
+                }
+                if (!stopBreakWord) {
                     this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
                 }
-                
+
             })
         })
         this.events.on(cursor, 'input', (e) => {
@@ -284,40 +305,40 @@ export default class Doc extends Node {
             console.log('input')
             let offset = 0;
             offset = this.cursor.input.length;
+            let firstCompositionPrev = null;
             if (composition == 'update') {
                 this.cursor.node.text = this.cursor.oldInput;
                 offset = 0;
-                console.log('hello')
                 // 清空其余的composition 文档只允许存在一个composition?
-                // this.cursor.node.compositionOtherEmpty(this.cursor)
+                // firstCompositionPrev = this.cursor.node.compositionOtherEmpty(this.cursor);
 
             } else {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
             }
 
             this.nextTick(_ => {
-                
+
                 if (composition == 'update') {
-                   
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
-                    console.log(this.cursor.offset, this.cursor.node.text.length)
-                    // this.cursor.
+                    this.cursor.unlock();
                 } else {
                     this.cursor.update(offset + this.cursor.offset);
-                }   
-                let breakword = this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
-                if(breakword.breaks.length) {
+
+
+                }
+                let _cursor = this.cursor;
+                let breakword = this.cursor.node.parentNode.parentNode.breakWord2(_cursor);
+                if (breakword.breaks.length) {
                     let _break = breakword.breaks[0];
-                    console.log(_break, this.cursor.offset)
                     let first = _break.nodes[0];
-                    if(_break.offset == this.cursor.offset -1 && first == this.cursor.node) {
+                    if (_break.offset == this.cursor.offset - 1 && first == this.cursor.node) {
                         this.nextTick(() => {
                             this.cursor.emptyInput();
                             this.cursor.set(this.cursor.node.parentNode.nextSibling.childNodes[0].__el__, 1)
                         })
-                       
+
                     }
-            
+
                 }
 
             })
@@ -333,6 +354,7 @@ export default class Doc extends Node {
         });
         this.events.on(cursor, 'compositionupdate', (e) => {
             this.cursor.composition = 'update';
+            // console.log(e.locale, 'locale')
         })
         this.events.on(cursor, 'compositionend', (e) => {
             this.cursor.composition = 'end';

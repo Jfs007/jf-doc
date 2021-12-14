@@ -65,6 +65,39 @@ export default class Node extends Base {
     }
     _solveFirstChild() {
         this.firstChild = this.childNodes[0];
+       
+    }
+    // 搜索节点之前所有nodetype一样的node
+    getPreviousSameNodeTypeNodes(callback = () => {}) {
+        let _this = this;
+        let node = _this.previousSibling;
+        while(node) {
+            callback(node);
+            let parentNode = node.parentNode;
+            node = node.previousSibling;
+            if(!node) {
+                let prevParent = parentNode.previousSibling;
+                if(prevParent) {
+                    node = prevParent.lastChild;
+                } 
+            }
+        }
+    }
+
+    getNextSameNodeTypeNodes(callback = () => {}) {
+        let _this = this;
+        let node = _this.nextSibling;
+        while(node) {
+            callback(node);
+            let parentNode = node.parentNode;
+            node = node.nextSibling;
+            if(!node) {
+                let prevParent = parentNode.nextSibling;
+                if(prevParent) {
+                    node = prevParent.firstChild;
+                } 
+            }
+        }
     }
 
     getTextNodeHeight(node) {

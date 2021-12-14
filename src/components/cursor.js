@@ -22,6 +22,8 @@ export default class Cursor extends Node {
         this.input = '';
         this.oldInput = '';
         this.keyCode = '';
+        // 当锁的时候，update/set/setCuror将无效
+        this.locked = false;
         // 绑定的dom
         this.__el__ = null;
     }
@@ -41,9 +43,11 @@ export default class Cursor extends Node {
         // this.composition = '';
         this.input = '';
         this.oldInput = '';
+        
 
     }
     closeComposition() {
+        this.unlock();
         this.composition = '';
         this.emptyInput();
 
@@ -70,8 +74,15 @@ export default class Cursor extends Node {
         }
         this.oldInput = value;
     }
+    lock() {
+        this.locked = true;
+    }
+    unlock() {
+        this.locked = false;
+    }
 
     update(offset = undefined) {
+        if(this.locked) return;
         if (typeof offset == 'number') {
             let textNode = getTextNode(this.dom);
             
@@ -80,6 +91,7 @@ export default class Cursor extends Node {
         this.setCursor(this._boundary);
     }
     set(dom, offset) {
+        if(this.locked) return;
         this.empty();
         let textNode = getTextNode(dom);
        
@@ -113,6 +125,7 @@ export default class Cursor extends Node {
    
 
     place(e) {
+        this.unlock();
         if (this.__el__) {
             this.__el__.value = '';
         }
@@ -135,6 +148,7 @@ export default class Cursor extends Node {
 
 
     setCursor(boundary) {
+        if(this.locked) return;
         if (!boundary.range) return;
         let { x, y, height } = boundary.rect;
         let scrollTop = document.body.scrollTop || 0;
