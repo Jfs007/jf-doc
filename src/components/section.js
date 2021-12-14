@@ -10,6 +10,7 @@ import {
     getTextNode
 } from '@/util/dom';
 import Base from '../lib/base';
+import Tabs from '@/lib/tabs.js';
 
 
 class breakWord extends Base {
@@ -34,20 +35,24 @@ export default class Section extends Node {
         super.init(options);
     }
 
+
+
+    isPlaceholder() {
+        return this.textContent == Tabs.space;
+    }
+
     insetLine() {
 
     }
+    // 在光标指定段落下插入一个段落 并将光标所在段落(该段落的文本)以后的文本剪切到新段落
     insetSection(cursor) {
         let { offset, node } = cursor;
         let Line = node.parentNode;
-        // console.log(Line, 'el');
         let cloneSection = this.cloneNode();
         cloneSection.emptyChildNodes();
         let doc = this.parentNode;
-
         let cloneLine = Line.cloneNode();
         cloneLine.emptyChildNodes();
-
         if (offset == 0) {
             Line.removeChild(node);
             let cloneNode = node.cloneNode();
@@ -71,12 +76,12 @@ export default class Section extends Node {
             cloneLine.appendChild(_node_.cloneNode());
         }
         if(cloneLine.childNodes.length == 1 && cloneLine.childNodes[0].isBlank()) {
-            cloneLine.childNodes[0].text = '\u00a0'
+            cloneLine.childNodes[0].text = Tabs.space;
         }
         if(Line.childNodes.length == 0) {
           
             let clone = cursor.node.cloneNode();
-            clone.text = '\u00a0';
+            clone.text = Tabs.space;
             Line.appendChild(clone)
         }
         cloneSection.appendChild(cloneLine);

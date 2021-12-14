@@ -3,7 +3,8 @@ import {
     guid
 } from '../util/index';
 import {
-    getTextNode
+    getTextNode,
+    loopNodes
 } from "@/util/dom";
 import {
     getRange
@@ -13,6 +14,7 @@ export default class Node extends Base {
         super();
         this.class = '';
         this.nodeName = '';
+        this.text = '';
         this.style = '';
         this.parentNode = null;
         this.childNodes = [];
@@ -33,6 +35,19 @@ export default class Node extends Base {
         }
 
 
+    }
+
+    getText() {
+        return this.text;
+    }
+
+
+    get textContent() {
+        let text = this.getText();
+        loopNodes(this, (node) => {
+            text = text + node.getText();
+        });
+        return text;
     }
     _updateDirty(flag) {
         this._dirty = flag;
@@ -61,25 +76,45 @@ export default class Node extends Base {
         }
     }
     _solveLastChild() {
-        this.lastChild = this.childNodes[this.childNodes.length-1];
+        this.lastChild = this.childNodes[this.childNodes.length - 1];
     }
     _solveFirstChild() {
         this.firstChild = this.childNodes[0];
-       
+
+    }
+
+    getPreviousSameNodeTypeNode() {
+        // let _this = this;
+        // let node = _this.previousSibling;
+        // if (node) return node;
+        // let prevParent = node.parentNode.previousSibling;
+        
+        // while(!prevParent && node.parentNode) {
+        //     node = node.parentNode;
+        //     prevParent = node.parentNode
+            
+            
+        // }
+        // if (prevParent) {
+        //     node = prevParent.lastChild;
+        // } 
+
+
+      
     }
     // 搜索节点之前所有nodetype一样的node
     getPreviousSameNodeTypeNodes(callback = () => {}) {
         let _this = this;
         let node = _this.previousSibling;
-        while(node) {
+        while (node) {
             callback(node);
             let parentNode = node.parentNode;
             node = node.previousSibling;
-            if(!node) {
+            if (!node) {
                 let prevParent = parentNode.previousSibling;
-                if(prevParent) {
+                if (prevParent) {
                     node = prevParent.lastChild;
-                } 
+                }
             }
         }
     }
@@ -87,15 +122,15 @@ export default class Node extends Base {
     getNextSameNodeTypeNodes(callback = () => {}) {
         let _this = this;
         let node = _this.nextSibling;
-        while(node) {
+        while (node) {
             callback(node);
             let parentNode = node.parentNode;
             node = node.nextSibling;
-            if(!node) {
+            if (!node) {
                 let prevParent = parentNode.nextSibling;
-                if(prevParent) {
+                if (prevParent) {
                     node = prevParent.firstChild;
-                } 
+                }
             }
         }
     }

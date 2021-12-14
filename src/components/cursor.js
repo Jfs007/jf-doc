@@ -2,7 +2,7 @@
 import Node from '@/lib/node';
 import { computedRangeClientBoundary, computedClientBoundaryByOffset } from "@/util/computed";
 import { getTextNode, getComputedStyle, getScroll } from "@/util/dom";
-
+import Tabs from '@/lib/tabs.js';
 import {
     getRange
 } from '@/util/range';
@@ -61,7 +61,7 @@ export default class Cursor extends Node {
     }
     updateInput(value) {
         if (!this.composition) {
-            value = value.replace(/\s/g, '\u00a0')
+            value = value.replace(/\s/g, Tabs.space)
         }
         let oldInput = this.oldInput;
         if (value.length > oldInput.length) {
@@ -87,6 +87,7 @@ export default class Cursor extends Node {
             let textNode = getTextNode(this.dom);
             
             this._boundary = computedClientBoundaryByOffset(textNode, offset);
+            console.log(textNode, offset, 'offset', this.dom);
         }
         this.setCursor(this._boundary);
     }
@@ -140,6 +141,7 @@ export default class Cursor extends Node {
             textNode
         );
         this.setByBoundary(boundary);
+        console.log(e.target.__unit__.textContent)
         this.__el__.focus();
 
 

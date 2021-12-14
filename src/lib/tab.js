@@ -1,3 +1,0 @@
-let tab = {
-    'space': '&nbsp;'
-}

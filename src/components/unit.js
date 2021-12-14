@@ -1,6 +1,8 @@
 
 import Node from '../lib/node.js';
 import { guid, vSplit } from '../util/index';
+
+import Tabs from '@/lib/tabs.js';
 // import DocStyle from './doc-style';
 export default class Unit extends Node {
     constructor(options = {}, update) {
@@ -59,6 +61,9 @@ export default class Unit extends Node {
     }
     isBlank() {
         return this.text == '';
+    }
+    isPlaceholder() {
+        return this.text == Tabs.space;
     }
     setComments(id, index) {
         if (this.isCarousel() && index!=undefined) {

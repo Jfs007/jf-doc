@@ -128,6 +128,23 @@ export let computedClientBoundaryByOffset = (textNode, offset, dir = 'right', ra
     range = range || getRange();
     range.setStart(textNode, offset);
     range.setEnd(textNode, offset);
+    if(textNode.textContent == '') {
+        let node = textNode.parentNode;
+       
+        let rect = node.getBoundingClientRect();
+        // console.log(node, 'node', rect);
+        return {
+            dir,
+            offset,
+            range,
+            rect: {
+                y: rect.y,
+                x: rect.x,
+                height: rect.height
+            }
+        }
+    }
+   
     
     let rect = range.getBoundingClientRect();
     let boundary = {

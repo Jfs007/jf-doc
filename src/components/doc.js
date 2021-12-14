@@ -71,7 +71,7 @@ export default class Doc extends Node {
         this.init(config);
     }
 
-    nextTick(callback = () => { }) {
+    nextTick(callback = () => {}) {
         setTimeout(callback, 0)
     }
 
@@ -176,16 +176,31 @@ export default class Doc extends Node {
                 offset = -1;
                 if (!composition) {
                     if (this.cursor.offset == 0) {
+                        // 判断上一个node是否存在
                         if (previousSibling) {
-                            if (this.cursor.node.text == '') {
+                            // 删除当前的，move到上一个node位置
+                            if (this.cursor.node.isBlank()) {
                                 this.cursor.node.parentNode.removeChild(this.cursor.node);
                             }
                             this.cursor.set(previousSibling.__el__, previousSibling.text.length);
                         } else {
+                            // 不存在move至上一行
+                            let line = this.cursor.node.parentNode;
+                        
+                            if(line.previousSibling) {
+                                if(line.previousSibling.isPlaceholder()) {
+                                    console.log('yeah!!')
+                                }
+                                // this.cursor.set(line.)
+                            }
                             // return;
                         }
                     }
-                    this.cursor.node.deleteText(this.cursor, Math.abs(offset));
+                    if(!this.cursor.node.isPlaceholder()) {
+                        this.cursor.node.deleteText(this.cursor, Math.abs(offset));
+                    }
+                    
+
                     if (this.cursor.offset == 0 && !previousSibling) {
                         return;
                     }
@@ -267,29 +282,13 @@ export default class Doc extends Node {
                 }
                 // let textoff = 
             }
-            // console.log(e, 'e...')
-            if (e.keyCode == 229 && e.code == 'ArrowLeft') {
-                
-                let offset = this.cursor.offset - 1;
-                // this.cursor.update(offset);
-                this.cursor.lock();
-                return;
 
-            }
-            if (e.keyCode == 229 && e.code == 'ArrowRight') {
-                
-                let offset = this.cursor.offset + 1;
-                
-                this.cursor.update(offset);
-                this.cursor.lock();
-                return;
-
-            }
 
             this.nextTick(_ => {
 
                 if (!accord) return;
                 if (composition != 'update') {
+
                     this.cursor.update(offset + this.cursor.offset);
                 }
                 if (!stopBreakWord) {
