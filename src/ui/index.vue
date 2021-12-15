@@ -2,10 +2,16 @@
 <style lang="less" scoped>
 .jf-doc-wrapper {
   height: 400px;
+  width: 400px;
   overflow-y: overlay;
   position: relative;
+  border: 1px solid #333333;
+  border-radius: 10px;
+  box-sizing: border-box;
+   padding: 8px;
 }
 .jf-doc {
+  
   font-size: 15px;
   font-family: Arial, "Microsoft YaHei", "微软雅黑", "黑体", Heiti, sans-serif,
     SimSun, "宋体", serif;
