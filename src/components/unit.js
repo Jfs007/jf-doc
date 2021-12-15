@@ -146,8 +146,8 @@ export default class Unit extends Node {
 
 
     placeholder() {
-        this.text = Tabs.place;
-        console.log(this.text, 'text');
+        this.text = Tabs.space;
+        // console.log(this.text, 'text');
     }
 
     appendText(cursor, text) {

@@ -46,7 +46,7 @@ export default class Doc extends Node {
                     let unit = __unit__.lastChild;
                     if (unit.nodeType == 'unit') {
                         let offset = unit.getTextLength();
-                        if(unit.L.isPlaceholder()) {
+                        if (unit.L.isPlaceholder()) {
                             offset = 0;
                         }
                         this.cursor.set(unit.__el__, offset);
@@ -56,7 +56,7 @@ export default class Doc extends Node {
                     // let nodeType = 
                     // this.cursor.set(e.target.__unit__)
                 } else {
-                    
+
                     this.cursor.place(e);
                 }
 
@@ -186,12 +186,15 @@ export default class Doc extends Node {
                 }
                 offset = -1;
                 if (!composition) {
-                    let movePrev = this.cursor.node.L.textContent.length == 1 && this.cursor.offset == 1
-                    if(movePrev) {
-                        this.cursor.node.deleteText(this.cursor, Math.abs(offset));
-                    }
-                    console.log(movePrev, 'movePrev', this.cursor.offset)
-                    if (this.cursor.offset == 0 || movePrev) {
+                    // let movePrev = this.cursor.node.L.textContent.length == 1 && this.cursor.offset == 1
+
+
+                    // if(movePrev) {
+                    //     this.cursor.node.deleteText(this.cursor, Math.abs(offset));
+                    // }
+
+
+                    if (this.cursor.offset == 0) {
                         // 判断上一个node是否存在
                         if (previousSibling) {
                             // 删除当前的，move到上一个node位置
@@ -202,29 +205,57 @@ export default class Doc extends Node {
                         } else {
                             // 不存在move至上一行
                             let node = this.cursor.node.getPreviousSameNodeTypeNode();
-                            if(node) {
-                                if(node.L.isPlaceholder()) {
+
+                            if (node) {
+                                // 如果为占位符行 (空行) 则依旧在当前行 不换行
+                                if (node.L.isPlaceholder()) {
                                     node.D.removeChild(node.S);
-                                    offset = 0;
-                                }else {
-                                   
-                                   this.cursor.set(node.L.lastChild.__el__, node.L.lastChild.getTextLength())
+                                    console.log(this.cursor.node)
+                                    // if (this.cursor.node.L.isBlank()) {
+                                        
+                                        offset = 0;
+                                        this.cursor.offset = 0;
+                                        if(this.cursor.node.L.isBlank()) {
+                                            this.cursor.node.placeholder();
+                                        }
+                                       
+                                    // }
+
+                                } else {
+                                    if (this.cursor.node.L.isPlaceholder()) {
+                                        this.cursor.node.S.removeChild(this.cursor.node.L)
+                                    }
+                                    this.cursor.set(node.L.lastChild.__el__, node.L.lastChild.getTextLength());
+
+
                                 }
-                            }else {
-                               offset = 0;
-                               if(this.D.isBlank()) {
+                            } else {
+                                offset = 0;
+                                console.log('place')
                                 this.cursor.node.placeholder();
-                               }
+
+                                //    if(this.D.isBlank()) {
+
+                                //     this.cursor.node.placeholder();
+                                //    }
                             }
                         }
                     }
-                    
-                    console.log(this.cursor.node.text, this.cursor.node.guid, this.cursor.node.isPlaceholder())
-                    if(!this.cursor.node.isPlaceholder()) {
-                        console.log(this.cursor, '---', offset)
-                        this.cursor.node.deleteText(this.cursor, Math.abs(offset));
+                    // console.log(this.cursor.node.text, this.cursor.node.isPlaceholder())
+                    // 不是占位符行(空行)
+                    this.cursor.node.deleteText(this.cursor, Math.abs(offset));
+                    if (this.cursor.node.L.isBlank()) {
+                        console.log('place')
+                        this.cursor.node.placeholder()
                     }
-                    
+                    // if(!this.cursor.node.isPlaceholder()) {
+
+                    //     this.cursor.node.deleteText(this.cursor, Math.abs(offset));
+                    // }else {
+
+
+                    // }
+
                     // if (this.cursor.offset == 0 && !previousSibling) {
                     //     // return;
                     // }
@@ -308,10 +339,9 @@ export default class Doc extends Node {
 
 
             this.nextTick(_ => {
-                
+
                 if (!accord) return;
                 if (composition != 'update') {
-                  
                     this.cursor.update(offset + this.cursor.offset);
                 }
                 if (!stopBreakWord) {
