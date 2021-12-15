@@ -37,10 +37,6 @@ export default class Section extends Node {
 
 
 
-    isPlaceholder() {
-        return this.textContent == Tabs.space;
-    }
-
     insetLine() {
 
     }

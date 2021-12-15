@@ -26,8 +26,10 @@ export default class Doc extends Node {
         this.history = new History();
         this.range = null;
         this.nodeType = 'doc';
+        this.rect = null;
         // this.sections = [];
-        this.cursor = new Cursor();
+        this.cursor = new Cursor(this);
+        // this.cursor.doc = this;
 
         this.events = new Events();
         this.__el__ = null;
@@ -43,13 +45,18 @@ export default class Doc extends Node {
                 if (__unit__ && __unit__.nodeType != 'unit') {
                     let unit = __unit__.lastChild;
                     if (unit.nodeType == 'unit') {
-                        this.cursor.set(unit.__el__, unit.getTextLength())
+                        let offset = unit.getTextLength();
+                        if(unit.L.isPlaceholder()) {
+                            offset = 0;
+                        }
+                        this.cursor.set(unit.__el__, offset);
+                        this.cursor.emptyInput()
                     }
 
                     // let nodeType = 
                     // this.cursor.set(e.target.__unit__)
                 } else {
-                    console.log('eee')
+                    
                     this.cursor.place(e);
                 }
 
@@ -107,7 +114,7 @@ export default class Doc extends Node {
         });
         let unit21 = new Unit({
 
-            text: 'JDs 风'
+            text: 'JDs\u00a0风'
         });
         let unit22 = new Unit({
 
@@ -149,7 +156,11 @@ export default class Doc extends Node {
     }) {
         this.__el__ = doc;
         this.cursor.__el__ = cursor;
-        this.bind()
+        this.drawRect();
+        this.bind();
+    }
+    drawRect() {
+        this.rect = this.__el__.getBoundingClientRect();
     }
     bind() {
         let cursor = this.cursor.__el__;
@@ -175,52 +186,64 @@ export default class Doc extends Node {
                 }
                 offset = -1;
                 if (!composition) {
-                    if (this.cursor.offset == 0) {
+                    let movePrev = this.cursor.node.L.textContent.length == 1 && this.cursor.offset == 1
+                    if(movePrev) {
+                        this.cursor.node.deleteText(this.cursor, Math.abs(offset));
+                    }
+                    console.log(movePrev, 'movePrev', this.cursor.offset)
+                    if (this.cursor.offset == 0 || movePrev) {
                         // 判断上一个node是否存在
                         if (previousSibling) {
                             // 删除当前的，move到上一个node位置
                             if (this.cursor.node.isBlank()) {
-                                this.cursor.node.parentNode.removeChild(this.cursor.node);
+                                this.cursor.node.L.removeChild(this.cursor.node);
                             }
                             this.cursor.set(previousSibling.__el__, previousSibling.text.length);
                         } else {
                             // 不存在move至上一行
-                            let line = this.cursor.node.parentNode;
-                        
-                            if(line.previousSibling) {
-                                if(line.previousSibling.isPlaceholder()) {
-                                    console.log('yeah!!')
+                            let node = this.cursor.node.getPreviousSameNodeTypeNode();
+                            if(node) {
+                                if(node.L.isPlaceholder()) {
+                                    node.D.removeChild(node.S);
+                                    offset = 0;
+                                }else {
+                                   
+                                   this.cursor.set(node.L.lastChild.__el__, node.L.lastChild.getTextLength())
                                 }
-                                // this.cursor.set(line.)
+                            }else {
+                               offset = 0;
+                               if(this.D.isBlank()) {
+                                this.cursor.node.placeholder();
+                               }
                             }
-                            // return;
                         }
                     }
+                    
+                    console.log(this.cursor.node.text, this.cursor.node.guid, this.cursor.node.isPlaceholder())
                     if(!this.cursor.node.isPlaceholder()) {
+                        console.log(this.cursor, '---', offset)
                         this.cursor.node.deleteText(this.cursor, Math.abs(offset));
                     }
                     
-
-                    if (this.cursor.offset == 0 && !previousSibling) {
-                        return;
-                    }
+                    // if (this.cursor.offset == 0 && !previousSibling) {
+                    //     // return;
+                    // }
                 }
 
             } else if (KeyCodeName == 'Enter') {
                 accord = false;
                 stopBreakWord = true;
-                let Line = this.cursor.node.parentNode.parentNode.insetSection(this.cursor);
+                let Line = this.cursor.node.S.insetSection(this.cursor);
                 this.nextTick(_ => {
                     this.cursor.reset();
                     this.cursor.set(Line.childNodes[0].__el__, 0);
 
-                    this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
+                    this.cursor.node.S.breakWord2(this.cursor);
                 })
 
             } else if (KeyCodeName == 'ArrowLeft' || KeyCodeName == 'ArrowRight') {
                 stopBreakWord = true;
                 accord = true;
-                console.log('left');
                 this.cursor.emptyInput();
                 let _offset = this.cursor.offset;
                 if (KeyCodeName == 'ArrowLeft') {
@@ -285,14 +308,14 @@ export default class Doc extends Node {
 
 
             this.nextTick(_ => {
-
+                
                 if (!accord) return;
                 if (composition != 'update') {
-
+                  
                     this.cursor.update(offset + this.cursor.offset);
                 }
                 if (!stopBreakWord) {
-                    this.cursor.node.parentNode.parentNode.breakWord2(this.cursor);
+                    this.cursor.node.S.breakWord2(this.cursor);
                 }
 
             })
@@ -307,6 +330,7 @@ export default class Doc extends Node {
             let firstCompositionPrev = null;
             if (composition == 'update') {
                 this.cursor.node.text = this.cursor.oldInput;
+                console.log(this.cursor.node.text, 'text')
                 offset = 0;
                 // 清空其余的composition 文档只允许存在一个composition?
                 // firstCompositionPrev = this.cursor.node.compositionOtherEmpty(this.cursor);
@@ -323,17 +347,17 @@ export default class Doc extends Node {
                 } else {
                     this.cursor.update(offset + this.cursor.offset);
 
-
                 }
                 let _cursor = this.cursor;
-                let breakword = this.cursor.node.parentNode.parentNode.breakWord2(_cursor);
+                // r
+                let breakword = this.cursor.node.S.breakWord2(_cursor);
                 if (breakword.breaks.length) {
                     let _break = breakword.breaks[0];
                     let first = _break.nodes[0];
                     if (_break.offset == this.cursor.offset - 1 && first == this.cursor.node) {
                         this.nextTick(() => {
                             this.cursor.emptyInput();
-                            this.cursor.set(this.cursor.node.parentNode.nextSibling.childNodes[0].__el__, 1)
+                            this.cursor.set(this.cursor.node.L.nextSibling.childNodes[0].__el__, 1)
                         })
 
                     }
@@ -356,6 +380,7 @@ export default class Doc extends Node {
             // console.log(e.locale, 'locale')
         })
         this.events.on(cursor, 'compositionend', (e) => {
+            console.log('end');
             this.cursor.composition = 'end';
             let previousSibling = this.cursor.node.previousSibling;
             this.cursor.composition = '';
@@ -363,6 +388,8 @@ export default class Doc extends Node {
             let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
             this.cursor.node.compositionEnd(this.cursor);
             this.cursor.closeComposition();
+            // console.log('oooo')
+
             this.nextTick(_ => {
                 this.cursor.update(offset);
             })

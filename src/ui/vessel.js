@@ -14,7 +14,7 @@ export default {
         }
     },
     mounted() {
-        console.log(this.$el, '绑定' );
+        // console.log(this.$el, '绑定' );
         this.$el.__unit__ = this.unit;
         this.unit.__el__ = this.$el;
         
@@ -22,7 +22,7 @@ export default {
         
     },
     beforeDestroy() {
-        console.log(this.$el, '解绑', this.unit.parentNode == this.unit)
+        // console.log(this.$el, '解绑', this.unit.parentNode == this.unit)
         // this.$el.__unit__ = null;
         // this.unit.__el__ = null;
     },

@@ -144,6 +144,12 @@ export default class Unit extends Node {
         return _offset;
     }
 
+
+    placeholder() {
+        this.text = Tabs.place;
+        console.log(this.text, 'text');
+    }
+
     appendText(cursor, text) {
         let { offset } = cursor;
         let [left, right] = vSplit(this.text, offset);

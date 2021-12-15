@@ -1,5 +1,10 @@
 
 <style lang="less" scoped>
+.jf-doc-wrapper {
+  height: 400px;
+  overflow-y: overlay;
+  position: relative;
+}
 .jf-doc {
   font-size: 15px;
   font-family: Arial, "Microsoft YaHei", "微软雅黑", "黑体", Heiti, sans-serif,
@@ -22,25 +27,27 @@
 }
 </style>
 <template>
-  <div class="jf-doc" id="jf-doc">
-    <ui-cursor :cursor="doc.cursor" :doc="doc" ref="cursor"></ui-cursor>
-    <div
-      :key="section.guid"
-      v-for="section in doc.childNodes"
-      :class="[section.class]"
-    >
-      <Vessel
-        :key="line.guid"
-        type="line"
-        :unit="line"
-        v-for="line in section.childNodes"
+  <div class="jf-doc-wrapper" id="jf-doc-wrapper">
+    <div class="jf-doc" id="jf-doc">
+      <ui-cursor :cursor="doc.cursor" :doc="doc" ref="cursor"></ui-cursor>
+      <div
+        :key="section.guid"
+        v-for="section in doc.childNodes"
+        :class="[section.class]"
       >
         <Vessel
-          :key="unit.guid"
-          :unit="unit"
-          v-for="unit in line.childNodes"
-        ></Vessel>
-      </Vessel>
+          :key="line.guid"
+          type="line"
+          :unit="line"
+          v-for="line in section.childNodes"
+        >
+          <Vessel
+            :key="unit.guid"
+            :unit="unit"
+            v-for="unit in line.childNodes"
+          ></Vessel>
+        </Vessel>
+      </div>
     </div>
   </div>
 </template>
@@ -65,7 +72,6 @@ export default {
     // test
   },
   created() {
-
     let doc = new Doc();
     this.doc = doc;
     this.$nextTick(() => {

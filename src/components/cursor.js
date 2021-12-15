@@ -1,5 +1,5 @@
 
-import Node from '@/lib/node';
+import Base from '@/lib/base';
 import { computedRangeClientBoundary, computedClientBoundaryByOffset } from "@/util/computed";
 import { getTextNode, getComputedStyle, getScroll } from "@/util/dom";
 import Tabs from '@/lib/tabs.js';
@@ -7,9 +7,9 @@ import {
     getRange
 } from '@/util/range';
 
-export default class Cursor extends Node {
-    constructor(params) {
-        super(params);
+export default class Cursor extends Base {
+    constructor(doc) {
+        super();
         this.offset = -1;
         this.left = undefined;
         this.top = undefined;
@@ -26,6 +26,10 @@ export default class Cursor extends Node {
         this.locked = false;
         // 绑定的dom
         this.__el__ = null;
+        this.doc = doc;
+    }
+    focus() {
+        this.__el__ && this.__el__.focus();
     }
     reset() {
         this.empty();
@@ -87,19 +91,19 @@ export default class Cursor extends Node {
             let textNode = getTextNode(this.dom);
             
             this._boundary = computedClientBoundaryByOffset(textNode, offset);
-            console.log(textNode, offset, 'offset', this.dom);
         }
+        console.log(this._boundary)
         this.setCursor(this._boundary);
     }
     set(dom, offset) {
         if(this.locked) return;
         this.empty();
         let textNode = getTextNode(dom);
-       
-
         this.offset = offset;
         let boundary = computedClientBoundaryByOffset(textNode, offset);
         this.setByBoundary(boundary);
+        // this.__el__.focus();
+        this.__el__.focus();
     }
 
 
@@ -130,7 +134,7 @@ export default class Cursor extends Node {
         if (this.__el__) {
             this.__el__.value = '';
         }
-
+        this.emptyInput();
         this.empty();
         let textNode = getTextNode(e.target);
         let boundary = computedRangeClientBoundary(
@@ -141,7 +145,7 @@ export default class Cursor extends Node {
             textNode
         );
         this.setByBoundary(boundary);
-        console.log(e.target.__unit__.textContent)
+        // console.log(e.target.__unit__.textContent)
         this.__el__.focus();
 
 
@@ -151,14 +155,19 @@ export default class Cursor extends Node {
 
     setCursor(boundary) {
         if(this.locked) return;
+        if(!boundary) return;
+        // console.log(boundary.range,  document.body.scrollTop, 'top')
         if (!boundary.range) return;
+        // this.emptyInput();
         let { x, y, height } = boundary.rect;
-        let scrollTop = document.body.scrollTop || 0;
-        let scrollLeft = document.body.scrollLeft || 0;
+        let scrollTop = this.doc.__el__.scrollTop || 0;
+        let scrollLeft = this.doc.__el__.scrollLeft || 0;
+        let docRect = this.doc.rect;
         let top = (height - this.height) / 2 + y + scrollTop;
-        this.left = x + scrollLeft;
-        this.top = top;
+        this.left = x + scrollLeft - docRect.left;
+        this.top = top - docRect.top;
         this.offset = boundary.offset;
+        
 
 
 
@@ -167,7 +176,7 @@ export default class Cursor extends Node {
     setCursorAccordWithCursor(cursor, referenceLine) {
        
         let range = getRange();
-        let scrollLeft = document.body.scrollLeft || 0;
+        let scrollLeft = this.doc.__el__.scrollLeft || 0;
         let isSet = false;
         let _cursor = null;
         referenceLine.childNodes.find(Unit => {

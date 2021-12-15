@@ -1,6 +1,7 @@
 import Base from './base';
 import {
-    guid
+    guid,
+    getProperty
 } from '../util/index';
 import {
     getTextNode,
@@ -9,6 +10,7 @@ import {
 import {
     getRange
 } from '@/util/range';
+import Tabs from '@/lib/tabs.js';
 export default class Node extends Base {
     constructor(options, update = false) {
         super();
@@ -35,6 +37,59 @@ export default class Node extends Base {
         }
 
 
+    }
+
+    get D() {
+        let nodeType = this.nodeType; 
+        if(nodeType == 'unit') {
+            return this.parentNode.parentNode.parentNode;
+        }
+        if(nodeType == 'line') {
+            return this.parentNode.parentNode;
+        }
+        if(nodeType == 'section') {
+            return this.parentNode;
+        }
+        if(nodeType == 'doc') {
+            return this;
+        }
+
+        return null;
+
+    }
+    get S() {
+        let nodeType = this.nodeType; 
+        if(nodeType == 'unit') {
+            return this.parentNode.parentNode;
+        }
+        if(nodeType == 'line') {
+            return this.parentNode;
+        }
+        if(nodeType == 'section') {
+            return this;
+        }
+
+        return null;
+    }
+
+    get L() {
+        let nodeType = this.nodeType;
+        if(nodeType == 'unit') {
+            return this.parentNode;
+        }
+        if(nodeType == 'line') {
+            return this;
+        }
+        return null;
+
+    }
+
+    get U() {
+        let nodeType = this.nodeType;
+        if(nodeType!='unit') {
+            return null;
+        }
+        return this;
     }
 
     getText() {
@@ -83,27 +138,63 @@ export default class Node extends Base {
 
     }
 
-    getPreviousSameNodeTypeNode() {
-        // let _this = this;
-        // let node = _this.previousSibling;
-        // if (node) return node;
-        // let prevParent = node.parentNode.previousSibling;
+
+
+
+    isPlaceholder() {
+        return this.textContent == Tabs.space;
+    }
+    isBlank() {
         
+        return this.textContent == '';
+    }
+
+
+
+    /**
+     * 
+     * 
+     * 
+     * ||||||||||||
+     * 
+     */
+
+    getPreviousSameNodeTypeNode() {
+        let _this = this;
+        let node = _this.previousSibling;
+       
+        if (node) return node;
+        let level = 0;
+        while (node = _this.parentNode) {
+            level++;
+            if (!node.previousSibling) {
+                _this = node;
+                // node = _parent.parentNode;
+            } else {
+
+                return getProperty(node.previousSibling, new Array(level).fill('lastChild').join('.'))
+            }
+        }
+        return null;
+
+
+        // let prevParent = node.parentNode.previousSibling;
+
         // while(!prevParent && node.parentNode) {
         //     node = node.parentNode;
         //     prevParent = node.parentNode
-            
-            
+
+
         // }
         // if (prevParent) {
         //     node = prevParent.lastChild;
         // } 
 
 
-      
+
     }
     // 搜索节点之前所有nodetype一样的node
-    getPreviousSameNodeTypeNodes(callback = () => {}) {
+    getPreviousSameNodeTypeNodes(callback = () => { }) {
         let _this = this;
         let node = _this.previousSibling;
         while (node) {
@@ -119,7 +210,7 @@ export default class Node extends Base {
         }
     }
 
-    getNextSameNodeTypeNodes(callback = () => {}) {
+    getNextSameNodeTypeNodes(callback = () => { }) {
         let _this = this;
         let node = _this.nextSibling;
         while (node) {
@@ -161,6 +252,9 @@ export default class Node extends Base {
         node.guid = guid();
         return node;
     }
+
+
+    
 
     insertBefore(newNode, referenceNode) {
         let idx = this.childNodes.findIndex(node => node == referenceNode);
