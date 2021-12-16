@@ -163,7 +163,9 @@ export default class Cursor extends Base {
         let scrollTop = this.doc.__el__.scrollTop || 0;
         let scrollLeft = this.doc.__el__.scrollLeft || 0;
         let docRect = this.doc.rect;
-        let top = (height - this.height) / 2 + y + scrollTop;
+        console.log(-Math.abs(height - this.height) / 2)
+        
+        let top = -Math.abs(height - this.height) / 2 + y + scrollTop;
         this.left = x + scrollLeft - docRect.left;
         this.top = top - docRect.top;
         this.offset = boundary.offset;

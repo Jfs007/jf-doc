@@ -52,16 +52,10 @@ export default class Doc extends Node {
                         this.cursor.set(unit.__el__, offset);
                         this.cursor.emptyInput()
                     }
-
-                    // let nodeType = 
-                    // this.cursor.set(e.target.__unit__)
                 } else {
 
                     this.cursor.place(e);
                 }
-
-
-
             } else {
                 this.cursor.closeComposition();
                 this.cursor.emptyInput();
@@ -78,7 +72,7 @@ export default class Doc extends Node {
         this.init(config);
     }
 
-    nextTick(callback = () => {}) {
+    nextTick(callback = () => { }) {
         setTimeout(callback, 0)
     }
 
@@ -122,15 +116,12 @@ export default class Doc extends Node {
         });
         let unit23 = new Unit({
 
-            text: '吵董小姐，你从没忘记你的微'
+            text: '吵董小姐，你从没忘记你的微这首歌深夜写给黄淮，我用那无悔时光来填满，看着那无忧无互的神火，抹布洗，啦啦啦，这是一首简单的小情歌，唱着人们心中的白鸽'
         });
         line1.appendChild(unit1);
         line1.appendChild(unit2);
         line1.appendChild(unit3);
         section1.appendChild(line1);
-        console.log(section1, 'secetion1')
-
-
         line2.appendChild(unit21);
         line2.appendChild(unit22);
         line2.appendChild(unit23);
@@ -156,11 +147,18 @@ export default class Doc extends Node {
     }) {
         this.__el__ = doc;
         this.cursor.__el__ = cursor;
+        this.breakWord();
         this.drawRect();
         this.bind();
+
     }
     drawRect() {
         this.rect = this.__el__.getBoundingClientRect();
+    }
+    breakWord() {
+        this.childNodes.map(section => {
+            section.breakWord2()
+        })
     }
     bind() {
         let cursor = this.cursor.__el__;
@@ -186,14 +184,6 @@ export default class Doc extends Node {
                 }
                 offset = -1;
                 if (!composition) {
-                    // let movePrev = this.cursor.node.L.textContent.length == 1 && this.cursor.offset == 1
-
-
-                    // if(movePrev) {
-                    //     this.cursor.node.deleteText(this.cursor, Math.abs(offset));
-                    // }
-
-
                     if (this.cursor.offset == 0) {
                         // 判断上一个node是否存在
                         if (previousSibling) {
@@ -210,55 +200,28 @@ export default class Doc extends Node {
                                 // 如果为占位符行 (空行) 则依旧在当前行 不换行
                                 if (node.L.isPlaceholder()) {
                                     node.D.removeChild(node.S);
-                                    console.log(this.cursor.node)
-                                    // if (this.cursor.node.L.isBlank()) {
-                                        
-                                        offset = 0;
-                                        this.cursor.offset = 0;
-                                        if(this.cursor.node.L.isBlank()) {
-                                            this.cursor.node.placeholder();
-                                        }
-                                       
-                                    // }
-
+                                    offset = 0;
+                                    this.cursor.offset = 0;
+                                    if (this.cursor.node.L.isBlank()) {
+                                        this.cursor.node.placeholder();
+                                    }
                                 } else {
                                     if (this.cursor.node.L.isPlaceholder()) {
                                         this.cursor.node.S.removeChild(this.cursor.node.L)
                                     }
                                     this.cursor.set(node.L.lastChild.__el__, node.L.lastChild.getTextLength());
-
-
                                 }
                             } else {
                                 offset = 0;
-                                console.log('place')
                                 this.cursor.node.placeholder();
-
-                                //    if(this.D.isBlank()) {
-
-                                //     this.cursor.node.placeholder();
-                                //    }
                             }
                         }
                     }
-                    // console.log(this.cursor.node.text, this.cursor.node.isPlaceholder())
                     // 不是占位符行(空行)
                     this.cursor.node.deleteText(this.cursor, Math.abs(offset));
                     if (this.cursor.node.L.isBlank()) {
-                        console.log('place')
                         this.cursor.node.placeholder()
                     }
-                    // if(!this.cursor.node.isPlaceholder()) {
-
-                    //     this.cursor.node.deleteText(this.cursor, Math.abs(offset));
-                    // }else {
-
-
-                    // }
-
-                    // if (this.cursor.offset == 0 && !previousSibling) {
-                    //     // return;
-                    // }
                 }
 
             } else if (KeyCodeName == 'Enter') {
@@ -304,7 +267,6 @@ export default class Doc extends Node {
                 if (KeyCodeName == 'ArrowUp') {
 
                     let Line = this.cursor.node.parentNode;
-                    // console.log(Line.previousSibling, 'nnode', Line);
                     if (!Line.previousSibling) {
                         let Section = Line.parentNode;
                         Line = Section.previousSibling ? Section.previousSibling.lastChild : null;
@@ -312,8 +274,6 @@ export default class Doc extends Node {
                         Line = Line.previousSibling;
                     };
                     this.cursor.setCursorAccordWithCursor(this.cursor, Line);
-                    // this.cursor.set(_cursor.node.__el__, _cursor.offset)
-
                 }
                 if (KeyCodeName == 'ArrowDown') {
                     let Line = this.cursor.node.parentNode;
@@ -330,11 +290,7 @@ export default class Doc extends Node {
                     if (Line) {
                         this.cursor.setCursorAccordWithCursor(this.cursor, Line);
                     }
-
-
-                    // this.cursor.set(_cursor.node.__el__, _cursor.offset)
                 }
-                // let textoff = 
             }
 
 
@@ -360,7 +316,6 @@ export default class Doc extends Node {
             let firstCompositionPrev = null;
             if (composition == 'update') {
                 this.cursor.node.text = this.cursor.oldInput;
-                console.log(this.cursor.node.text, 'text')
                 offset = 0;
                 // 清空其余的composition 文档只允许存在一个composition?
                 // firstCompositionPrev = this.cursor.node.compositionOtherEmpty(this.cursor);
@@ -379,7 +334,6 @@ export default class Doc extends Node {
 
                 }
                 let _cursor = this.cursor;
-                // r
                 let breakword = this.cursor.node.S.breakWord2(_cursor);
                 if (breakword.breaks.length) {
                     let _break = breakword.breaks[0];
@@ -391,12 +345,8 @@ export default class Doc extends Node {
                         })
 
                     }
-
                 }
-
             })
-
-
         });
         this.events.on(cursor, 'compositionstart', (e) => {
             this.cursor.emptyInput()
@@ -418,8 +368,6 @@ export default class Doc extends Node {
             let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
             this.cursor.node.compositionEnd(this.cursor);
             this.cursor.closeComposition();
-            // console.log('oooo')
-
             this.nextTick(_ => {
                 this.cursor.update(offset);
             })

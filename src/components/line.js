@@ -36,7 +36,9 @@ export default class Line extends Node {
     }
     startInsertUnits(units) {
         let firstChild = this.firstChild;
+        let v = Date.now();
         units.map(unit => {
+            console.log(unit.text, 'unit', v, firstChild, this.guid,)
             if(unit.isBlank()) return;
             if (firstChild) {
                 if (firstChild.guid == unit.guid) {
@@ -44,7 +46,7 @@ export default class Line extends Node {
                 } else {
                     this.insertBefore(unit, firstChild);
                 }
-                firstChild = unit;
+                // firstChild = unit;
             } else {
                 this.appendChild(unit)
             }
@@ -103,24 +105,27 @@ export default class Line extends Node {
         let prevContentRect = null;
         let abountNodes = [];
         let firstContentRect = null;
-
+        
         for (let i = isAsc ? 0 : this.childNodes.length - 1;
             (isAsc ? i < this.childNodes.length : i >= 0);
             (isAsc ? i++ : i--)) {
 
             let node = this.childNodes[i];
             // console.log(node, 'node', this.childNodes, this.__el__)
-            let text = node.getText();
-            let textLength = node.getTextLength();
+            let text = node.__el__.textContent;
+            // let text = node.getText();
+            let textLength = text.length;
             abountNodes[isAsc ? 'push' : 'unshift'](node);
+           
             if(node.isBlank()) {
                 continue;
             }
+            
             for (let offset = isAsc ? 0 : textLength;
                 (isAsc ? offset <= textLength : offset >= 0);
                 (isAsc ? offset++ : offset--)) {
                 let _boundary = computedClientBoundaryByOffset(getTextNode(node.__el__), offset, isAsc ? 'left' : 'right', range);
-
+                // console.log(node.__el__, offset)
 
                 let x = _boundary.rect.x - lineRect.x;
                 

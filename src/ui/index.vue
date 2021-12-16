@@ -5,14 +5,18 @@
   width: 400px;
   overflow-y: overlay;
   position: relative;
-  border: 1px solid #333333;
-  border-radius: 10px;
+  color: #606266;
+  background-color: #fff;
+  background-image: none;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
   box-sizing: border-box;
-   padding: 8px;
+  padding: 8px;
+
 }
 .jf-doc {
-  
-  font-size: 15px;
+  font-size: 13px;
+  line-height: 1.5;
   font-family: Arial, "Microsoft YaHei", "微软雅黑", "黑体", Heiti, sans-serif,
     SimSun, "宋体", serif;
   color: #333333;

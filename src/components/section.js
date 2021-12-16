@@ -55,27 +55,27 @@ export default class Section extends Node {
             cloneNode.guid = node.guid;
             cloneLine.appendChild(cloneNode);
 
-        }else {
+        } else {
             let text = node.text;
             node.text = text.slice(0, offset);
             let cloneNode = node.cloneNode();
             cloneNode.guid = node.guid;
-            cloneNode.text = text.slice(offset);  
+            cloneNode.text = text.slice(offset);
             // node = cloneNode;
             cloneLine.appendChild(cloneNode);
         }
         node = node.nextSibling;
-        while(!!node) {
+        while (!!node) {
             let _node_ = node;
             node = node.nextSibling;
             Line.removeChild(_node_);
             cloneLine.appendChild(_node_.cloneNode());
         }
-        if(cloneLine.childNodes.length == 1 && cloneLine.childNodes[0].isBlank()) {
+        if (cloneLine.childNodes.length == 1 && cloneLine.childNodes[0].isBlank()) {
             cloneLine.childNodes[0].text = Tabs.space;
         }
-        if(Line.childNodes.length == 0) {
-          
+        if (Line.childNodes.length == 0) {
+
             let clone = cursor.node.cloneNode();
             clone.text = Tabs.space;
             Line.appendChild(clone)
@@ -83,21 +83,21 @@ export default class Section extends Node {
         cloneSection.appendChild(cloneLine);
         let cLine = Line.nextSibling;
         // console.log(cLine.nextSibling, 'cLine')
-        while(!!cLine) {
+        while (!!cLine) {
             let _cline_ = cLine;
-            cLine = cLine.nextSibling; 
+            cLine = cLine.nextSibling;
             this.removeChild(_cline_);
             cloneSection.appendChild(_cline_);
         }
-        if(!this.nextSibling) {
+        if (!this.nextSibling) {
             doc.appendChild(cloneSection);
-        }else {
+        } else {
             doc.insertBefore(cloneSection, this.nextSibling);
         }
 
         return cloneLine;
-       
-       
+
+
 
 
 
@@ -119,12 +119,11 @@ export default class Section extends Node {
         let Section = Line.parentNode;
         let breakword = new breakWord();
         let renderQueue = [];
-        // while(Line. )
-        // console.log('overflow::', Line.isOverflow(), 'line', Line)
-        if (!Line.isOverflow()) {
+        function complement() {
+            console.log('bbendan1')
             let isBlank = true;
             breakword.type = 'blank'
-
+            let blank = 0;
             while (isBlank && Line) {
                 let nextLine = Line.nextSibling;
                 if (nextLine) {
@@ -134,7 +133,7 @@ export default class Section extends Node {
                     let {
                         rect
                     } = computedClientBoundaryByOffset(getTextNode(lastChild.__el__), offset, 'right', range);
-                    let blank = clientWidth - (rect.x - lineRect.x);
+                    blank = clientWidth - (rect.x - lineRect.x);
                     // overOrBlankWidth = blank;
                     let content = nextLine.getAccordWithContentRect(({
                         x
@@ -177,51 +176,74 @@ export default class Section extends Node {
                     }
                     Line.appendUnits(nodes);
                     Line = Line.nextSibling;
+                  
                     // console.log(Line.childNodes[0].guid, 'text', Line.lastChild.guid, Line.guid, Line.nextSibling);
                 } else {
                     isBlank = false;
+                    console.log(Line, 'Line')
+                    overOrBlankWidth = -blank;
+                    console.log(overOrBlankWidth, '----')
+                    over();
                 }
             }
             return breakword;
-        } else {
+
+        }
+
+        function over() {
             breakword.type = 'overflow';
             let isOverflow = true;
             while (isOverflow) {
                 let nextLine = Line.nextSibling;
+                // if(Line.__new__ == 1) {
 
+                // }
                 let content = Line.getAccordWithContentRect(({
                     x,
+                    text,
+                    offset
                 }) => {
+                    // console.log(x, overOrBlankWidth, 'over', clientWidth, text[offset], text[offset - (Line.__over__ ? Line.__over__.offset : 0)], text, '---');
                     if (x + overOrBlankWidth < clientWidth) {
                         return true;
                     }
                 }, 'desc');
-                // 说明没有发生overflow
-                console.log('over');
                 if (!content.prev) {
                     isOverflow = false;
                     break;
                 }
                 breakword.push(content);
-
-                overOrBlankWidth = content.first.x - content.x;
-                // console.log(content, 'conten')
+                // console.log(content, 'content')
+                if (!nextLine) {
+                    // console.log(-content.x)
+                    overOrBlankWidth = -content.x;
+                } else {
+                    overOrBlankWidth = content.first.x - content.x;
+                }
+               
+                
                 let prev = content;
+                // overEle = prev[0]
                 let content_offset = prev.offset;
+                
+
                 let nodes = prev.nodes.map((node, index) => {
                     if (index == 0) {
+
                         if (content_offset == 0) {
                             Line.removeChild(node);
                             return node;
                         } else {
-                            let text = node.text;
-                            node.text = text.slice(0, content_offset);
+                            let text = node.__el__.textContent;
+                            let __over__ = Line.__over__ || {}
+                            node.text = text.slice(__over__.offset || 0, content_offset);
                             if (node.isBlank()) {
                                 Line.removeChild(node);
                             }
                             let clone = node.cloneNode();
                             clone.guid = node.guid;
                             clone.text = text.slice(content_offset);
+                            console.log(text, 'offset: ', __over__.offset, 'content_offset', content_offset,  'node: ', node.text, 'clone: ',clone.text)
                             return clone;
                         }
                     } else {
@@ -229,25 +251,58 @@ export default class Section extends Node {
                         return node;
                     }
                 });
-                // isOverflow = false;
+              
                 if (!nextLine) {
                     let newLine = Line.cloneNode();
                     newLine.emptyChildNodes();
                     Section.appendChild(newLine);
+ 
                     newLine.startInsertUnits(nodes);
                     nextLine = newLine;
-                    isOverflow = false;
 
+                    newLine.__new__ = 1;
+                    let __over__ = nextLine.previousSibling.__over__ || {};
+                    let guid = prev.nodes[prev.nodes.length - 1] ? prev.nodes[prev.nodes.length - 1].guid : null;
+                    console.log('分割节点的guid', guid)
+                    newLine.__over__ = {
+                        guid,
+                        offset: __over__.guid && __over__.guid == guid ? prev.offset : 0,
+                        // offset: 0
+                    }
+                    console.log(nextLine.childNodes[0].text, 'newLines')
+                   
+
+                    renderQueue.push(_ => {
+                        newLine.__over__ = undefined;
+                    })
+                    // break;
                 } else {
                     renderQueue.push(() => {
+                        console.log('ddi')
                         nextLine.startInsertUnits(nodes);
-                    })
+                    });
+
+
+                    // if(!nextLine.isOverflow()) {
+                    //     console.log('hello')
+                    //     complement();
+                    //     isOverflow = false;
+                    // }
                 }
                 Line = nextLine;
             }
 
             renderQueue.map(queue => queue());
             return breakword;
+        }
+
+
+        // while(Line. )
+        // console.log('overflow::', Line.isOverflow(), 'line', Line)
+        if (!Line.isOverflow()) {
+            return complement()
+        } else {
+            return over();
 
         }
 
