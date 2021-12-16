@@ -1,16 +1,16 @@
 <template>
   <div id="app">
-    <index style="width: 400px;height: 400px;margin: 20px auto;"/>
+    <doc style="width: 430px;height: 400px;margin: 20px auto;"/>
   </div>
 </template>
 
 <script>
-import index from './ui/index.vue';
+import doc from './ui/index.vue';
 
 export default {
   name: 'App',
   components: {
-    index
+    doc
   }
 }
 </script>

@@ -138,7 +138,7 @@ export let computedClientBoundaryByOffset = (textNode, offset, dir = 'right', ra
             range,
             rect: {
                 y: rect.y,
-                x: rect.x,
+                x: dir == 'left' ? rect.x : rect.x + rect.width,
                 height: rect.height
             }
         }
@@ -182,7 +182,8 @@ export let computedRangeClientBoundary = (e, textNode) => {
             rect: {
                 y: rect.y,
                 x: dir == 'left' ? rect.x : rect.x + rect.width,
-                height: rect.height
+                height: rect.height,
+                _rect: rect
             },
         };
         return boundary;
@@ -201,7 +202,8 @@ export let computedRangeClientBoundary = (e, textNode) => {
                 rect: {
                     y: rect.y,
                     x: dir == 'left' ? rect.x : rect.x + rect.width,
-                    height: rect.height
+                    height: rect.height,
+                    _rect: rect
                 }
 
             };

@@ -91,6 +91,7 @@ export default class Cursor extends Base {
             let textNode = getTextNode(this.dom);
             
             this._boundary = computedClientBoundaryByOffset(textNode, offset);
+            console.log(textNode, 'text>node', this._boundary, '---')
         }
         console.log(this._boundary)
         this.setCursor(this._boundary);

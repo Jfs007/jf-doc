@@ -119,29 +119,36 @@ export default class Section extends Node {
         let Section = Line.parentNode;
         let breakword = new breakWord();
         let renderQueue = [];
+
         function complement() {
-            console.log('bbendan1')
             let isBlank = true;
             breakword.type = 'blank'
             let blank = 0;
+            let complement = 0;
+            console.info('complement')
             while (isBlank && Line) {
                 let nextLine = Line.nextSibling;
                 if (nextLine) {
                     let lastChild = Line.lastChild;
-                    // console.log(lastChild, 'lastChild', lastChild.__el__, Line.guid, 'Line')
                     let offset = lastChild ? lastChild.getTextLength() : 0;
                     let {
                         rect
                     } = computedClientBoundaryByOffset(getTextNode(lastChild.__el__), offset, 'right', range);
                     blank = clientWidth - (rect.x - lineRect.x);
                     // overOrBlankWidth = blank;
+                    console.log(blank, 'blank', lastChild, '---', rect)
+                    
                     let content = nextLine.getAccordWithContentRect(({
-                        x
+                        x,
+                        text,
+                        offset
                     }) => {
+                        
                         if (x > blank) {
                             return true;
                         }
                     });
+                    complement = content.prev ? content.prev.x : 0;
                     let prev = content.prev;
                     if (!prev) {
                         isBlank = false;
@@ -163,7 +170,7 @@ export default class Section extends Node {
                                 let clone = node.cloneNode();
                                 clone.guid = node.guid;
                                 clone.text = text.slice(0, content_offset);
-
+                                node.__el__.__over__ = content_offset;
                                 return clone;
                             }
                         } else {
@@ -180,9 +187,7 @@ export default class Section extends Node {
                     // console.log(Line.childNodes[0].guid, 'text', Line.lastChild.guid, Line.guid, Line.nextSibling);
                 } else {
                     isBlank = false;
-                    console.log(Line, 'Line')
-                    overOrBlankWidth = -blank;
-                    console.log(overOrBlankWidth, '----')
+                    overOrBlankWidth = -complement;
                     over();
                 }
             }
@@ -193,6 +198,7 @@ export default class Section extends Node {
         function over() {
             breakword.type = 'overflow';
             let isOverflow = true;
+            console.info('overflow')
             while (isOverflow) {
                 let nextLine = Line.nextSibling;
                 // if(Line.__new__ == 1) {
@@ -203,25 +209,24 @@ export default class Section extends Node {
                     text,
                     offset
                 }) => {
-                    // console.log(x, overOrBlankWidth, 'over', clientWidth, text[offset], text[offset - (Line.__over__ ? Line.__over__.offset : 0)], text, '---');
                     if (x + overOrBlankWidth < clientWidth) {
+                      
                         return true;
                     }
                 }, 'desc');
+                console.log(content, 'content')
                 if (!content.prev) {
-                    isOverflow = false;
+                    isOverflow = false;                             
                     break;
                 }
                 breakword.push(content);
-                // console.log(content, 'content')
+                
                 if (!nextLine) {
-                    // console.log(-content.x)
                     overOrBlankWidth = -content.x;
                 } else {
                     overOrBlankWidth = content.first.x - content.x;
                 }
                
-                
                 let prev = content;
                 // overEle = prev[0]
                 let content_offset = prev.offset;
@@ -234,16 +239,24 @@ export default class Section extends Node {
                             Line.removeChild(node);
                             return node;
                         } else {
+                            if(!node.isText()) {
+                                let clone = node.cloneNode();
+                                clone.guid = node.guid;
+                                Line.removeChild(node);
+                                return clone;
+                            }
                             let text = node.__el__.textContent;
-                            let __over__ = Line.__over__ || {}
-                            node.text = text.slice(__over__.offset || 0, content_offset);
+                            node.text = text.slice(node.__el__.__over__ || 0, content_offset);
                             if (node.isBlank()) {
                                 Line.removeChild(node);
                             }
                             let clone = node.cloneNode();
                             clone.guid = node.guid;
                             clone.text = text.slice(content_offset);
-                            console.log(text, 'offset: ', __over__.offset, 'content_offset', content_offset,  'node: ', node.text, 'clone: ',clone.text)
+                            node.__el__.__over__ = content_offset;
+                            renderQueue.push(() => {
+                                node.__el__.__over__ = undefined;
+                            })
                             return clone;
                         }
                     } else {
@@ -260,45 +273,18 @@ export default class Section extends Node {
                     newLine.startInsertUnits(nodes);
                     nextLine = newLine;
 
-                    newLine.__new__ = 1;
-                    let __over__ = nextLine.previousSibling.__over__ || {};
-                    let guid = prev.nodes[prev.nodes.length - 1] ? prev.nodes[prev.nodes.length - 1].guid : null;
-                    console.log('分割节点的guid', guid)
-                    newLine.__over__ = {
-                        guid,
-                        offset: __over__.guid && __over__.guid == guid ? prev.offset : 0,
-                        // offset: 0
-                    }
-                    console.log(nextLine.childNodes[0].text, 'newLines')
-                   
-
-                    renderQueue.push(_ => {
-                        newLine.__over__ = undefined;
-                    })
                     // break;
                 } else {
                     renderQueue.push(() => {
-                        console.log('ddi')
                         nextLine.startInsertUnits(nodes);
                     });
-
-
-                    // if(!nextLine.isOverflow()) {
-                    //     console.log('hello')
-                    //     complement();
-                    //     isOverflow = false;
-                    // }
                 }
                 Line = nextLine;
             }
-
             renderQueue.map(queue => queue());
             return breakword;
         }
 
-
-        // while(Line. )
-        // console.log('overflow::', Line.isOverflow(), 'line', Line)
         if (!Line.isOverflow()) {
             return complement()
         } else {

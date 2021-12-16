@@ -16,8 +16,10 @@ export default class Unit extends Node {
         // 文本
         this.text = options.text;
         this.isRange = options.isRange;
-        // 类型 composition / text composition表示输入法类型
+        // 类型  text composition表示输入法类型
         this.type = options.type || 'text';
+        // composition表示正在输入法
+        this.is_composition = false;
         // 标记 delete 
         this.remark = options.remark || '';
         this.linespacing = options.linespacing || ''
@@ -43,6 +45,18 @@ export default class Unit extends Node {
             this.sceneSupport = ['comment'];
         }
 
+       
+
+    }
+
+    get safeText() {
+        return this.__el__ ? this.__el__.textContent : this.text;
+    }
+    get safeTextLength() {
+        if(this.isText()) {
+            return this.safeText.length;
+        }
+        return 1;
     }
     isLineFeed() {
         return this.text == '\n'
@@ -51,7 +65,7 @@ export default class Unit extends Node {
         return this.type == 'text';
     }
     isComposition() {
-        return this.type == 'composition';
+        return this.is_composition && this.isText();
     }
     isImage() {
         return this.type == 'image';
@@ -60,6 +74,7 @@ export default class Unit extends Node {
         return this.type == 'carousel'
     }
     isBlank() {
+        if(this.isImage()) return false;
         return this.text == '';
     }
     isPlaceholder() {
@@ -121,7 +136,7 @@ export default class Unit extends Node {
     }
 
     getTextLength() {
-        if (this.isText() || this.isComposition()) {
+        if (this.isText()) {
             return +this.text.length;
         }
         return 0;
@@ -205,7 +220,7 @@ export default class Unit extends Node {
         noderight.text = right;
         let composition = this.cloneNode();
         composition.text = '';
-        composition.type = 'composition';
+        composition.is_composition = true;
         this.parentNode.insertBefore(nodeleft, this);
         this.parentNode.insertBefore(composition, this);
         this.parentNode.insertBefore(noderight, this);
@@ -224,7 +239,7 @@ export default class Unit extends Node {
         this.parentNode.removeChild(previousSibling);
         this.parentNode.removeChild(nextSibling);
         this.text = leftText + text + rightText;
-        this.type = 'text';
+        this.is_composition = false;
         return this;
     }
 

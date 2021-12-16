@@ -94,6 +94,9 @@ export default class Doc extends Node {
 
             text: '这个东西包含原生Range'
         });
+        let unit4 = new Unit({
+            type: 'image',
+        });
         let unit3 = new Unit({
 
             text: '富含自定义ui组件'
@@ -120,6 +123,7 @@ export default class Doc extends Node {
         });
         line1.appendChild(unit1);
         line1.appendChild(unit2);
+        line1.appendChild(unit4);
         line1.appendChild(unit3);
         section1.appendChild(line1);
         line2.appendChild(unit21);
@@ -325,12 +329,13 @@ export default class Doc extends Node {
             }
 
             this.nextTick(_ => {
-
+                let update_offset = offset + this.cursor.offset;
                 if (composition == 'update') {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                     // this.cursor.unlock();
                 } else {
-                    this.cursor.update(offset + this.cursor.offset);
+                   
+                    this.cursor.update(update_offset);
 
                 }
                 let _cursor = this.cursor;
@@ -344,6 +349,12 @@ export default class Doc extends Node {
                             this.cursor.set(this.cursor.node.L.nextSibling.childNodes[0].__el__, 1)
                         })
 
+                    }else {
+                        this.nextTick(() => {
+                            this.cursor.update(update_offset);
+                        })
+                        
+                        
                     }
                 }
             })
