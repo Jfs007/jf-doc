@@ -43,6 +43,7 @@ export default class Doc extends Node {
             if (this.__el__.contains(e.target)) {
                 let __unit__ = e.target.__unit__;
                 if (__unit__ && __unit__.nodeType != 'unit') {
+                    
                     let unit = __unit__.lastChild;
                     if (unit.nodeType == 'unit') {
                         let offset = unit.getTextLength();
@@ -53,7 +54,7 @@ export default class Doc extends Node {
                         this.cursor.emptyInput()
                     }
                 } else {
-
+                   
                     this.cursor.place(e);
                 }
             } else {

@@ -122,7 +122,7 @@ export default class Cursor extends Base {
             // console.log(style.lineHeight, 'lineht')
             fontSize = isNaN(fontSize) ? undefined : fontSize;
             let { height } = boundary.rect;
-            let cursor_height = fontSize ? fontSize * (1.2) : height;
+            let cursor_height = fontSize && this.node.isText() ? fontSize * (1.2) : height;
             this.height = cursor_height;
             this.setCursor(boundary);
         }
@@ -138,6 +138,7 @@ export default class Cursor extends Base {
         this.emptyInput();
         this.empty();
         let textNode = getTextNode(e.target);
+        console.log(e.target, 'e.target')
         let boundary = computedRangeClientBoundary(
             {
                 x: e.clientX,
@@ -145,6 +146,7 @@ export default class Cursor extends Base {
             },
             textNode
         );
+        console.log(boundary, 'oo')
         this.setByBoundary(boundary);
         // console.log(e.target.__unit__.textContent)
         this.__el__.focus();
