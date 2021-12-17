@@ -97,7 +97,12 @@ export default class Doc extends Node {
         });
         let unit4 = new Unit({
             type: 'image',
+            url: 'http://doc2.tongmingmedia.com/uploads/201811/avatar_1566a6c28504c915_small.jpeg'
         });
+        let unit5 = new Unit({
+            type: 'image',
+            url: 'https://starorange.xingju.top/static/img/login_logo.3c478d98.png'
+        })
         let unit3 = new Unit({
 
             text: '富含自定义ui组件'
@@ -129,7 +134,9 @@ export default class Doc extends Node {
         section1.appendChild(line1);
         line2.appendChild(unit21);
         line2.appendChild(unit22);
+        line2.appendChild(unit5);
         line2.appendChild(unit23);
+    
         section1.appendChild(line2);
         this.appendChild(section1);
         // this.appendChild(section1);

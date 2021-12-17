@@ -15,6 +15,8 @@ export default class Unit extends Node {
         this.comments = [...(options.comments || [])];
         // 文本
         this.text = options.text;
+        // 图片地址
+        this.url = options.url;
         this.isRange = options.isRange;
         // 类型  text composition表示输入法类型
         this.type = options.type || 'text';
@@ -33,6 +35,7 @@ export default class Unit extends Node {
         this._copy = [];
 
         super.init(options, update);
+        console.log(this.type, 'options');
         if(!this.isCarousel()) {
             this.comments = this.comments.filter(_ => _);
         }

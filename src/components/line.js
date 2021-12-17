@@ -22,7 +22,7 @@ export default class Line extends Node {
     appendUnits(units) {
         let lastChild = this.lastChild
         units.map(unit => {
-            if(unit.isBlank()) return;
+            if (unit.isBlank()) return;
             if (lastChild) {
                 if (lastChild.guid == unit.guid) {
                     lastChild.text = lastChild.text + unit.text;
@@ -38,7 +38,7 @@ export default class Line extends Node {
         let firstChild = this.firstChild;
         let v = Date.now();
         units.map(unit => {
-            if(unit.isBlank()) return;
+            if (unit.isBlank()) return;
             if (firstChild) {
                 if (firstChild.guid == unit.guid) {
                     firstChild.text = unit.text + firstChild.text;
@@ -61,7 +61,7 @@ export default class Line extends Node {
         return scrollWidth > clientWidth;
 
     }
- 
+
     getOverFlowUnits() {
         let range = getRange();
         let Units = this.childNodes;
@@ -70,16 +70,16 @@ export default class Line extends Node {
         let overUnits = [];
         for (let i = Units.length - 1; i >= 0; i--) {
             let Unit = Units[i];
-            let textNode = getTextNode(Unit.__el__);
+            // let textNode = getTextNode(Unit.__el__);
             let text = Unit.getText();
             for (let offset = text.length; offset >= 0; offset--) {
                 let {
                     rect
-                } = computedClientBoundaryByOffset(textNode, offset, 'right', range);
+                } = computedClientBoundaryByOffset(Unit.__el__, offset, 'right', range);
                 let x = rect.x - lineRect.x;
                 Unit.__offset__ = offset;
                 if (x <= clientWidth) {
-                    
+
                     overUnits.unshift(Unit);
                     return overUnits;
                 }
@@ -91,7 +91,7 @@ export default class Line extends Node {
     }
 
     // order = asc/desc
-    getAccordWithContentRect(callback = () => {}, order = 'asc', ) {
+    getAccordWithContentRect(callback = () => { }, order = 'asc',) {
         class ContentRect extends Base {
             constructor(options) {
                 super(options);
@@ -105,7 +105,7 @@ export default class Line extends Node {
         let prevContentRect = null;
         let abountNodes = [];
         let firstContentRect = null;
-        
+
         for (let i = isAsc ? 0 : this.childNodes.length - 1;
             (isAsc ? i < this.childNodes.length : i >= 0);
             (isAsc ? i++ : i--)) {
@@ -116,32 +116,35 @@ export default class Line extends Node {
             let textLength = node.safeTextLength;
             // node.__offset__ = 
             abountNodes[isAsc ? 'push' : 'unshift'](node);
-            
-            if(node.isBlank()) {
+
+            if (node.isBlank()) {
                 continue;
             }
-            if(node.type == 'image') {
-                console.log('hii')
 
-            }
             for (let offset = isAsc ? 0 : textLength;
                 (isAsc ? offset <= textLength : offset >= 0);
                 (isAsc ? offset++ : offset--)) {
-                let _boundary = computedClientBoundaryByOffset(getTextNode(node.__el__), offset, isAsc ? 'left' : 'right', range);
+                let _dir = isAsc ? 'left' : 'right'
+                if (!node.isText()) {
+                    _dir = 'right'
+                }
+                let _boundary = computedClientBoundaryByOffset((node.__el__), offset, _dir, range);
                 let x = _boundary.rect.x - lineRect.x;
-                
+
                 let exec = callback({
                     x: Math.abs(x),
                     clientWidth,
                     text,
-                    offset
+                    offset,
+                    node
                 });
                 if (exec) {
                     let contentRect = new ContentRect({
                         boundary: _boundary,
                         nodes: abountNodes,
                         offset,
-                        x
+                        x,
+
                     });
                     contentRect.prev = prevContentRect;
                     contentRect.first = firstContentRect;

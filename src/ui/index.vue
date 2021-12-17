@@ -54,6 +54,7 @@
           <Vessel
             :key="unit.guid"
             :unit="unit"
+            :type="unit.type"
             v-for="unit in line.childNodes"
           ></Vessel>
         </Vessel>

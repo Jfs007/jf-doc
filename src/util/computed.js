@@ -124,14 +124,15 @@ export let computedLineFeed2 = (line, callback = () => {}) => {
 }
 
 
-export let computedClientBoundaryByOffset = (textNode, offset, dir = 'right', range) => {
+export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) => {
+    let textNode = getTextNode(dom);
     range = range || getRange();
-    // console.log(textNode.textContent, '---')
-    if(!textNode.textContent.length) {
-        let node = textNode.parentNode;
-       
+    // console.log(textNode.parentNode, '---')
+    if(!textNode || !textNode.textContent.length) {
+        let node = dom;
+        console.log(dom);
         let rect = node.getBoundingClientRect();
-        // console.log(node, 'node', rect);
+       console.log('computed', dom , dir == 'left' ? rect.x : rect.x + rect.width)
         return {
             dir,
             offset,

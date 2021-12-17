@@ -133,23 +133,22 @@ export default class Section extends Node {
                     let offset = lastChild ? lastChild.getTextLength() : 0;
                     let {
                         rect
-                    } = computedClientBoundaryByOffset(getTextNode(lastChild.__el__), offset, 'right', range);
+                    } = computedClientBoundaryByOffset(lastChild.__el__, offset, 'right', range);
                     blank = clientWidth - (rect.x - lineRect.x);
-                    // overOrBlankWidth = blank;
-                    console.log(blank, 'blank', lastChild, '---', rect)
-                    
                     let content = nextLine.getAccordWithContentRect(({
                         x,
                         text,
-                        offset
+                        offset,
+                        node
                     }) => {
-                        
+                        console.log(node, 'xxx')
                         if (x > blank) {
                             return true;
                         }
                     });
                     complement = content.prev ? content.prev.x : 0;
                     let prev = content.prev;
+                    console.log(prev, 'prev', content, '---', blank)
                     if (!prev) {
                         isBlank = false;
                         break;
@@ -162,6 +161,12 @@ export default class Section extends Node {
                                 nextLine.removeChild(node);
                                 return node;
                             } else {
+                                if(!node.isText()) {
+                                    let clone = node.cloneNode();
+                                    clone.guid = node.guid;
+                                    Line.removeChild(node);
+                                    return clone;
+                                }
                                 let text = node.text;
                                 node.text = text.slice(content_offset);
                                 if (node.isBlank()) {
@@ -214,7 +219,6 @@ export default class Section extends Node {
                         return true;
                     }
                 }, 'desc');
-                console.log(content, 'content')
                 if (!content.prev) {
                     isOverflow = false;                             
                     break;

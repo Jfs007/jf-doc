@@ -6,7 +6,7 @@
 }
 </style>
 <template>
-  <span :class="[unit.isComposition() ? 'jf-unit--composition' : '']">{{ unit.text }}<br v-if="unit.isLineFeed()" /><img src="https://starorange.xingju.top/static/img/login_logo.3c478d98.png" v-if="unit.type == 'image'"/></span>
+  <span :class="[unit.isComposition() ? 'jf-unit--composition' : '']">{{ unit.text }}<br v-if="unit.isLineFeed()" /></span>
 </template>
 <script>
 export default {

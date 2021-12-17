@@ -28,6 +28,7 @@ export default {
     },
     render(h) {
        let unit = this.unit;
+       console.log(this.type, 'type')
         return h(UIs['ui-' + this.type], {
             attrs: {
                 'data-id': `${unit.guid}`,

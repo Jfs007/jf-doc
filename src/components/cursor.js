@@ -88,10 +88,10 @@ export default class Cursor extends Base {
     update(offset = undefined) {
         if(this.locked) return;
         if (typeof offset == 'number') {
-            let textNode = getTextNode(this.dom);
+            // let textNode = getTextNode(this.dom);
             
-            this._boundary = computedClientBoundaryByOffset(textNode, offset);
-            console.log(textNode, 'text>node', this._boundary, '---')
+            this._boundary = computedClientBoundaryByOffset(this.dom, offset);
+            // console.log(textNode, 'text>node', this._boundary, '---')
         }
         console.log(this._boundary)
         this.setCursor(this._boundary);
@@ -99,9 +99,9 @@ export default class Cursor extends Base {
     set(dom, offset) {
         if(this.locked) return;
         this.empty();
-        let textNode = getTextNode(dom);
+        // let textNode = getTextNode(dom);
         this.offset = offset;
-        let boundary = computedClientBoundaryByOffset(textNode, offset);
+        let boundary = computedClientBoundaryByOffset(dom, offset);
         this.setByBoundary(boundary);
         // this.__el__.focus();
         this.__el__.focus();
@@ -188,10 +188,10 @@ export default class Cursor extends Base {
             if(isSet) return true;
             for(let offset = 0; offset <= Unit.getTextLength(); offset++) {
                
-                let textNode = getTextNode(Unit.__el__);
+                // let textNode = getTextNode(Unit.__el__);
                 let {
                     rect
-                } = computedClientBoundaryByOffset(textNode, offset, 'right', range);
+                } = computedClientBoundaryByOffset(Unit.__el__, offset, 'right', range);
                 let x = rect.x + scrollLeft;
 
                 if(x >= cursor.left) {

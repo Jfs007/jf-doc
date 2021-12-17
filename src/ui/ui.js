@@ -1,6 +1,7 @@
 
 
 import Text from './text.vue';
+import Image from './image.vue'
 import Line from './line.vue';
 
 let UIs = {
@@ -12,7 +13,7 @@ export let register = (Components) => {
     })
    
 }
-register([Text, Line]);
+register([Text, Line, Image]);
 
 export default UIs;
 
