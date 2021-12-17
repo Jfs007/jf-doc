@@ -130,9 +130,8 @@ export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) 
     // console.log(textNode.parentNode, '---')
     if(!textNode || !textNode.textContent.length) {
         let node = dom;
-        console.log(dom);
         let rect = node.getBoundingClientRect();
-       console.log('computed', dom , dir == 'left' ? rect.x : rect.x + rect.width)
+    //    console.log('computed', dom , dir == 'left' ? rect.x : rect.x + rect.width)
         return {
             dir,
             offset,

@@ -89,15 +89,16 @@ export default class Doc extends Node {
         });
         let unit1 = new Unit({
 
-            text: '这是一个自定义编辑器'
+            text: '又是一个安静的晚上，一个人窝在摇椅里乘凉，我承认这样真的很安详，和楼下老爷爷一样'
         });
         let unit2 = new Unit({
 
-            text: '这个东西包含原生Range'
+            text: '听说你还在搞什么原创，搞来搞去好像也就这样，不如花点时间想想，琢磨一下模样'
         });
         let unit4 = new Unit({
-            type: 'image',
-            url: 'http://doc2.tongmingmedia.com/uploads/201811/avatar_1566a6c28504c915_small.jpeg'
+            // type: 'image',
+            // url: 'http://doc2.tongmingmedia.com/uploads/201811/avatar_1566a6c28504c915_small.jpeg'，
+            text: '1'
         });
         let unit5 = new Unit({
             type: 'image',
@@ -105,7 +106,7 @@ export default class Doc extends Node {
         })
         let unit3 = new Unit({
 
-            text: '富含自定义ui组件'
+            text: '今夜化了美美的妆(我相信是很美美的妆)，'
         });
 
 
@@ -117,15 +118,15 @@ export default class Doc extends Node {
         });
         let unit21 = new Unit({
 
-            text: 'JDs\u00a0风'
+            text: '我摇晃在舞池中央(那种体态可以想象)，'
         });
         let unit22 = new Unit({
 
-            text: '两份一样，渴望着'
+            text: '我做我的改变 又何必纠结，那就拜托别和我碰面'
         });
         let unit23 = new Unit({
 
-            text: '吵董小姐，你从没忘记你的微这首歌深夜写给黄淮，我用那无悔时光来填满，看着那无忧无互的神火，抹布洗，啦啦啦，这是一首简单的小情歌，唱着人们心中的白鸽'
+            text: '如果再看你一眼，是否还会有感觉，当年素面朝天要多纯洁就有多纯洁，不画扮熟的眼线，不用抹匀粉底液'
         });
         line1.appendChild(unit1);
         line1.appendChild(unit2);

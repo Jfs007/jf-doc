@@ -35,7 +35,6 @@ export default class Unit extends Node {
         this._copy = [];
 
         super.init(options, update);
-        console.log(this.type, 'options');
         if(!this.isCarousel()) {
             this.comments = this.comments.filter(_ => _);
         }

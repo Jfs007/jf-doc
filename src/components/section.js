@@ -141,14 +141,12 @@ export default class Section extends Node {
                         offset,
                         node
                     }) => {
-                        console.log(node, 'xxx')
                         if (x > blank) {
                             return true;
                         }
                     });
                     complement = content.prev ? content.prev.x : 0;
                     let prev = content.prev;
-                    console.log(prev, 'prev', content, '---', blank)
                     if (!prev) {
                         isBlank = false;
                         break;
@@ -215,11 +213,14 @@ export default class Section extends Node {
                     offset
                 }) => {
                     if (x + overOrBlankWidth < clientWidth) {
-                      
+                      console.log(text[offset], 'offset', overOrBlankWidth)
                         return true;
                     }
                 }, 'desc');
+                console.log(content, 'content', overOrBlankWidth);
                 if (!content.prev) {
+                    console.log('完了')
+                    // complement();
                     isOverflow = false;                             
                     break;
                 }

@@ -15,7 +15,7 @@
 
 }
 .jf-doc {
-  font-size: 22px;
+  font-size: 13px;
   line-height: 1.5;
   font-family: Arial, "Microsoft YaHei", "微软雅黑", "黑体", Heiti, sans-serif,
     SimSun, "宋体", serif;
