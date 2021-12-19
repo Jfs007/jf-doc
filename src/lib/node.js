@@ -244,6 +244,7 @@ export default class Node extends Base {
         this.childNodes = [];
         this.firstChild = null;
         this.lastChild = null;
+        return this;
     }
 
     cloneNode() {
@@ -275,6 +276,13 @@ export default class Node extends Base {
         node._solveSibling();
         this._solveLastChild();
         this._solveFirstChild();
+        return node;
+    }
+    appendChilds(nodes) {
+        nodes.map(node => {
+            this.appendChild(node);
+        });
+        return this;
     }
     removeChild(dnode) {
         let idx = this.childNodes.findIndex(node => node == dnode);

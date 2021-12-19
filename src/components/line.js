@@ -38,10 +38,14 @@ export default class Line extends Node {
         let firstChild = this.firstChild;
         let v = Date.now();
         units.map(unit => {
+            console.log(unit.__offset__, 'unit')
             if (unit.isBlank()) return;
             if (firstChild) {
                 if (firstChild.guid == unit.guid) {
                     firstChild.text = unit.text + firstChild.text;
+                    // firstChild.__offset__ = unit.__offset__;
+                    // firstChild.__x__ = unit.__x__;
+                   
                 } else {
                     this.insertBefore(unit, firstChild);
                 }
@@ -50,6 +54,7 @@ export default class Line extends Node {
                 this.appendChild(unit)
             }
         });
+
     }
 
 
@@ -58,6 +63,7 @@ export default class Line extends Node {
         let el = this.__el__;
         let clientWidth = el.clientWidth;
         let scrollWidth = el.scrollWidth;
+        console.log(clientWidth, scrollWidth, 'scrollWidth', el)
         return scrollWidth > clientWidth;
 
     }
@@ -91,7 +97,7 @@ export default class Line extends Node {
     }
 
     // order = asc/desc
-    getAccordWithContentRect(callback = () => { }, order = 'asc',) {
+    getAccordWithContentRect(callback = () => { }, order = 'asc', anchorNodes = null) {
         class ContentRect extends Base {
             constructor(options) {
                 super(options);
@@ -105,18 +111,19 @@ export default class Line extends Node {
         let prevContentRect = null;
         let abountNodes = [];
         let firstContentRect = null;
+        // console.log('childNodes',  this.childNodes)
 
         for (let i = isAsc ? 0 : this.childNodes.length - 1;
             (isAsc ? i < this.childNodes.length : i >= 0);
             (isAsc ? i++ : i--)) {
 
             let node = this.childNodes[i];
-            let text = node.safeText;
-            // let text = node.getText();
-            let textLength = node.safeTextLength;
+            let text = node.getText();
+          
+            let textLength = node.getTextLength();
             // node.__offset__ = 
             abountNodes[isAsc ? 'push' : 'unshift'](node);
-
+            console.log(text, 'text----------------')
             if (node.isBlank()) {
                 continue;
             }
@@ -128,15 +135,22 @@ export default class Line extends Node {
                 if (!node.isText()) {
                     _dir = 'right'
                 }
-                let _boundary = computedClientBoundaryByOffset((node.__el__), offset, _dir, range);
-                let x = _boundary.rect.x - lineRect.x;
+                console.log( node.__offset__, 'ddddddddddddddddddddddddddddddddddddddd', (offset + node.__offset__ || 0))
+                let _boundary = computedClientBoundaryByOffset((node.__el__), offset + (node.__offset__ || 0), _dir, range);
 
+                let x = _boundary.rect.x - lineRect.x;
+                let elx = x;
+               
+                x = node.__x__ ? x + node.__x__ : x;
                 let exec = callback({
-                    x: Math.abs(x),
+                    x: x,
                     clientWidth,
                     text,
                     offset,
-                    node
+                    node,
+                    elx
+
+                    // __x__
                 });
                 if (exec) {
                     let contentRect = new ContentRect({
@@ -144,6 +158,8 @@ export default class Line extends Node {
                         nodes: abountNodes,
                         offset,
                         x,
+                        elx
+                        // __x__
 
                     });
                     contentRect.prev = prevContentRect;
@@ -154,7 +170,9 @@ export default class Line extends Node {
                     boundary: _boundary,
                     nodes: [].concat(abountNodes),
                     offset,
-                    x
+                    x,
+                    elx
+                    // __x__
                 });
                 if (!firstContentRect) {
                     firstContentRect = prevContentRect;

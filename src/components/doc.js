@@ -101,8 +101,9 @@ export default class Doc extends Node {
             text: '1'
         });
         let unit5 = new Unit({
-            type: 'image',
-            url: 'https://starorange.xingju.top/static/img/login_logo.3c478d98.png'
+            // type: 'image',
+            // url: 'https://starorange.xingju.top/static/img/login_logo.3c478d98.png',
+            text: '2'
         })
         let unit3 = new Unit({
 
@@ -122,7 +123,7 @@ export default class Doc extends Node {
         });
         let unit22 = new Unit({
 
-            text: '我做我的改变 又何必纠结，那就拜托别和我碰面'
+            text: '我做我的改变\u00a0又何必纠结，那就拜托别和我碰面'
         });
         let unit23 = new Unit({
 
@@ -313,6 +314,7 @@ export default class Doc extends Node {
                 if (composition != 'update') {
                     this.cursor.update(offset + this.cursor.offset);
                 }
+                console.log('keycod')
                 if (!stopBreakWord) {
                     this.cursor.node.S.breakWord2(this.cursor);
                 }
@@ -348,7 +350,9 @@ export default class Doc extends Node {
 
                 }
                 let _cursor = this.cursor;
+                console.log(this.cursor.node.L.__el__.textContent)
                 let breakword = this.cursor.node.S.breakWord2(_cursor);
+                
                 if (breakword.breaks.length) {
                     let _break = breakword.breaks[0];
                     let first = _break.nodes[0];
