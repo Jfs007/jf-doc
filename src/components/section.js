@@ -231,14 +231,15 @@ export default class Section extends Node {
                 // if(Line.__new__ == 1) {
 
                 // } 
-             
+
                 let content = (Line).getAccordWithContentRect(({
                     x,
                     offset,
-                    text,elx
+                    text,
+                    elx
                 }) => {
                     console.log('%c%s', 'color:white;background: red', text, '___text___', x, '---', elx, text[offset])
-                    if (x  < clientWidth) {
+                    if (x < clientWidth) {
                         console.log('meimei')
                         return true;
                     }
@@ -250,10 +251,10 @@ export default class Section extends Node {
                     break;
                 }
                 breakword.push(content);
-                
+
                 // if (!nextLine) {
                 //     overOrBlankWidth = -content.x;
-                   
+
                 // } else {
                 //     overOrBlankWidth = content.first.x - content.x;
                 // }
@@ -264,17 +265,17 @@ export default class Section extends Node {
 
 
                 let nodes = prev.nodes.map((node, index) => {
-                   
+
                     let __x__ = node.__overed__ ? (content.first.elx - content.elx) : -content.elx;
-                    if(node.__x__ && node.__overed__) {
+                    if (node.__x__ && node.__overed__) {
                         __x__ = node.__x__ - content.x
                     }
-                    __x__ = __x__ || 0 ;
+                    __x__ = __x__ || 0;
                     // console.log('%c%s', 'color:white;background: red', __x__, content.first.__x__, content.__x__)
                     if (index == 0) {
                         if (content_offset == 0) {
                             Line.removeChild(node);
-                            node.__x__ =  __x__;
+                            node.__x__ = __x__;
                             renderQueue.push(() => {
                                 node.__x__ = undefined;
                             });
@@ -306,10 +307,10 @@ export default class Section extends Node {
                                 clone.__x__ = undefined;
                                 clone.__offset__ = undefined;
                             });
-                           
+
                             clone.__offset__ = clone.__offset__ ? clone.__offset__ + content_offset : content_offset;
                             console.log('%c%s', 'color: white;background: black', content_offset || 0, clone.__offset__)
-                            clone.__x__ =  __x__;
+                            clone.__x__ = __x__;
                             return clone;
                         }
                     } else {
@@ -328,7 +329,17 @@ export default class Section extends Node {
                     newLine.emptyChildNodes();
                     Section.appendChild(newLine);
 
-                    newLine.startInsertUnits(nodes);
+                    // newLine.startInsertUnits(nodes);
+
+
+                    let _units_ = newLine.startInsertUnits(nodes);
+                    _units_.map(node => {
+                        console.log(node, '----')
+                        renderQueue.push(() => {
+
+                            node.__offset__ = undefined;
+                        })
+                    })
                     nextLine = newLine;
 
                     // break;
@@ -345,9 +356,19 @@ export default class Section extends Node {
                             node.__x__ = undefined;
                         });
                     });
-                    console.log(nodes.map(_ => ({..._})))
-                    nextLine.startInsertUnits(nodes);
-                    
+                    console.log(nodes.map(_ => ({
+                        ..._
+                    })))
+                    let _units_ = nextLine.startInsertUnits(nodes);
+                    _units_.map(node => {
+                        console.log(node, '----')
+                        renderQueue.push(() => {
+
+                            node.__offset__ = undefined;
+                        })
+                    })
+
+
                 }
                 Line = nextLine;
                 console.log(Line, 'LIne--')

@@ -36,24 +36,28 @@ export default class Line extends Node {
     }
     startInsertUnits(units) {
         let firstChild = this.firstChild;
-        let v = Date.now();
+        let _units_ = [];
         units.map(unit => {
-            console.log(unit.__offset__, 'unit')
+            console.log(unit.text.length)
             if (unit.isBlank()) return;
             if (firstChild) {
                 if (firstChild.guid == unit.guid) {
                     firstChild.text = unit.text + firstChild.text;
-                    // firstChild.__offset__ = unit.__offset__;
+                    firstChild.__offset__ = -unit.text.length;
+                    _units_.push(firstChild);
                     // firstChild.__x__ = unit.__x__;
                    
                 } else {
                     this.insertBefore(unit, firstChild);
+                    _units_.push(unit);
                 }
                 // firstChild = unit;
             } else {
-                this.appendChild(unit)
+                this.appendChild(unit);
+                _units_.push(unit);
             }
         });
+        return _units_;
 
     }
 
@@ -135,12 +139,12 @@ export default class Line extends Node {
                 if (!node.isText()) {
                     _dir = 'right'
                 }
-                console.log( node.__offset__, 'ddddddddddddddddddddddddddddddddddddddd', (offset + node.__offset__ || 0))
+                console.log( node.__offset__, 'ddddddddddddddddddddddddddddddddddddddd', (offset + node.__offset__ || 0), node.__offset__)
                 let _boundary = computedClientBoundaryByOffset((node.__el__), offset + (node.__offset__ || 0), _dir, range);
 
                 let x = _boundary.rect.x - lineRect.x;
                 let elx = x;
-               
+                
                 x = node.__x__ ? x + node.__x__ : x;
                 let exec = callback({
                     x: x,
