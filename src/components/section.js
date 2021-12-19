@@ -226,7 +226,7 @@ export default class Section extends Node {
             console.info('overflow');
             let max = 0;
             while (isOverflow) {
-                if (max > 10) break;
+                if (max > 100) break;
                 let nextLine = Line.nextSibling;
                 // if(Line.__new__ == 1) {
 
