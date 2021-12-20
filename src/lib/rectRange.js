@@ -43,7 +43,7 @@ export default class RectRange extends Base {
         return range;
     }
 
-    getRange() {
+    getRange(callbback) {
         
     }
 }

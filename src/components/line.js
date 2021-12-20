@@ -177,12 +177,22 @@ export default class Line extends Node {
                 });
 
                 if (!this.rectRange.startNode) {
-                    this.rectRange.setStart({ node, offset, x, elx });
+                    if(isAsc) {
+                        this.rectRange.setStart({ node, offset, x, elx });
+                    }else {
+                        this.rectRange.setEnd({ node, offset, x, elx });
+                    }
+                   
                     
                 }
                 
                 if (exec) {
-                    this.rectRange.setEnd({ node, offset, x, elx });
+                    // this.rectRange.setEnd({ node, offset, x, elx });
+                    if(isAsc) {
+                        this.rectRange.setEnd({ node, offset, x, elx });
+                    }else {
+                        this.rectRange.setStart({ node, offset, x, elx });
+                    }
                     let contentRect = new ContentRect({
                         boundary: _boundary,
                         nodes: abountNodes,
