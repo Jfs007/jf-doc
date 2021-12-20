@@ -101,7 +101,7 @@ export default class Line extends Node {
     }
 
     // order = asc/desc
-    getAccordWithContentRect(callback = () => { }, order = 'asc', anchorNodes = null) {
+    getAccordWithContentRect(callback = () => {}, order = 'asc', anchorNodes = null) {
         class ContentRect extends Base {
             constructor(options) {
                 super(options);
@@ -149,7 +149,7 @@ export default class Line extends Node {
                 (isAsc ? offset <= textLength : offset >= 0);
                 (isAsc ? offset++ : offset--)) {
 
-                
+
                 let _dir = isAsc ? 'left' : 'right'
                 if (!node.isText() && !isAsc) {
                     _dir = 'right'
@@ -164,7 +164,7 @@ export default class Line extends Node {
 
 
 
-                
+
                 let exec = callback({
                     x: x,
                     clientWidth,
@@ -175,30 +175,57 @@ export default class Line extends Node {
 
                     // __x__
                 });
-
-                if (!this.rectRange.startNode) {
-                    if(isAsc) {
-                        this.rectRange.setStart({ node, offset, x, elx });
-                    }else {
-                        this.rectRange.setEnd({ node, offset, x, elx });
+                // console.log(this.rectRange.startNode, 'startNode', exec, 'exec')
+                if (!(isAsc ? this.rectRange.startNode : this.rectRange.endNode)) {
+                    if (isAsc) {
+                        this.rectRange.setStart({
+                            node,
+                            offset,
+                            x,
+                            elx
+                        });
+                    } else {
+                        this.rectRange.setEnd({
+                            node,
+                            offset,
+                            x,
+                            elx
+                        });
                     }
-                   
-                    
+
+
                 }
-                
+
                 if (exec) {
                     // this.rectRange.setEnd({ node, offset, x, elx });
-                    if(isAsc) {
-                        this.rectRange.setEnd({ node, offset, x, elx });
-                    }else {
-                        this.rectRange.setStart({ node, offset, x, elx });
+                    if (isAsc) {
+                        let {
+                            node,
+                            offset,
+                            x,
+                            elx
+                        } = prevContentRect || {};
+                        this.rectRange.setEnd({
+                            node: node || null,
+                            offset: offset || 0,
+                            x: x || 0,
+                            elx: elx || 0
+                        });
+                    } else {
+                        this.rectRange.setStart({
+                            node,
+                            offset,
+                            x,
+                            elx
+                        });
                     }
                     let contentRect = new ContentRect({
                         boundary: _boundary,
                         nodes: abountNodes,
                         offset,
                         x,
-                        elx
+                        elx,
+                        node
                         // __x__
 
                     });
@@ -214,7 +241,8 @@ export default class Line extends Node {
                     nodes: [].concat(abountNodes),
                     offset,
                     x,
-                    elx
+                    elx,
+                    node
                     // __x__
                 });
                 // }
@@ -229,6 +257,32 @@ export default class Line extends Node {
         let contentRect = new ContentRect(prevContentRect || {});
         contentRect.prev = prevContentRect;
         contentRect.first = firstContentRect;
+        if (!(isAsc ? this.rectRange.endNode : this.rectRange.startNode)) {
+            console.log(this.cloneNode().childNodes.map(node => node.cloneNode()), 'childNodes')
+            let {
+                node,
+                offset,
+                x,
+                elx
+            } = prevContentRect || {};
+            if (isAsc) {
+                this.rectRange.setEnd({
+                    node: node || null,
+                    offset: offset || 0,
+                    x: x || 0,
+                    elx: elx || 0
+                });
+            } else {
+                this.rectRange.setStart({
+                    node,
+                    offset,
+                    x,
+                    elx
+                });
+            }
+        }
+
+
         return contentRect;
 
     }

@@ -145,7 +145,7 @@ export default class Section extends Node {
                 let nextLine = Line.nextSibling;
                 if (nextLine) {
                     let lastChild = Line.lastChild;
-                    let offset = lastChild ? lastChild.getTextLength() : 0;
+                    let offset = lastChild ? lastChild.getTextLength() + (lastChild.__offset__ || 0) : 0;
                     let {
                         rect
                     } = computedClientBoundaryByOffset(lastChild.__el__, offset, 'left', range);
@@ -157,16 +157,17 @@ export default class Section extends Node {
                         offset,
                         node
                     }) => {
-                        // console.log(x, '__xx__')
                         if (x > blank) {
+                            // console.log(x, '______', text, offset)
                             return true;
                         }
                     });
-                    complement = content.prev ? content.prev.x : 0;
-                    let prev = content.prev;
-                    console.log(Line.rectRange.clone(), 'rectRange');
-                    console.log('%c%s', 'background: green;color: white', 'blank', content, lastChild.__el__, blank)
-                    if (!prev) {
+                    complement = nextLine.rectRange.endX - nextLine.rectRange.startX;
+                    // console.log(complement, 'prev')
+                    // let prev = content.prev;
+                    console.log('%c%s', 'background: green;color: white', 'complement: ', complement, Line.rectRange.clone(), 'collapsed', Line.rectRange.collapsed, blank);
+                    // console.log('%c%s', 'background: green;color: white', 'blank', content, lastChild.__el__, blank)
+                    if (nextLine.rectRange.collapsed) {
                         isBlank = false;
                         renderQueue.map(queue => queue());
                         break;
@@ -174,68 +175,45 @@ export default class Section extends Node {
                     console.log('%c%s', 'background: red;color: white', '-------', content, 'content')
 
                     // console.log(prev.nodes, 'prev-----', prev.offset, content)
-                    breakword.push(prev);
-                    let content_offset = prev.offset;
-                    let nodes = prev.nodes.map((node, index) => {
+                    // breakword.push(prev);
+                    let content_offset = nextLine.rectRange.endOffset;
+                    let nodes = nextLine.rectRange.getRange((node) => {
                         if (!node.isText()) {
                             let clone = node.cloneNode();
                             clone.guid = node.guid;
-                            if (content_offset == 0) {
-                                return clone.typed('text');
-                            } else {
-                                Line.removeChild(node);
-                                clone.__x__ = complement;
-                                renderQueue.push(_ => {
-                                    clone.__x__ = undefined;
-                                })
-
-                            }
+                            nextLine.removeChild(node);
+                            clone.__x__ = complement;
+                            renderQueue.push(_ => {
+                                clone.__x__ = undefined;
+                                clone.__el__.__over__ = undefined;
+                                clone.__offset__ = undefined;
+                            })
                             return clone;
 
                         }
-                        if (index == prev.nodes.length - 1) {
-
-
+                        if (node == nextLine.rectRange.endNode) {
                             if (content_offset == node.getTextLength()) {
                                 nextLine.removeChild(node);
                                 node.__x__ = complement;
                                 renderQueue.push(_ => {
+                                    node.__el__.__over__ = undefined;
                                     node.__x__ = undefined;
+                                    node.__offset__ = undefined;
                                 })
                                 return node;
                             } else {
-                                // if (!node.isText()) {
-                                //     let clone = node.cloneNode();
-                                //     clone.guid = node.guid;
-                                //     // console.log('-----', content_offset, 'conten t_ffe')
-                                //     if (content_offset == 0) {
-                                //         // console.log('-----')
-                                //         return clone.typed('text');
-                                //     } else {
-                                //         Line.removeChild(node);
-                                //         clone.__x__ = complement;
-                                //         renderQueue.push(_ => {
-                                //             clone.__x__ = undefined;
-                                //         })
-
-                                //     }
-
-
-                                //     return clone;
-                                // }
                                 let text = node.text;
                                 node.text = text.slice(content_offset);
                                 if (node.isBlank()) {
-                                    Line.removeChild(node);
+                                    nextLine.removeChild(node);
                                 }
                                 let clone = node.cloneNode();
                                 clone.guid = node.guid;
                                 clone.text = text.slice(0, content_offset);
                                 node.__el__.__over__ = content_offset;
                                 clone.__x__ = complement;
-
                                 node.__offset__ = node.__offset__ ? node.__offset__ + content_offset : content_offset;
-                                console.log('%c%s', 'background: black;color: white', node.__offset__)
+                                // console.log('%c%s', 'background: black;color: white', node.__offset__)
                                 renderQueue.push(_ => {
                                     node.__el__.__over__ = undefined;
                                     clone.__x__ = undefined;
@@ -324,7 +302,7 @@ export default class Section extends Node {
                         __x__ = node.__x__ - content.x
                     }
                     __x__ = __x__ || 0;
-                   
+
 
                     if (index == 0) {
                         if (content_offset == 0) {
@@ -363,7 +341,7 @@ export default class Section extends Node {
                                 clone.__x__ = undefined;
                                 clone.__offset__ = undefined;
                                 clone.__overed__ = undefined;
-                                
+
                             });
 
                             clone.__offset__ = clone.__offset__ ? clone.__offset__ + content_offset : content_offset;
@@ -376,7 +354,7 @@ export default class Section extends Node {
                         node.__x__ = __x__;
                         renderQueue.push(() => {
                             node.__x__ = undefined;
-                            
+
                         });
                         return node;
                     }
@@ -386,7 +364,7 @@ export default class Section extends Node {
                 if (!nextLine) {
                     let newLine = Line.cloneNode();
                     newLine.emptyChildNodes();
-                    
+
                     let _units_ = newLine.startInsertUnits(nodes);
                     _units_.map(node => {
                         renderQueue.push(() => {

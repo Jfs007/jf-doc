@@ -15,6 +15,9 @@ export default class RectRange extends Base {
 
         super.init(options);
     }
+    get collapsed() {
+        return this.startNode == this.endNode && this.startOffset == this.endNode;
+    }
     reset() {
         this.startNode = null;
         this.endNode = null;
@@ -43,7 +46,25 @@ export default class RectRange extends Base {
         return range;
     }
 
-    getRange(callbback) {
-        
+    getRange(callback = () => {}) {
+        let startNode = this.startNode;
+        let endNode = this.endNode;
+        let index = 0;
+        let nodes = [];
+        if(startNode == endNode && this.endOffset == 0) return [];
+        let node = callback(startNode, index);
+        index++;
+        if(node) nodes.push(node);
+        if(startNode == endNode) return nodes;
+        startNode = startNode.nextSibling;
+        while(startNode) {
+            if(startNode == endNode && this.endOffset == 0) break;
+            let node = callback(startNode, index);
+            index++;
+            if(node) nodes.push(node);
+            if(startNode == endNode) break;
+            startNode = startNode.nextSibling;
+        };
+        return nodes;
     }
 }
