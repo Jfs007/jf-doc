@@ -283,7 +283,7 @@ export default class Section extends Node {
                 // if(Line.__new__ == 1) {
 
                 // } 
-                console.log(Line.childNodes.length, 'l')
+                // console.log(Line.childNodes.length, 'l')
                 let content = (Line).getAccordWithContentRect(({
                     x,
                     offset,
@@ -300,7 +300,7 @@ export default class Section extends Node {
                     isOverflow = false;
                     break;
                 }
-                // console.log(Line.rectRange.clone(), 'rectRange');
+                console.log(Line.rectRange.clone(), 'rectRange');
                 breakword.push(content);
 
                 // if (!nextLine) {
@@ -319,7 +319,7 @@ export default class Section extends Node {
 
                     let __x__ = node.__overed__ ? (content.first.elx - content.elx) : -content.elx;
 
-                    console.log(__x__, 'x__', node.__overed__, content.elx)
+                    // console.log(__x__, 'x__', node.__overed__, content.elx)
                     if (node.__x__ && node.__overed__) {
                         __x__ = node.__x__ - content.x
                     }
