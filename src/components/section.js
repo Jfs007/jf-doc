@@ -148,7 +148,7 @@ export default class Section extends Node {
                     let offset = lastChild ? lastChild.getTextLength() + (lastChild.__offset__ || 0) : 0;
                     let {
                         rect
-                    } = computedClientBoundaryByOffset(lastChild.__el__, offset, 'left', range);
+                    } = computedClientBoundaryByOffset(lastChild.__el__, lastChild.isText() ? offset : 1, 'left', range);
                     blank = clientWidth - (rect.x - complement - lineRect.x);
 
                     let content = nextLine.getAccordWithContentRect(({
