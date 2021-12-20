@@ -96,14 +96,14 @@ export default class Doc extends Node {
             text: '听说你还在搞什么原创，搞来搞去好像也就这样，不如花点时间想想，琢磨一下模样'
         });
         let unit4 = new Unit({
-            // type: 'image',
-            // url: 'http://doc2.tongmingmedia.com/uploads/201811/avatar_1566a6c28504c915_small.jpeg'，
-            text: '1'
+            type: 'image',
+            url: 'http://doc2.tongmingmedia.com/uploads/201811/avatar_1566a6c28504c915_small.jpeg'
+            // text: '1'
         });
         let unit5 = new Unit({
-            // type: 'image',
-            // url: 'https://starorange.xingju.top/static/img/login_logo.3c478d98.png',
-            text: '2'
+            type: 'image',
+            url: 'https://starorange.xingju.top/static/img/login_logo.3c478d98.png',
+            // text: '2'
         })
         let unit3 = new Unit({
 
@@ -242,11 +242,26 @@ export default class Doc extends Node {
                 accord = false;
                 stopBreakWord = true;
                 let Line = this.cursor.node.S.insetSection(this.cursor);
+             
+                if(!Line.childNodes.length) {
+                    this.cursor.set(Line.nextSibling.childNodes[0].__el__, 0);
+                    return;
+                } 
+                
+                // this.cursor.node.S.breakWord2(this.cursor);
+                
+                // return;
                 this.nextTick(_ => {
                     this.cursor.reset();
-                    this.cursor.set(Line.childNodes[0].__el__, 0);
-
-                    this.cursor.node.S.breakWord2(this.cursor);
+                    // this.cursor.reset();
+                    // this.cursor.set(Line.childNodes[0].__el__, 0);
+                    // this.cursor.node.S.breakWord2(this.cursor);
+                    // return;
+                    // console.log('分离者!')
+                    Line.childNodes[0].S.breakWord2({ node: Line.childNodes[0] });
+                    this.nextTick(() => {
+                        this.cursor.set(Line.childNodes[0].__el__, 0);
+                    })
                 })
 
             } else if (KeyCodeName == 'ArrowLeft' || KeyCodeName == 'ArrowRight') {
@@ -341,6 +356,7 @@ export default class Doc extends Node {
 
             this.nextTick(_ => {
                 let update_offset = offset + this.cursor.offset;
+                // console.log(this.cursor.node.text, 'tdskfjaskfdjext', this.cursor.node.is_composition, this.cursor.node.__el__)
                 if (composition == 'update') {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                     // this.cursor.unlock();
@@ -350,9 +366,9 @@ export default class Doc extends Node {
 
                 }
                 let _cursor = this.cursor;
-                console.log(this.cursor.node.L.__el__.textContent)
+           
                 let breakword = this.cursor.node.S.breakWord2(_cursor);
-                
+                // console.log(breakword.breaks, '------', _cursor)
                 if (breakword.breaks.length) {
                     let _break = breakword.breaks[0];
                     let first = _break.nodes[0];

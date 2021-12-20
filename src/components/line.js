@@ -1,5 +1,6 @@
 import Node from '@/lib/node';
 import Base from '@/lib/base';
+import RectRange from '@/lib/rectRange';
 import {
     getRange
 } from '@/util/range';
@@ -14,7 +15,8 @@ export default class Line extends Node {
     constructor(options, update) {
         super(options, update);
         this.class = 'jf-line';
-        this.nodeType = 'line'
+        this.nodeType = 'line';
+        this.rectRange = new RectRange();
         super.init(options, update);
     }
 
@@ -38,7 +40,6 @@ export default class Line extends Node {
         let firstChild = this.firstChild;
         let _units_ = [];
         units.map(unit => {
-            console.log(unit.text.length)
             if (unit.isBlank()) return;
             if (firstChild) {
                 if (firstChild.guid == unit.guid) {
@@ -46,7 +47,7 @@ export default class Line extends Node {
                     firstChild.__offset__ = -unit.text.length;
                     _units_.push(firstChild);
                     // firstChild.__x__ = unit.__x__;
-                   
+
                 } else {
                     this.insertBefore(unit, firstChild);
                     _units_.push(unit);
@@ -67,7 +68,6 @@ export default class Line extends Node {
         let el = this.__el__;
         let clientWidth = el.clientWidth;
         let scrollWidth = el.scrollWidth;
-        console.log(clientWidth, scrollWidth, 'scrollWidth', el)
         return scrollWidth > clientWidth;
 
     }
@@ -108,6 +108,9 @@ export default class Line extends Node {
                 super.init(options);
             }
         }
+
+        this.rectRange.reset();
+
         let range = getRange();
         let isAsc = order == 'asc';
         let lineRect = this.__el__.getBoundingClientRect();
@@ -115,37 +118,53 @@ export default class Line extends Node {
         let prevContentRect = null;
         let abountNodes = [];
         let firstContentRect = null;
+        // let rectRange = new RectRange();
         // console.log('childNodes',  this.childNodes)
 
         for (let i = isAsc ? 0 : this.childNodes.length - 1;
             (isAsc ? i < this.childNodes.length : i >= 0);
             (isAsc ? i++ : i--)) {
 
+
             let node = this.childNodes[i];
             let text = node.getText();
-          
+
             let textLength = node.getTextLength();
+
+
+
             // node.__offset__ = 
+
             abountNodes[isAsc ? 'push' : 'unshift'](node);
-            console.log(text, 'text----------------')
+
             if (node.isBlank()) {
                 continue;
+            }
+            if (!node.isText()) {
+                textLength = 1;
+                // offset = 1;
             }
 
             for (let offset = isAsc ? 0 : textLength;
                 (isAsc ? offset <= textLength : offset >= 0);
                 (isAsc ? offset++ : offset--)) {
+
+                
                 let _dir = isAsc ? 'left' : 'right'
-                if (!node.isText()) {
+                if (!node.isText() && !isAsc) {
                     _dir = 'right'
                 }
-                console.log( node.__offset__, 'ddddddddddddddddddddddddddddddddddddddd', (offset + node.__offset__ || 0), node.__offset__)
+                // console.log(isAsc, 'isAsc', _dir)
                 let _boundary = computedClientBoundaryByOffset((node.__el__), offset + (node.__offset__ || 0), _dir, range);
 
                 let x = _boundary.rect.x - lineRect.x;
                 let elx = x;
-                
+
                 x = node.__x__ ? x + node.__x__ : x;
+
+
+
+                
                 let exec = callback({
                     x: x,
                     clientWidth,
@@ -156,7 +175,14 @@ export default class Line extends Node {
 
                     // __x__
                 });
+
+                if (!this.rectRange.startNode) {
+                    this.rectRange.setStart({ node, offset, x, elx });
+                    
+                }
+                
                 if (exec) {
+                    this.rectRange.setEnd({ node, offset, x, elx });
                     let contentRect = new ContentRect({
                         boundary: _boundary,
                         nodes: abountNodes,
@@ -170,6 +196,9 @@ export default class Line extends Node {
                     contentRect.first = firstContentRect;
                     return contentRect;
                 }
+
+
+                // if(!prevContentRect || prevContentRect.x!= x) {
                 prevContentRect = new ContentRect({
                     boundary: _boundary,
                     nodes: [].concat(abountNodes),
@@ -178,6 +207,9 @@ export default class Line extends Node {
                     elx
                     // __x__
                 });
+                // }
+
+
                 if (!firstContentRect) {
                     firstContentRect = prevContentRect;
                 }

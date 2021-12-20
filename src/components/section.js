@@ -60,13 +60,17 @@ export default class Section extends Node {
             cloneLine.appendChild(cloneNode);
 
         } else {
+            // 切割光标所在位置文本
             let text = node.text;
             node.text = text.slice(0, offset);
             let cloneNode = node.cloneNode();
             cloneNode.guid = node.guid;
             cloneNode.text = text.slice(offset);
+            if (!cloneNode.isBlank()) {
+                cloneLine.appendChild(cloneNode);
+            }
             // node = cloneNode;
-            cloneLine.appendChild(cloneNode);
+
         }
         node = node.nextSibling;
         while (!!node) {
@@ -75,18 +79,25 @@ export default class Section extends Node {
             Line.removeChild(_node_);
             cloneLine.appendChild(_node_.cloneNode());
         }
-        if (cloneLine.childNodes.length == 1 && cloneLine.childNodes[0].isBlank()) {
-            cloneLine.childNodes[0].text = Tabs.space;
+        if (cloneLine.isBlank() && !this.nextSibling) {
+            // cloneLine.childNodes[0].text = Tabs.space;
+            let clone = cursor.node.cloneNode();
+            clone.text = Tabs.space;
+            cloneLine.appendChild(clone)
         }
-        if (Line.childNodes.length == 0) {
+        if (Line.isBlank()) {
 
             let clone = cursor.node.cloneNode();
             clone.text = Tabs.space;
             Line.appendChild(clone)
         }
-        cloneSection.appendChild(cloneLine);
+        if (cloneLine.childNodes.length) {
+            cloneSection.appendChild(cloneLine);
+        }
+
         let cLine = Line.nextSibling;
-        // console.log(cLine.nextSibling, 'cLine')
+
+        //    console.log(cLine)
         while (!!cLine) {
             let _cline_ = cLine;
             cLine = cLine.nextSibling;
@@ -137,29 +148,54 @@ export default class Section extends Node {
                     let offset = lastChild ? lastChild.getTextLength() : 0;
                     let {
                         rect
-                    } = computedClientBoundaryByOffset(lastChild.__el__, offset, 'right', range);
-                    blank = clientWidth - (rect.x - lineRect.x);
+                    } = computedClientBoundaryByOffset(lastChild.__el__, offset, 'left', range);
+                    blank = clientWidth - (rect.x - complement - lineRect.x);
+
                     let content = nextLine.getAccordWithContentRect(({
                         x,
                         text,
                         offset,
                         node
                     }) => {
-                        // console.log(x, 'xx')
+                        // console.log(x, '__xx__')
                         if (x > blank) {
                             return true;
                         }
                     });
                     complement = content.prev ? content.prev.x : 0;
                     let prev = content.prev;
+                    console.log(Line.rectRange.clone(), 'rectRange');
+                    console.log('%c%s', 'background: green;color: white', 'blank', content, lastChild.__el__, blank)
                     if (!prev) {
                         isBlank = false;
+                        renderQueue.map(queue => queue());
                         break;
                     };
+                    console.log('%c%s', 'background: red;color: white', '-------', content, 'content')
+
+                    // console.log(prev.nodes, 'prev-----', prev.offset, content)
                     breakword.push(prev);
                     let content_offset = prev.offset;
                     let nodes = prev.nodes.map((node, index) => {
+                        if (!node.isText()) {
+                            let clone = node.cloneNode();
+                            clone.guid = node.guid;
+                            if (content_offset == 0) {
+                                return clone.typed('text');
+                            } else {
+                                Line.removeChild(node);
+                                clone.__x__ = complement;
+                                renderQueue.push(_ => {
+                                    clone.__x__ = undefined;
+                                })
+
+                            }
+                            return clone;
+
+                        }
                         if (index == prev.nodes.length - 1) {
+
+
                             if (content_offset == node.getTextLength()) {
                                 nextLine.removeChild(node);
                                 node.__x__ = complement;
@@ -168,16 +204,25 @@ export default class Section extends Node {
                                 })
                                 return node;
                             } else {
-                                if (!node.isText()) {
-                                    let clone = node.cloneNode();
-                                    clone.guid = node.guid;
-                                    Line.removeChild(node);
-                                    clone.__x__ = complement;
-                                    renderQueue.push(_ => {
-                                        clone.__x__ = undefined;
-                                    })
-                                    return clone;
-                                }
+                                // if (!node.isText()) {
+                                //     let clone = node.cloneNode();
+                                //     clone.guid = node.guid;
+                                //     // console.log('-----', content_offset, 'conten t_ffe')
+                                //     if (content_offset == 0) {
+                                //         // console.log('-----')
+                                //         return clone.typed('text');
+                                //     } else {
+                                //         Line.removeChild(node);
+                                //         clone.__x__ = complement;
+                                //         renderQueue.push(_ => {
+                                //             clone.__x__ = undefined;
+                                //         })
+
+                                //     }
+
+
+                                //     return clone;
+                                // }
                                 let text = node.text;
                                 node.text = text.slice(content_offset);
                                 if (node.isBlank()) {
@@ -188,9 +233,13 @@ export default class Section extends Node {
                                 clone.text = text.slice(0, content_offset);
                                 node.__el__.__over__ = content_offset;
                                 clone.__x__ = complement;
+
+                                node.__offset__ = node.__offset__ ? node.__offset__ + content_offset : content_offset;
+                                console.log('%c%s', 'background: black;color: white', node.__offset__)
                                 renderQueue.push(_ => {
                                     node.__el__.__over__ = undefined;
                                     clone.__x__ = undefined;
+                                    node.__offset__ = undefined;
                                 })
                                 return clone;
                             }
@@ -208,8 +257,11 @@ export default class Section extends Node {
                     }
                     Line.appendUnits(nodes);
                     Line = Line.nextSibling;
+                    if (!Line) {
+                        renderQueue.map(queue => queue());
+                    }
 
-                    // console.log(Line.childNodes[0].guid, 'text', Line.lastChild.guid, Line.guid, Line.nextSibling);
+
                 } else {
                     isBlank = false;
                     overOrBlankWidth = -complement;
@@ -231,25 +283,24 @@ export default class Section extends Node {
                 // if(Line.__new__ == 1) {
 
                 // } 
-
+                console.log(Line.childNodes.length, 'l')
                 let content = (Line).getAccordWithContentRect(({
                     x,
                     offset,
                     text,
                     elx
                 }) => {
-                    console.log('%c%s', 'color:white;background: red', text, '___text___', x, '---', elx, text[offset])
+
                     if (x < clientWidth) {
-                        console.log('meimei')
                         return true;
                     }
                 }, 'desc');
                 // console.log(content, 'content', overOrBlankWidth)
                 if (!content.prev) {
-                    console.log('完了')
                     isOverflow = false;
                     break;
                 }
+                // console.log(Line.rectRange.clone(), 'rectRange');
                 breakword.push(content);
 
                 // if (!nextLine) {
@@ -267,11 +318,14 @@ export default class Section extends Node {
                 let nodes = prev.nodes.map((node, index) => {
 
                     let __x__ = node.__overed__ ? (content.first.elx - content.elx) : -content.elx;
+
+                    console.log(__x__, 'x__', node.__overed__, content.elx)
                     if (node.__x__ && node.__overed__) {
                         __x__ = node.__x__ - content.x
                     }
                     __x__ = __x__ || 0;
-                    // console.log('%c%s', 'color:white;background: red', __x__, content.first.__x__, content.__x__)
+                   
+
                     if (index == 0) {
                         if (content_offset == 0) {
                             Line.removeChild(node);
@@ -288,13 +342,15 @@ export default class Section extends Node {
                                 clone.__x__ = __x__;
                                 renderQueue.push(() => {
                                     clone.__x__ = undefined;
+                                    clone.__overed__ = undefined;
+                                    clone.__offset__ = undefined;
                                 });
                                 return clone;
                             }
                             // 使用overoffset的意义，由于over node是虚拟的 
                             let text = node.text;
                             node.text = text.slice(0, content_offset);
-                            console.log('%c%s', 'color:white;background: green', text, node.__el__.__overoffset__ || 0, content_offset)
+
                             if (node.isBlank()) {
                                 Line.removeChild(node);
                             }
@@ -306,10 +362,12 @@ export default class Section extends Node {
                                 node.__el__.__overoffset__ = undefined;
                                 clone.__x__ = undefined;
                                 clone.__offset__ = undefined;
+                                clone.__overed__ = undefined;
+                                
                             });
 
                             clone.__offset__ = clone.__offset__ ? clone.__offset__ + content_offset : content_offset;
-                            console.log('%c%s', 'color: white;background: black', content_offset || 0, clone.__offset__)
+
                             clone.__x__ = __x__;
                             return clone;
                         }
@@ -318,28 +376,26 @@ export default class Section extends Node {
                         node.__x__ = __x__;
                         renderQueue.push(() => {
                             node.__x__ = undefined;
+                            
                         });
                         return node;
                     }
                 });
-
+                // console.log(!nextLine, 'nexLine')
 
                 if (!nextLine) {
                     let newLine = Line.cloneNode();
                     newLine.emptyChildNodes();
-                    Section.appendChild(newLine);
-
-                    // newLine.startInsertUnits(nodes);
-
-
+                    
                     let _units_ = newLine.startInsertUnits(nodes);
                     _units_.map(node => {
-                        console.log(node, '----')
                         renderQueue.push(() => {
 
                             node.__offset__ = undefined;
                         })
                     })
+                    Section.appendChild(newLine);
+                    // console.log(newLine.childNodes.length, 'nexLinex', [].concat([], nodes))
                     nextLine = newLine;
 
                     // break;
@@ -354,14 +410,12 @@ export default class Section extends Node {
                         renderQueue.push(() => {
                             node.__overed__ = undefined;
                             node.__x__ = undefined;
+                            // console.log(node.__overed__, 'over__')
                         });
                     });
-                    console.log(nodes.map(_ => ({
-                        ..._
-                    })))
                     let _units_ = nextLine.startInsertUnits(nodes);
                     _units_.map(node => {
-                        console.log(node, '----')
+
                         renderQueue.push(() => {
 
                             node.__offset__ = undefined;
@@ -371,7 +425,6 @@ export default class Section extends Node {
 
                 }
                 Line = nextLine;
-                console.log(Line, 'LIne--')
                 max++;
             }
 

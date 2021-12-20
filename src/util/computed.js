@@ -130,6 +130,7 @@ export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) 
     if(!textNode || !textNode.textContent.length) {
         let node = dom;
         let rect = node.getBoundingClientRect();
+        range.setStart(node, 0);
     //    console.log('computed', dom , dir == 'left' ? rect.x : rect.x + rect.width)
         return {
             dir,
@@ -137,18 +138,19 @@ export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) 
             range,
             rect: {
                 y: rect.y,
-                x: dir == 'left' ? rect.x : rect.x + rect.width,
+                x: offset == 0 ? rect.x : rect.x + rect.width,
                 height: rect.height
             }
         }
     }
-
+    
     range.setStart(textNode, offset);
     range.setEnd(textNode, offset);
    
     
     let rect = range.getBoundingClientRect();
-    
+    // console.log(range, rect, '---')
+  
     let boundary = {
         dir,
         offset: offset,
@@ -156,7 +158,7 @@ export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) 
         range,
         rect: {
             y: rect.y,
-            x: dir == 'left' ? rect.x : rect.x + rect.width,
+            x: rect.x,
             height: rect.height
         }
 

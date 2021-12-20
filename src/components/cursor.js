@@ -1,7 +1,7 @@
 
 import Base from '@/lib/base';
 import { computedRangeClientBoundary, computedClientBoundaryByOffset } from "@/util/computed";
-import { getTextNode, getComputedStyle, getScroll } from "@/util/dom";
+import { getTextNode, getComputedStyle, getScroll, isTextNode } from "@/util/dom";
 import Tabs from '@/lib/tabs.js';
 import {
     getRange
@@ -96,11 +96,13 @@ export default class Cursor extends Base {
         this.setCursor(this._boundary);
     }
     set(dom, offset) {
+        
         if(this.locked) return;
         this.empty();
         // let textNode = getTextNode(dom);
         this.offset = offset;
         let boundary = computedClientBoundaryByOffset(dom, offset);
+        console.log(boundary, 'bou', dom)
         this.setByBoundary(boundary);
         // this.__el__.focus();
         this.__el__.focus();
@@ -110,7 +112,7 @@ export default class Cursor extends Base {
     setByBoundary(boundary) {
         let { range } = boundary;
         if (range) {
-            this.dom = range.startContainer.parentNode;
+            this.dom = isTextNode(range.startContainer) ? range.startContainer.parentNode : range.startContainer;
             this.node = this.dom.__unit__;
             this.node.__cursor__ = this;
 
@@ -165,6 +167,7 @@ export default class Cursor extends Base {
         let docRect = this.doc.rect;
         let top = -Math.abs(height - this.height) / 2 + y + scrollTop;
         this.left = x + scrollLeft - docRect.left;
+        console.log(y, height, this.height, scrollTop, this.doc.rect)
         this.top = top - docRect.top;
         this.offset = boundary.offset;
         

@@ -14,7 +14,7 @@ export default class Unit extends Node {
         // 评论数组
         this.comments = [...(options.comments || [])];
         // 文本
-        this.text = options.text;
+        this.text = '';
         // 图片地址
         this.url = options.url;
         this.isRange = options.isRange;
@@ -141,6 +141,7 @@ export default class Unit extends Node {
         if (this.isText()) {
             return +this.text.length;
         }
+        
         return 0;
 
     }
@@ -165,6 +166,11 @@ export default class Unit extends Node {
     placeholder() {
         this.text = Tabs.space;
         // console.log(this.text, 'text');
+    }
+
+    typed(type) {
+        this.type = type;
+        return this;
     }
 
     appendText(cursor, text) {
