@@ -3,6 +3,7 @@
 import Text from './text.vue';
 import Image from './image.vue'
 import Line from './line.vue';
+import Section from './section.vue';
 
 let UIs = {
     
@@ -13,7 +14,7 @@ export let register = (Components) => {
     })
    
 }
-register([Text, Line, Image]);
+register([Text, Line, Section, Image]);
 
 export default UIs;
 

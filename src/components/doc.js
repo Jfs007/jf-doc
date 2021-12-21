@@ -1,12 +1,15 @@
 import Node from '@/lib/node';
 import Range from './range';
 import History from '@/lib/history';
+import Version from '@/lib/version'
 import Section from './section';
 import Cursor from './cursor';
 import Events from '@/lib/events';
 import Unit from './unit';
 import Line from './line';
 import keyCode from '@/lib/keyCode';
+import UIs from '@/ui/ui.js'
+
 
 /**
  * [{  s: '', lid: 1  }]
@@ -20,7 +23,10 @@ import keyCode from '@/lib/keyCode';
  * 
  */
 
-export default class Doc extends Node {
+class Doc extends Node {
+    // static Components() {
+    //     return 
+    // }
     constructor(config = {}) {
         super();
         this.history = new History();
@@ -32,6 +38,7 @@ export default class Doc extends Node {
         // this.cursor.doc = this;
 
         this.events = new Events();
+        this.version = new Version();
         this.__el__ = null;
 
 
@@ -432,3 +439,6 @@ export default class Doc extends Node {
 
 }
 // Doc.Line(component, )
+Doc.UIs = UIs;
+
+export default Doc

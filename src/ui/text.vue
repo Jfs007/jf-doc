@@ -6,7 +6,7 @@
 }
 </style>
 <template>
-  <span :class="[unit.isComposition() ? 'jf-unit--composition' : '']">{{ unit.text }}<br v-if="unit.isLineFeed()" /></span>
+  <span :class="[unit.isComposition&&unit.isComposition() ? 'jf-unit--composition' : '']">{{ unit.text }}<br v-if="unit.isLineFeed&&unit.isLineFeed()" /><slot></slot></span>
 </template>
 <script>
 export default {

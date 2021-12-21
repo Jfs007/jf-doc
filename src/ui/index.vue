@@ -12,10 +12,9 @@
   border-radius: 4px;
   box-sizing: border-box;
   padding: 8px;
-
 }
 .jf-doc {
-  font-size: 20px;
+  font-size: 12px;
   line-height: 1.5;
   font-family: Arial, "Microsoft YaHei", "微软雅黑", "黑体", Heiti, sans-serif,
     SimSun, "宋体", serif;
@@ -38,12 +37,19 @@
 </style>
 <template>
   <div class="jf-doc-wrapper" id="jf-doc-wrapper">
+    <!--  -->
+
     <div class="jf-doc" id="jf-doc">
+      <div v-show="false">
+        <slot ></slot>
+      </div>
+      
       <ui-cursor :cursor="doc.cursor" :doc="doc" ref="cursor"></ui-cursor>
-      <div
+      <Vessel
         :key="section.guid"
         v-for="section in doc.childNodes"
         :class="[section.class]"
+        :unit="section"
         type="section"
       >
         <Vessel
@@ -59,7 +65,7 @@
             v-for="unit in line.childNodes"
           ></Vessel>
         </Vessel>
-      </div>
+      </Vessel>
     </div>
   </div>
 </template>
@@ -69,8 +75,11 @@
 import Doc from "@/index";
 import Cursor from "./cursor.vue";
 import Vessel from "./vessel";
+console.log(Doc.UIs, "Doc");
+
 export default {
   name: "Index",
+  UIs: Doc.UIs,
   data() {
     return {
       doc: null,
@@ -89,6 +98,7 @@ export default {
     this.$nextTick(() => {
       doc.render({ doc: this.$el, cursor: this.$refs["cursor"].getInput() });
     });
+    console.log(this.$slots.default, 'default')
   },
 };
 </script>
