@@ -13,7 +13,7 @@
 .jf-editor__cursor {
   opacity: 1;
   position: absolute;
-  background: #000;
+  background: #F56C6C;
   animation: cursor 1.3s infinite;
   animation-fill-mode: forwards;
   overflow: hidden;
