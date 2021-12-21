@@ -136,12 +136,12 @@ export default class Section extends Node {
         let breakword = new breakWord();
         let renderQueue = [];
 
-        function complement() {
+        let complement = () => {
             let isBlank = true;
             breakword.type = 'blank'
             let blank = 0;
             let complement = 0;
-            console.info('complement')
+            this._console.info('====正在complement====')
             while (isBlank && Line) {
                 let nextLine = Line.nextSibling;
                 if (nextLine) {
@@ -250,10 +250,11 @@ export default class Section extends Node {
 
         }
 
-        function over() {
+        let over = () => {
             breakword.type = 'overflow';
             let isOverflow = true;
-            console.info('overflow');
+           
+            this._console.info('====正在overflow====')
             let max = 0;
             while (isOverflow) {
                 if (max > 100) break;
