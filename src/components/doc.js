@@ -329,7 +329,7 @@ export default class Doc extends Node {
                 if (composition != 'update') {
                     this.cursor.update(offset + this.cursor.offset);
                 }
-                console.log('keycod')
+                // console.log('keycod')
                 if (!stopBreakWord) {
                     this.cursor.node.S.breakWord2(this.cursor);
                 }
@@ -343,6 +343,7 @@ export default class Doc extends Node {
             console.log('input')
             let offset = 0;
             offset = this.cursor.input.length;
+            // console.log(offset, this.cursor.input, '---')
             let firstCompositionPrev = null;
             if (composition == 'update') {
                 this.cursor.node.text = this.cursor.oldInput;
@@ -356,7 +357,8 @@ export default class Doc extends Node {
 
             this.nextTick(_ => {
                 let update_offset = offset + this.cursor.offset;
-                // console.log(this.cursor.node.text, 'tdskfjaskfdjext', this.cursor.node.is_composition, this.cursor.node.__el__)
+                let composition = this.cursor.composition;
+             
                 if (composition == 'update') {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                     // this.cursor.unlock();
@@ -367,12 +369,16 @@ export default class Doc extends Node {
                 }
                 let _cursor = this.cursor;
            
-                let breakword = this.cursor.node.S.breakWord2(_cursor);
-                // console.log(breakword.breaks, '------', _cursor)
-                if (breakword.breaks.length) {
-                    let _break = breakword.breaks[0];
-                    let first = _break.nodes[0];
-                    if (_break.offset == this.cursor.offset - 1 && first == this.cursor.node) {
+                let breakwords= this.cursor.node.S.breakWord2(_cursor);
+             
+                if (breakwords.breaks.length) {
+                    let breakword = breakwords.breaks;
+                    let _break = breakword[0];
+                    let startNode = _break.startNode;
+                    let startOffset = _break.startOffset;
+                    
+                    if (startOffset == this.cursor.offset - 1 && startNode == this.cursor.node) {
+                     
                         this.nextTick(() => {
                             this.cursor.emptyInput();
                             this.cursor.set(this.cursor.node.L.nextSibling.childNodes[0].__el__, 1)
@@ -380,7 +386,8 @@ export default class Doc extends Node {
 
                     }else {
                         this.nextTick(() => {
-                            this.cursor.update(update_offset);
+                            // console.log(update_offset, 'udpate_offset')
+                            // this.cursor.update(update_offset);
                         })
                         
                         
@@ -400,7 +407,7 @@ export default class Doc extends Node {
             // console.log(e.locale, 'locale')
         })
         this.events.on(cursor, 'compositionend', (e) => {
-            console.log('end');
+            // console.log('end');
             this.cursor.composition = 'end';
             let previousSibling = this.cursor.node.previousSibling;
             this.cursor.composition = '';
@@ -408,6 +415,7 @@ export default class Doc extends Node {
             let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
             this.cursor.node.compositionEnd(this.cursor);
             this.cursor.closeComposition();
+            // console.log(offset, 'offset', this.cursor.node)
             this.nextTick(_ => {
                 this.cursor.update(offset);
             })

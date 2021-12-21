@@ -44,6 +44,7 @@
         :key="section.guid"
         v-for="section in doc.childNodes"
         :class="[section.class]"
+        type="section"
       >
         <Vessel
           :key="line.guid"

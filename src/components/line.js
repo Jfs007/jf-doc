@@ -43,7 +43,9 @@ export default class Line extends Node {
             if (unit.isBlank()) return;
             if (firstChild) {
                 if (firstChild.guid == unit.guid) {
+                    let ft = firstChild.text;
                     firstChild.text = unit.text + firstChild.text;
+                    // console.log('-u', unit.text, -unit.text.length, ft)
                     firstChild.__offset__ = -unit.text.length;
                     _units_.push(firstChild);
                     // firstChild.__x__ = unit.__x__;
@@ -154,7 +156,7 @@ export default class Line extends Node {
                 if (!node.isText() && !isAsc) {
                     _dir = 'right'
                 }
-                // console.log(isAsc, 'isAsc', _dir)
+                // console.log(node.__el__, offset + (node.__offset__ || 0), node.__offset__, 'offset', textLength, 'textLength', text, this.childNodes.map(_ => ({ ..._ })), '---')
                 let _boundary = computedClientBoundaryByOffset((node.__el__), offset + (node.__offset__ || 0), _dir, range);
 
                 let x = _boundary.rect.x - lineRect.x;
@@ -191,20 +193,33 @@ export default class Line extends Node {
                 }
 
                 if (exec) {
-                    // this.rectRange.setEnd({ node, offset, x, elx });
+                    // console.log('okk')
                     if (isAsc) {
-                        let {
-                            node,
-                            offset,
-                            x,
-                            elx
-                        } = prevContentRect || {};
-                        this.rectRange.setEnd({
-                            node: node || null,
-                            offset: offset || 0,
-                            x: x || 0,
-                            elx: elx || 0
-                        });
+                       
+
+                        if (!prevContentRect) {
+                            this.rectRange.setEnd({
+                                node: this.rectRange.startNode,
+                                offset: this.rectRange.startOffset,
+                                x: this.rectRange.startX,
+                                elx: this.rectRange.startElx
+                            })
+                        } else {
+                            let {
+                                node,
+                                offset,
+                                x,
+                                elx
+                            } = prevContentRect;
+                            this.rectRange.setEnd({
+                                node: node || null,
+                                offset: offset || 0,
+                                x: x || 0,
+                                elx: elx || 0
+                            });
+
+                        }
+
                     } else {
                         // 未加入endNode
 
@@ -232,8 +247,6 @@ export default class Line extends Node {
                     return contentRect;
                 }
 
-
-                // if(!prevContentRect || prevContentRect.x!= x) {
                 prevContentRect = new ContentRect({
                     boundary: _boundary,
                     nodes: [].concat(abountNodes),
@@ -241,7 +254,6 @@ export default class Line extends Node {
                     x,
                     elx,
                     node
-                    // __x__
                 });
                 // }
 

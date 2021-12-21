@@ -128,6 +128,7 @@ export default class Section extends Node {
 
         let range = getRange();
         let node = cursor ? cursor.node : this.childNodes[0].childNodes[0];
+        // console.log(node, 'node...', node.text)
         let Line = node.parentNode;
         let lineRect = Line.__el__.getBoundingClientRect();
         let clientWidth = Line.__el__.clientWidth;
@@ -145,7 +146,7 @@ export default class Section extends Node {
                 let nextLine = Line.nextSibling;
                 if (nextLine) {
                     let lastChild = Line.lastChild;
-                    console.log('%c%s', 'background: green;color: white', 'complement: ',  'lastChild', Line, lastChild)
+                    // console.log('%c%s', 'background: green;color: white', 'complement: ',  'lastChild', Line, lastChild)
                     let offset = lastChild ? lastChild.getTextLength() + (lastChild.__offset__ || 0) : 0;
                     let {
                         rect
@@ -163,6 +164,7 @@ export default class Section extends Node {
                             return true;
                         }
                     });
+                    // console.log('%c%s', 'background: green;color: white', 'complement: ', Line.rectRange.clone())
                     complement = nextLine.rectRange.endX - nextLine.rectRange.startX;
                     // console.log(complement, 'prev')
                     // let prev = content.prev;
@@ -208,7 +210,7 @@ export default class Section extends Node {
                                 let clone = node.cloneNode();
                                 clone.guid = node.guid;
                                 clone.text = text.slice(0, content_offset);
-                                node.__el__.__over__ = content_offset;
+                                // node.__el__.__over__ = content_offset;
                                 clone.__x__ = complement;
                                 node.__offset__ = node.__offset__ ? node.__offset__ + content_offset : content_offset;
                                 // console.log('%c%s', 'background: black;color: white', node.__offset__)
@@ -276,7 +278,8 @@ export default class Section extends Node {
                     isOverflow = false;
                     break;
                 }
-                // breakword.push(content);
+                // console.log('%c%s', 'background: green;color: white', 'overflow: ', Line.rectRange.clone())
+                breakword.push(Line.rectRange.clone());
                 // let prev = content;
                 // overEle = prev[0]
                 let content_offset = Line.rectRange.startOffset;
@@ -318,9 +321,7 @@ export default class Section extends Node {
                             let clone = node.cloneNode();
                             clone.guid = node.guid;
                             clone.text = text.slice(content_offset);
-                            // node.__el__.__overoffset__ = content_offset;
                             renderQueue.push(() => {
-                                node.__el__.__overoffset__ = undefined;
                                 clone.__x__ = undefined;
                                 clone.__offset__ = undefined;
                                 clone.__overed__ = undefined;
@@ -377,9 +378,7 @@ export default class Section extends Node {
                     });
                     let _units_ = nextLine.startInsertUnits(nodes);
                     _units_.map(node => {
-
                         renderQueue.push(() => {
-
                             node.__offset__ = undefined;
                         })
                     })

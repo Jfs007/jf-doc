@@ -102,7 +102,7 @@ export default class Cursor extends Base {
         // let textNode = getTextNode(dom);
         this.offset = offset;
         let boundary = computedClientBoundaryByOffset(dom, offset);
-        console.log(boundary, 'bou', dom)
+        // console.log(boundary, 'bou', dom)
         this.setByBoundary(boundary);
         // this.__el__.focus();
         this.__el__.focus();
@@ -167,7 +167,7 @@ export default class Cursor extends Base {
         let docRect = this.doc.rect;
         let top = -Math.abs(height - this.height) / 2 + y + scrollTop;
         this.left = x + scrollLeft - docRect.left;
-        console.log(y, height, this.height, scrollTop, this.doc.rect)
+        // console.log(y, height, this.height, scrollTop, this.doc.rect)
         this.top = top - docRect.top;
         this.offset = boundary.offset;
         
