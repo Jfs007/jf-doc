@@ -45,7 +45,6 @@ export default class Line extends Node {
                 if (firstChild.guid == unit.guid) {
                     let ft = firstChild.text;
                     firstChild.text = unit.text + firstChild.text;
-                    // console.log('-u', unit.text, -unit.text.length, ft)
                     firstChild.__offset__ = -unit.text.length;
                     _units_.push(firstChild);
                     // firstChild.__x__ = unit.__x__;
@@ -120,8 +119,6 @@ export default class Line extends Node {
         let prevContentRect = null;
         let abountNodes = [];
         let firstContentRect = null;
-        // let rectRange = new RectRange();
-        // console.log('childNodes',  this.childNodes)
 
         for (let i = isAsc ? 0 : this.childNodes.length - 1;
             (isAsc ? i < this.childNodes.length : i >= 0);
@@ -156,7 +153,7 @@ export default class Line extends Node {
                 if (!node.isText() && !isAsc) {
                     _dir = 'right'
                 }
-                // console.log(node.__el__, offset + (node.__offset__ || 0), node.__offset__, 'offset', textLength, 'textLength', text, this.childNodes.map(_ => ({ ..._ })), '---')
+             
                 let _boundary = computedClientBoundaryByOffset((node.__el__), offset + (node.__offset__ || 0), _dir, range);
 
                 let x = _boundary.rect.x - lineRect.x;
@@ -193,7 +190,7 @@ export default class Line extends Node {
                 }
 
                 if (exec) {
-                    // console.log('okk')
+                  
                     if (isAsc) {
                        
 

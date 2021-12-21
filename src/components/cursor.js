@@ -91,7 +91,6 @@ export default class Cursor extends Base {
             // let textNode = getTextNode(this.dom);
             
             this._boundary = computedClientBoundaryByOffset(this.dom, offset);
-            // console.log(textNode, 'text>node', this._boundary, '---')
         }
         this.setCursor(this._boundary);
     }
@@ -99,10 +98,8 @@ export default class Cursor extends Base {
         
         if(this.locked) return;
         this.empty();
-        // let textNode = getTextNode(dom);
         this.offset = offset;
         let boundary = computedClientBoundaryByOffset(dom, offset);
-        // console.log(boundary, 'bou', dom)
         this.setByBoundary(boundary);
         // this.__el__.focus();
         this.__el__.focus();
@@ -120,7 +117,6 @@ export default class Cursor extends Base {
 
             let style = getComputedStyle(this.dom);
             let fontSize = parseInt(style.fontSize);
-            // console.log(style.lineHeight, 'lineht')
             fontSize = isNaN(fontSize) ? undefined : fontSize;
             let { height } = boundary.rect;
             let cursor_height = fontSize && this.node.isText() ? fontSize * (1.2) : height;
@@ -147,7 +143,6 @@ export default class Cursor extends Base {
             textNode
         );
         this.setByBoundary(boundary);
-        // console.log(e.target.__unit__.textContent)
         this.__el__.focus();
 
 
@@ -158,7 +153,6 @@ export default class Cursor extends Base {
     setCursor(boundary) {
         if(this.locked) return;
         if(!boundary) return;
-        // console.log(boundary.range,  document.body.scrollTop, 'top')
         if (!boundary.range) return;
         // this.emptyInput();
         let { x, y, height } = boundary.rect;
@@ -167,7 +161,6 @@ export default class Cursor extends Base {
         let docRect = this.doc.rect;
         let top = -Math.abs(height - this.height) / 2 + y + scrollTop;
         this.left = x + scrollLeft - docRect.left;
-        // console.log(y, height, this.height, scrollTop, this.doc.rect)
         this.top = top - docRect.top;
         this.offset = boundary.offset;
         

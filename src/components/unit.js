@@ -165,7 +165,7 @@ export default class Unit extends Node {
 
     placeholder() {
         this.text = Tabs.space;
-        // console.log(this.text, 'text');
+      
     }
 
     typed(type) {

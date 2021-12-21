@@ -128,7 +128,6 @@ export default class Section extends Node {
 
         let range = getRange();
         let node = cursor ? cursor.node : this.childNodes[0].childNodes[0];
-        // console.log(node, 'node...', node.text)
         let Line = node.parentNode;
         let lineRect = Line.__el__.getBoundingClientRect();
         let clientWidth = Line.__el__.clientWidth;
@@ -146,7 +145,6 @@ export default class Section extends Node {
                 let nextLine = Line.nextSibling;
                 if (nextLine) {
                     let lastChild = Line.lastChild;
-                    // console.log('%c%s', 'background: green;color: white', 'complement: ',  'lastChild', Line, lastChild)
                     let offset = lastChild ? lastChild.getTextLength() + (lastChild.__offset__ || 0) : 0;
                     let {
                         rect
@@ -160,16 +158,13 @@ export default class Section extends Node {
                         node
                     }) => {
                         if (x > blank) {
-                            // console.log(x, '______', text, offset)
+                          
                             return true;
                         }
                     });
-                    // console.log('%c%s', 'background: green;color: white', 'complement: ', Line.rectRange.clone())
+                   
                     complement = nextLine.rectRange.endX - nextLine.rectRange.startX;
-                    // console.log(complement, 'prev')
-                    // let prev = content.prev;
-                    // console.log('%c%s', 'background: green;color: white', 'complement: ', complement, Line.rectRange.clone(), 'collapsed', Line.rectRange.collapsed, blank);
-                    // console.log('%c%s', 'background: green;color: white', 'blank', content, lastChild.__el__, blank)
+                  
                     if (nextLine.rectRange.collapsed) {
                         isBlank = false;
                         renderQueue.map(queue => queue());
@@ -213,7 +208,7 @@ export default class Section extends Node {
                                 // node.__el__.__over__ = content_offset;
                                 clone.__x__ = complement;
                                 node.__offset__ = node.__offset__ ? node.__offset__ + content_offset : content_offset;
-                                // console.log('%c%s', 'background: black;color: white', node.__offset__)
+                              
                                 renderQueue.push(_ => {
                                     node.__el__.__over__ = undefined;
                                     clone.__x__ = undefined;
@@ -259,10 +254,7 @@ export default class Section extends Node {
             while (isOverflow) {
                 if (max > 100) break;
                 let nextLine = Line.nextSibling;
-                // if(Line.__new__ == 1) {
-
-                // } 
-                // console.log(Line.childNodes.length, 'l')
+             
                 (Line).getAccordWithContentRect(({
                     x,
                     offset,
@@ -274,12 +266,12 @@ export default class Section extends Node {
                         return true;
                     }
                 }, 'desc');
-                // console.log(Line.rectRange.startNode.text, '-------', Line.rectRange.endNode.text, 'collapsed')
+              
                 if (Line.rectRange.collapsed) {
                     isOverflow = false;
                     break;
                 }
-                // console.log('%c%s', 'background: green;color: white', 'overflow: ', Line.rectRange.clone())
+               
                 breakword.push(Line.rectRange.clone());
                 // let prev = content;
                 // overEle = prev[0]
@@ -290,7 +282,7 @@ export default class Section extends Node {
                         __x__ = node.__x__ - Line.rectRange.startX
                     }
                     __x__ = __x__ || 0;
-                    // console.log(__x__, '___x___')
+                   
                     if (!node.isText()) {
                         let clone = node.cloneNode();
                         clone.guid = node.guid;
@@ -303,7 +295,7 @@ export default class Section extends Node {
                         });
                         return clone;
                     }
-                    // console.log(node == Line.rectRange.startNode, '幽默')
+                 
                     if (node == Line.rectRange.startNode) {
                         if (Line.rectRange.startOffset == 0) {
                             Line.removeChild(node);
@@ -344,8 +336,7 @@ export default class Section extends Node {
                         return node;
                     }
                 });
-                // console.log(!nextLine, 'nexLine')
-
+             
                 if (!nextLine) {
                     let newLine = Line.cloneNode();
                     newLine.emptyChildNodes();
@@ -358,7 +349,7 @@ export default class Section extends Node {
                         })
                     })
                     Section.appendChild(newLine);
-                    // console.log(newLine.childNodes.length, 'nexLinex', [].concat([], nodes))
+                   
                     nextLine = newLine;
 
                     // break;
@@ -368,13 +359,13 @@ export default class Section extends Node {
                     //     nextLine.startInsertUnits(nodes);
                     // });
                     nextLine.childNodes.map(node => {
-                        // console.log(Line.rectRange.endX - Line.rectRange.startX, 'more than i can say')
+                      
                         node.__x__ = (Line.rectRange.endX - Line.rectRange.startX);
                         node.__overed__ = 1;
                         renderQueue.push(() => {
                             node.__overed__ = undefined;
                             node.__x__ = undefined;
-                            // console.log(node.__overed__, 'over__')
+                           
                         });
                     });
                     let _units_ = nextLine.startInsertUnits(nodes);

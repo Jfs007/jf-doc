@@ -184,7 +184,7 @@ export default class Doc extends Node {
                 composition
             } = this.cursor;
             let offset = 0;
-            console.log('keycode')
+            this._console.info('====正在keycode===')
             let KeyCodeName = keyCode[e.keyCode];
             let previousSibling = this.cursor.node.previousSibling;
             let nextSibling = this.cursor.node.nextSibling;
@@ -257,7 +257,6 @@ export default class Doc extends Node {
                     // this.cursor.set(Line.childNodes[0].__el__, 0);
                     // this.cursor.node.S.breakWord2(this.cursor);
                     // return;
-                    // console.log('分离者!')
                     Line.childNodes[0].S.breakWord2({ node: Line.childNodes[0] });
                     this.nextTick(() => {
                         this.cursor.set(Line.childNodes[0].__el__, 0);
@@ -329,7 +328,6 @@ export default class Doc extends Node {
                 if (composition != 'update') {
                     this.cursor.update(offset + this.cursor.offset);
                 }
-                // console.log('keycod')
                 if (!stopBreakWord) {
                     this.cursor.node.S.breakWord2(this.cursor);
                 }
@@ -340,10 +338,9 @@ export default class Doc extends Node {
             let {
                 composition
             } = this.cursor;
-            console.log('input')
+            this._console.info('====正在input===')
             let offset = 0;
             offset = this.cursor.input.length;
-            // console.log(offset, this.cursor.input, '---')
             let firstCompositionPrev = null;
             if (composition == 'update') {
                 this.cursor.node.text = this.cursor.oldInput;
@@ -386,7 +383,6 @@ export default class Doc extends Node {
 
                     }else {
                         this.nextTick(() => {
-                            // console.log(update_offset, 'udpate_offset')
                             // this.cursor.update(update_offset);
                         })
                         
@@ -404,10 +400,8 @@ export default class Doc extends Node {
         });
         this.events.on(cursor, 'compositionupdate', (e) => {
             this.cursor.composition = 'update';
-            // console.log(e.locale, 'locale')
         })
         this.events.on(cursor, 'compositionend', (e) => {
-            // console.log('end');
             this.cursor.composition = 'end';
             let previousSibling = this.cursor.node.previousSibling;
             this.cursor.composition = '';
@@ -415,7 +409,6 @@ export default class Doc extends Node {
             let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
             this.cursor.node.compositionEnd(this.cursor);
             this.cursor.closeComposition();
-            // console.log(offset, 'offset', this.cursor.node)
             this.nextTick(_ => {
                 this.cursor.update(offset);
             })
