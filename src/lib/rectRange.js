@@ -16,7 +16,7 @@ export default class RectRange extends Base {
         super.init(options);
     }
     get collapsed() {
-        return this.startNode == this.endNode && this.startOffset == this.endNode;
+        return this.startNode == this.endNode && this.startOffset == this.endOffset;
     }
     reset() {
         this.startNode = null;
@@ -51,6 +51,7 @@ export default class RectRange extends Base {
         let endNode = this.endNode;
         let index = 0;
         let nodes = [];
+        // let collapsed
         if(startNode == endNode && this.endOffset == 0) return [];
         let node = callback(startNode, index);
         index++;

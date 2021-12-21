@@ -101,7 +101,7 @@ export default class Line extends Node {
     }
 
     // order = asc/desc
-    getAccordWithContentRect(callback = () => {}, order = 'asc', anchorNodes = null) {
+    getAccordWithContentRect(callback = () => { }, order = 'asc', anchorNodes = null) {
         class ContentRect extends Base {
             constructor(options) {
                 super(options);
@@ -162,9 +162,6 @@ export default class Line extends Node {
 
                 x = node.__x__ ? x + node.__x__ : x;
 
-
-
-
                 let exec = callback({
                     x: x,
                     clientWidth,
@@ -175,7 +172,6 @@ export default class Line extends Node {
 
                     // __x__
                 });
-                // console.log(this.rectRange.startNode, 'startNode', exec, 'exec')
                 if (!(isAsc ? this.rectRange.startNode : this.rectRange.endNode)) {
                     if (isAsc) {
                         this.rectRange.setStart({
@@ -192,8 +188,6 @@ export default class Line extends Node {
                             elx
                         });
                     }
-
-
                 }
 
                 if (exec) {
@@ -212,12 +206,16 @@ export default class Line extends Node {
                             elx: elx || 0
                         });
                     } else {
+                        // 未加入endNode
+
                         this.rectRange.setStart({
                             node,
                             offset,
                             x,
                             elx
                         });
+
+
                     }
                     let contentRect = new ContentRect({
                         boundary: _boundary,
@@ -258,7 +256,6 @@ export default class Line extends Node {
         contentRect.prev = prevContentRect;
         contentRect.first = firstContentRect;
         if (!(isAsc ? this.rectRange.endNode : this.rectRange.startNode)) {
-            console.log(this.cloneNode().childNodes.map(node => node.cloneNode()), 'childNodes')
             let {
                 node,
                 offset,
@@ -274,10 +271,10 @@ export default class Line extends Node {
                 });
             } else {
                 this.rectRange.setStart({
-                    node,
-                    offset,
-                    x,
-                    elx
+                    node: node || null,
+                    offset: offset || 0,
+                    x: x || 0,
+                    elx: elx || 0
                 });
             }
         }
