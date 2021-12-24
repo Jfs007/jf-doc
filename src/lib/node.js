@@ -193,6 +193,14 @@ export default class Node extends Base {
 
 
     }
+    // 获取range内容的宽高
+    getRangeRect() {
+        
+    }
+
+
+
+
     // 搜索节点之前所有nodetype一样的node
     getPreviousSameNodeTypeNodes(callback = () => { }) {
         let _this = this;

@@ -51,15 +51,7 @@ export default class Unit extends Node {
 
     }
 
-    get safeText() {
-        return this.__el__ ? this.__el__.textContent : this.text;
-    }
-    get safeTextLength() {
-        if(this.isText()) {
-            return this.safeText.length;
-        }
-        return 1;
-    }
+
     isLineFeed() {
         return this.text == '\n'
     }
@@ -187,6 +179,10 @@ export default class Unit extends Node {
         let value = left + right;
         this.text = value;
         return value;
+    }
+    // 更新内容 文本变化，或者 图片 形变等
+    updateContent() {
+
     }
 
 

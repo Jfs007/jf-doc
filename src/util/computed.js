@@ -149,7 +149,7 @@ export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) 
    
     
     let rect = range.getBoundingClientRect();
-    // console.log(range, rect, '---')
+    console.log(range, rect, '---')
   
     let boundary = {
         dir,
