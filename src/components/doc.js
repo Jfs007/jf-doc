@@ -60,8 +60,7 @@ class Doc extends Node {
                         this.cursor.set(unit.__el__, offset);
                         this.cursor.emptyInput()
                     }
-                } else {
-                   
+                } else { 
                     this.cursor.place(e);
                 }
             } else {
