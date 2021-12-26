@@ -11,6 +11,7 @@ import {
     getRange
 } from '@/util/range';
 import Tabs from '@/lib/tabs.js';
+import RectRange from './rectRange';
 export default class Node extends Base {
     constructor(options, update = false) {
         super();
@@ -28,8 +29,9 @@ export default class Node extends Base {
         // dom渲染的时候会进行绑定真实dom
         this.__el__ = null;
         // 是否处于虚拟节点阶段
-        // this.__virtual__ = false;
+        this.__virtual__ = false;
         this.guid = guid();
+        this.areas = [];
         // this.render_id = guid();
         super.init(options);
         if (update) {
@@ -40,17 +42,17 @@ export default class Node extends Base {
     }
 
     get D() {
-        let nodeType = this.nodeType; 
-        if(nodeType == 'unit') {
+        let nodeType = this.nodeType;
+        if (nodeType == 'unit') {
             return this.parentNode.parentNode.parentNode;
         }
-        if(nodeType == 'line') {
+        if (nodeType == 'line') {
             return this.parentNode.parentNode;
         }
-        if(nodeType == 'section') {
+        if (nodeType == 'section') {
             return this.parentNode;
         }
-        if(nodeType == 'doc') {
+        if (nodeType == 'doc') {
             return this;
         }
 
@@ -58,14 +60,14 @@ export default class Node extends Base {
 
     }
     get S() {
-        let nodeType = this.nodeType; 
-        if(nodeType == 'unit') {
+        let nodeType = this.nodeType;
+        if (nodeType == 'unit') {
             return this.parentNode.parentNode;
         }
-        if(nodeType == 'line') {
+        if (nodeType == 'line') {
             return this.parentNode;
         }
-        if(nodeType == 'section') {
+        if (nodeType == 'section') {
             return this;
         }
 
@@ -74,10 +76,10 @@ export default class Node extends Base {
 
     get L() {
         let nodeType = this.nodeType;
-        if(nodeType == 'unit') {
+        if (nodeType == 'unit') {
             return this.parentNode;
         }
-        if(nodeType == 'line') {
+        if (nodeType == 'line') {
             return this;
         }
         return null;
@@ -86,11 +88,22 @@ export default class Node extends Base {
 
     get U() {
         let nodeType = this.nodeType;
-        if(nodeType!='unit') {
+        if (nodeType != 'unit') {
             return null;
         }
         return this;
     }
+
+    onMount() {
+        // this._console.info('mount', this.__el__);
+        this.__virtual__ = true;
+    }
+    onRender() {
+        if (!this.__virtual__) {
+
+        }
+    }
+
 
     getText() {
         return this.text;
@@ -140,12 +153,34 @@ export default class Node extends Base {
 
 
 
+    addArea(area) {
+        let isExit = this.areas.find(_area => {
+            let relation = _area.getRelation(area);
+            if (relation == 'coincide') return true;
+        });
+        if (!isExit) {
+            this.areas.push(area);
+        }
+    }
+    removeArea(area) {
+        let index = this.areas.findIndex(_area => _area == area);
+        this.splice(index, 1);
+    }
+
+
+    // 对指定进行文本替换
+    replaceText(area) {
+        let text = this.textContent;
+        let startNode = area.startNode;
+        let endNode = area.endNode;
+        // startNode.parentNode.removeChild(startNode);
+    }
 
     isPlaceholder() {
         return this.textContent == Tabs.space;
     }
     isBlank() {
-        
+
         return this.textContent == '';
     }
 
@@ -162,7 +197,7 @@ export default class Node extends Base {
     getPreviousSameNodeTypeNode() {
         let _this = this;
         let node = _this.previousSibling;
-       
+
         if (node) return node;
         let level = 0;
         while (node = _this.parentNode) {
@@ -194,7 +229,7 @@ export default class Node extends Base {
 
     }
     // 获取range内容的宽高
-    getRangeRect() {
+    getRangeRect(area) {
         
     }
 
@@ -202,7 +237,7 @@ export default class Node extends Base {
 
 
     // 搜索节点之前所有nodetype一样的node
-    getPreviousSameNodeTypeNodes(callback = () => { }) {
+    getPreviousSameNodeTypeNodes(callback = () => {}) {
         let _this = this;
         let node = _this.previousSibling;
         while (node) {
@@ -218,7 +253,7 @@ export default class Node extends Base {
         }
     }
 
-    getNextSameNodeTypeNodes(callback = () => { }) {
+    getNextSameNodeTypeNodes(callback = () => {}) {
         let _this = this;
         let node = _this.nextSibling;
         while (node) {
@@ -231,6 +266,22 @@ export default class Node extends Base {
                     node = prevParent.firstChild;
                 }
             }
+        }
+    }
+    getNextNodes(callback = () => {}) {
+        let _this = this;
+        let node = _this.nextSibling;
+        while(node) {
+            callback(node);
+            node = node.nextSibling;
+        }
+    }
+    getPreviousNodes(callback = () => {}) {
+        let _this = this;
+        let node = _this.previousSibling;
+        while(node) {
+            callback(node);
+            node = node.previousSibling;
         }
     }
 
@@ -256,14 +307,14 @@ export default class Node extends Base {
     }
 
     cloneNode() {
-
         let node = new this.constructor(this, true);
         node.guid = guid();
+        node.__virtual__ = true;
         return node;
     }
 
 
-    
+
 
     insertBefore(newNode, referenceNode) {
         let idx = this.childNodes.findIndex(node => node == referenceNode);
@@ -273,6 +324,7 @@ export default class Node extends Base {
         newNode._solveSibling();
         this._solveLastChild();
         this._solveFirstChild();
+        this.onRender();
 
         return newNode;
     }
@@ -284,12 +336,14 @@ export default class Node extends Base {
         node._solveSibling();
         this._solveLastChild();
         this._solveFirstChild();
+        this.onRender();
         return node;
     }
     appendChilds(nodes) {
         nodes.map(node => {
             this.appendChild(node);
         });
+        this.onRender();
         return this;
     }
     removeChild(dnode) {
@@ -309,7 +363,7 @@ export default class Node extends Base {
             // console.log('vw1', dnode.nextSibling.text)
             this._solveLastChild();
             this._solveFirstChild();
-
+            this.onRender();
             return dnode;
         }
         this._console.error('不存在该节点');
@@ -324,6 +378,7 @@ export default class Node extends Base {
             newChild._solveSibling();
             this._solveLastChild();
             this._solveFirstChild();
+            this.onRender();
             return oldChild;
         }
         this._console.error('不存在该节点');

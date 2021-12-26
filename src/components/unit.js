@@ -170,6 +170,7 @@ export default class Unit extends Node {
         let [left, right] = vSplit(this.text, offset);
         let value = left + text + right;
         this.text = value;
+        this.onRender();
         return value;
     }
     deleteText(cursor, num = 1) {
@@ -178,6 +179,7 @@ export default class Unit extends Node {
         left = left.slice(0, -1 * num);
         let value = left + right;
         this.text = value;
+        this.onRender();
         return value;
     }
     // 更新内容 文本变化，或者 图片 形变等
@@ -191,7 +193,7 @@ export default class Unit extends Node {
 
 
 
-    compositionOtherEmpty(cursor) {
+    compositioning(cursor, text) {
         let { node } = cursor;
         // 当前编辑的上一个node
         let firstCompositionPrev = node.previousSibling;
@@ -207,6 +209,7 @@ export default class Unit extends Node {
                 node.parentNode.removeChild(node);
             }
         });
+        node.text = text;
         
         
         return firstCompositionPrev;

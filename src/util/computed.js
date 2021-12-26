@@ -61,7 +61,6 @@ export let computedLineFeed = (line, callback = () => {}) => {
         Lines.push(cut);
         callback(_cutIdx, originTextIdx, base, compare, textIdx);
         base = null;
-        // console.log(base, 'vase')
         LineNumber++;
     }
     let SingleLineActuator = (Line) => {
@@ -71,7 +70,6 @@ export let computedLineFeed = (line, callback = () => {}) => {
             if (end) return true;
             let value = node.nodeValue;
             let originStart = start || 0;
-            // console.log(copyNode, start, value.length, )
             start = start == undefined ? 0 : start ;
             for (let i = start; i < value.length; i++) {
                 range.setStart(node, i);
@@ -131,7 +129,6 @@ export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) 
         let node = dom;
         let rect = node.getBoundingClientRect();
         range.setStart(node, 0);
-    //    console.log('computed', dom , dir == 'left' ? rect.x : rect.x + rect.width)
         return {
             dir,
             offset,
@@ -149,8 +146,6 @@ export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) 
    
     
     let rect = range.getBoundingClientRect();
-    console.log(range, rect, '---')
-  
     let boundary = {
         dir,
         offset: offset,

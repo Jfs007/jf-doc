@@ -75,8 +75,6 @@
 import Doc from "@/index";
 import Cursor from "./cursor.vue";
 import Vessel from "./vessel";
-console.log(Doc.UIs, "Doc");
-
 export default {
   name: "Index",
   UIs: Doc.UIs,
@@ -98,7 +96,6 @@ export default {
     this.$nextTick(() => {
       doc.render({ doc: this.$el, cursor: this.$refs["cursor"].getInput() });
     });
-    console.log(this.$slots.default, 'default')
   },
 };
 </script>

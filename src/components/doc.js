@@ -178,13 +178,15 @@ class Doc extends Node {
     breakWord() {
         this.childNodes.map(section => {
             section.breakWord2()
-        })
+        });
+        // this.replaceText()
     }
     bind() {
         let cursor = this.cursor.__el__;
 
         // 
         this.events.on(cursor, 'keydown', (e) => {
+            return;
 
             let {
                 composition
@@ -349,10 +351,11 @@ class Doc extends Node {
             offset = this.cursor.input.length;
             let firstCompositionPrev = null;
             if (composition == 'update') {
-                this.cursor.node.text = this.cursor.oldInput;
+                // this.cursor.node.text = this.cursor.oldInput;
                 offset = 0;
                 // 清空其余的composition 文档只允许存在一个composition?
-                // firstCompositionPrev = this.cursor.node.compositionOtherEmpty(this.cursor);
+                this._console.info('update', this.cursor.node.previousSibling.text, this.cursor.oldInput)
+                this.cursor.node.compositioning(this.cursor, this.cursor.oldInput);
 
             } else {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
@@ -366,7 +369,7 @@ class Doc extends Node {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                     // this.cursor.unlock();
                 } else {
-                   
+            
                     this.cursor.update(update_offset);
 
                 }
@@ -381,7 +384,6 @@ class Doc extends Node {
                     let startOffset = _break.startOffset;
                     
                     if (startOffset == this.cursor.offset - 1 && startNode == this.cursor.node) {
-                     
                         this.nextTick(() => {
                             this.cursor.emptyInput();
                             this.cursor.set(this.cursor.node.L.nextSibling.childNodes[0].__el__, 1)
@@ -426,6 +428,7 @@ class Doc extends Node {
     insertSection() {
 
     }
+
 
 
     getNodeByDom(dom) {

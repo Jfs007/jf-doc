@@ -17,7 +17,6 @@
 
 <script>
 import doc from './ui/index.vue';
-console.log(doc.UIs['ui-section'], 'UIs')
 export default {
   name: 'App',
   components: {

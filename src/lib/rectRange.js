@@ -1,4 +1,3 @@
-
 import Base from './base';
 
 export default class RectRange extends Base {
@@ -28,13 +27,23 @@ export default class RectRange extends Base {
         this.startX = 0;
         this.startElx = 0;
     }
-    setStart({ node, offset, x, elx }) {
+    setStart({
+        node,
+        offset,
+        x,
+        elx
+    }) {
         this.startNode = node;
         this.startOffset = offset;
         this.startX = x;
         this.startElx = elx;
     }
-    setEnd({ node, offset, x, elx }) {
+    setEnd({
+        node,
+        offset,
+        x,
+        elx
+    }) {
         this.endNode = node;
         this.endOffset = offset;
         this.endX = x;
@@ -42,8 +51,25 @@ export default class RectRange extends Base {
     }
     clone() {
         let range = new this.constructor(this);
-       
+
         return range;
+    }
+    getRelation(area) {
+
+        if (area.startNode == this.startNode && area.endNode == this.endNode) {
+            if (area.startOffset == this.startOffset && area.endOffset == this.endOffset) {
+                return 'conincide'
+            }
+            if (area.startOffset >= this.startOffset && area.endOffset <= this.endOffset) {
+                return 'included'
+            }
+            if (area.startOffset <= this.startOffset && area.endOffset >= this.endOffset) {
+                return 'contain'
+            }
+            return 'overlap'
+        };
+        return 'difference'
+
     }
 
     getRange(callback = () => {}) {
@@ -52,18 +78,18 @@ export default class RectRange extends Base {
         let index = 0;
         let nodes = [];
         // let collapsed
-        if(startNode == endNode && this.endOffset == 0) return [];
+        if (startNode == endNode && this.endOffset == 0) return [];
         let node = callback(startNode, index);
         index++;
-        if(node) nodes.push(node);
-        if(startNode == endNode) return nodes;
+        if (node) nodes.push(node);
+        if (startNode == endNode) return nodes;
         startNode = startNode.nextSibling;
-        while(startNode) {
-            if(startNode == endNode && this.endOffset == 0) break;
+        while (startNode) {
+            if (startNode == endNode && this.endOffset == 0) break;
             let node = callback(startNode, index);
             index++;
-            if(node) nodes.push(node);
-            if(startNode == endNode) break;
+            if (node) nodes.push(node);
+            if (startNode == endNode) break;
             startNode = startNode.nextSibling;
         };
         return nodes;

@@ -17,8 +17,7 @@ export default {
         // console.log(this.$el, '绑定' );
         this.$el.__unit__ = this.unit;
         this.unit.__el__ = this.$el;
-        
-        
+        this.unit.onMount();   
         
     },
     beforeDestroy() {
