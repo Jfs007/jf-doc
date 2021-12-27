@@ -8,7 +8,7 @@ import Events from '@/lib/events';
 import Unit from './unit';
 import Line from './line';
 import keyCode from '@/lib/keyCode';
-import UIs from '@/ui/ui.js'
+import UIs from '@/ui/ui.js';
 
 
 /**
@@ -64,9 +64,9 @@ class Doc extends Node {
                     this.cursor.place(e);
                 }
             } else {
-                this.cursor.closeComposition();
-                this.cursor.emptyInput();
-                this.cursor.empty();
+                // this.cursor.closeComposition();
+                // this.cursor.emptyInput();
+                // this.cursor.empty();
             }
 
         });
@@ -349,17 +349,20 @@ class Doc extends Node {
             this._console.info('====正在input===')
             let offset = 0;
             offset = this.cursor.input.length;
-            let firstCompositionPrev = null;
+            // let firstCompositionPrev = null;
             if (composition == 'update') {
                 // this.cursor.node.text = this.cursor.oldInput;
                 offset = 0;
                 // 清空其余的composition 文档只允许存在一个composition?
-                this._console.info('update', this.cursor.node.previousSibling.text, this.cursor.oldInput)
-                this.cursor.node.compositioning(this.cursor, this.cursor.oldInput);
+                // this._console.info('update', this.cursor.node.previousSibling.text, this.cursor.oldInput)
+                let cursorNode = this.cursor.node.compositioning(this.cursor, this.cursor.oldInput);
+                console.log(cursorNode, 'cur')
+                this.cursor.setNode(cursorNode);
 
             } else {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
             }
+            // return
 
             this.nextTick(_ => {
                 let update_offset = offset + this.cursor.offset;
@@ -374,6 +377,7 @@ class Doc extends Node {
 
                 }
                 let _cursor = this.cursor;
+                // return;
            
                 let breakwords= this.cursor.node.S.breakWord2(_cursor);
              
@@ -382,6 +386,7 @@ class Doc extends Node {
                     let _break = breakword[0];
                     let startNode = _break.startNode;
                     let startOffset = _break.startOffset;
+                    console.log(this.cursor.offset, startOffset, 'startOff', startNode.text, this.cursor.node.text, breakwords.breaks, '---')
                     
                     if (startOffset == this.cursor.offset - 1 && startNode == this.cursor.node) {
                         this.nextTick(() => {
@@ -403,6 +408,9 @@ class Doc extends Node {
             this.cursor.emptyInput()
             let composition = this.cursor.node.composition(this.cursor);
             this.cursor.composition = 'start';
+            // let range = new RectRange();
+            // range.setStart()
+            // this.cursor.range = range;
             this.cursor.node = composition;
             this.cursor.offset = 0;
         });
@@ -410,7 +418,9 @@ class Doc extends Node {
             this.cursor.composition = 'update';
         })
         this.events.on(cursor, 'compositionend', (e) => {
+            return;
             this.cursor.composition = 'end';
+            
             let previousSibling = this.cursor.node.previousSibling;
             this.cursor.composition = '';
             this.cursor.offset = 0;

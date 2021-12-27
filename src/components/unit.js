@@ -3,13 +3,14 @@ import Node from '../lib/node.js';
 import { guid, vSplit } from '../util/index';
 
 import Tabs from '@/lib/tabs.js';
+import RectRange from '../lib/rectRange.js';
 // import DocStyle from './doc-style';
 export default class Unit extends Node {
     constructor(options = {}, update) {
         super(options, update);
-        
+
         this.nodeType = 'unit';
-        this.class="jf-unit";
+        this.class = "jf-unit";
         // console.log(options, 'opots')
         // 评论数组
         this.comments = [...(options.comments || [])];
@@ -20,13 +21,14 @@ export default class Unit extends Node {
         this.isRange = options.isRange;
         // 类型  text composition表示输入法类型
         this.type = options.type || 'text';
+        this.range = null;
         // composition表示正在输入法
         this.is_composition = false;
         // 标记 delete 
         this.remark = options.remark || '';
         this.linespacing = options.linespacing || ''
 
-        
+
         // 标注选中时切割的textUnit隶属同一group_id
         this.group_id = options.group_id;
         // 光标，在Cursor产生后会被挂载
@@ -35,19 +37,20 @@ export default class Unit extends Node {
         this._copy = [];
 
         super.init(options, update);
-        if(!this.isCarousel()) {
+        if (!this.isCarousel()) {
             this.comments = this.comments.filter(_ => _);
         }
         // 场景支持
         this.sceneSupport = [];
-        if(this.isText()) {
+        if (this.isText()) {
             this.sceneSupport = ['comment', 'update-text'];
-        } 
-        if(this.isCarousel()) {
+        }
+        if (this.isCarousel()) {
             this.sceneSupport = ['comment'];
         }
+        this.updateRange();
 
-       
+
 
     }
 
@@ -68,15 +71,15 @@ export default class Unit extends Node {
         return this.type == 'carousel'
     }
     isBlank() {
-        if(this.isImage()) return false;
+        if (this.isImage()) return false;
         return this.text == '';
     }
     isPlaceholder() {
         return this.text == Tabs.space;
     }
     setComments(id, index) {
-        if (this.isCarousel() && index!=undefined) {
-            if(this.comments[index] !=id) {
+        if (this.isCarousel() && index != undefined) {
+            if (this.comments[index] != id) {
                 this.comments[index] = id;
                 this.comments = [...this.comments];
             }
@@ -119,7 +122,7 @@ export default class Unit extends Node {
         let text = this.text;
         if (!this.isText()) return [];
         // 如果是段落换行 不再执行分裂
-        if(this.isLineFeed()) return [];
+        if (this.isLineFeed()) return [];
 
         let modal = this.getFissionModal(start, end, text);
         let group_id = guid();
@@ -133,7 +136,7 @@ export default class Unit extends Node {
         if (this.isText()) {
             return +this.text.length;
         }
-        
+
         return 0;
 
     }
@@ -145,11 +148,11 @@ export default class Unit extends Node {
         let Line = this.parentNode;
         let _offset = 0;
         Line.childNodes.find(Unit => {
-            if(Unit == this) {
-                _offset+=offset;
+            if (Unit == this) {
+                _offset += offset;
                 return true;
             }
-            _offset+=Unit.getTextLength();
+            _offset += Unit.getTextLength();
         });
         return _offset;
     }
@@ -157,7 +160,7 @@ export default class Unit extends Node {
 
     placeholder() {
         this.text = Tabs.space;
-      
+
     }
 
     typed(type) {
@@ -183,7 +186,13 @@ export default class Unit extends Node {
         return value;
     }
     // 更新内容 文本变化，或者 图片 形变等
-    updateContent() {
+    updateContent(value) {
+        this.text = value;
+    }
+
+    updateRange() {
+        this.startOffset = 0;
+        this.endOffset = this.text.length;
 
     }
 
@@ -194,33 +203,62 @@ export default class Unit extends Node {
 
 
     compositioning(cursor, text) {
-        let { node } = cursor;
-        // 当前编辑的上一个node
-        let firstCompositionPrev = node.previousSibling;
-        // node.parentNode.removeChild(node);
-        node.getPreviousSameNodeTypeNodes(node => {
-            if(node.isComposition()) {
-                firstCompositionPrev = node.previousSibling;
-                node.parentNode.removeChild(node);
-            }
-        })
-        node.getNextSameNodeTypeNodes(node => {
-            if(node.isComposition()) {
-                node.parentNode.removeChild(node);
-            }
-        });
-        node.text = text;
-        
-        
-        return firstCompositionPrev;
+        let clone = cursor.node.cloneNode();
+        clone.guid = cursor.node.guid;
+        clone.text = text;
+        let nodes = cursor.range.getRange(node => {
+            
+            node.L.removeChild(node);
+            return node;
+        }, false);
+        let startNode = cursor.range.startNode;
+        // console.log(nodes, 'nodes')
+        if(startNode.nextSibling) {
+            startNode.L.insertBefore(clone, startNode.nextSibling)
+        }else {
+            startNode.L.appendChild(clone)
+        }
+        return clone;
+        // let { node } = cursor;
+        // // 当前编辑的上一个node
+        // let firstCompositionPrev = node.previousSibling;
+        // // let posNode = null;
+        // // node.parentNode.removeChild(node);
+        // node.getPreviousSameNodeTypeNodes(node => {
+        //     if (node.isComposition()) {
+        //         firstCompositionPrev = node.previousSibling;
+        //         node.parentNode.removeChild(node);
+        //     } else {
+        //         // if(!posNode) {
+        //         //     posNode = node;
+        //         // }
+        //     }
+        // })
+        // node.getNextSameNodeTypeNodes(node => {
+        //     if (node.isComposition()) {
+        //         node.parentNode.removeChild(node);
+        //     }
+        // });
+
+        // // if(posNode) {
+
+        // // }
+        // node.text = text;
+
+
+        // return firstCompositionPrev;
+
+
+
 
     }
 
     composition(cursor) {
         let { offset } = cursor;
+        let range = new RectRange();
         let [left, right] = vSplit(this.text, offset);
         // this.parentNode.removeChild(this);
-        
+
         let nodeleft = this.cloneNode();
         nodeleft.text = left
         let noderight = this.cloneNode();
@@ -232,6 +270,9 @@ export default class Unit extends Node {
         this.parentNode.insertBefore(composition, this);
         this.parentNode.insertBefore(noderight, this);
         this.parentNode.removeChild(this);
+        range.setStart({ node: nodeleft, offset: nodeleft.getTextLength() });
+        range.setEnd({ node: noderight, offset: 0 });
+        cursor.range = range;
         return composition;
         // this.parentNode
     }

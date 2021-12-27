@@ -84,6 +84,9 @@ export default class Cursor extends Base {
     unlock() {
         this.locked = false;
     }
+    setNode(node) {
+        this.node = node;
+    }
 
     update(offset = undefined) {
         if(this.locked) return;
@@ -124,6 +127,7 @@ export default class Cursor extends Base {
             this.setCursor(boundary);
         }
     }
+
 
    
 

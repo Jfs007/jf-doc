@@ -72,25 +72,35 @@ export default class RectRange extends Base {
 
     }
 
-    getRange(callback = () => {}) {
+    getRange(callback = (node) => { }, include = true) {
         let startNode = this.startNode;
         let endNode = this.endNode;
         let index = 0;
         let nodes = [];
         // let collapsed
+        // 如果在同一个节点
         if (startNode == endNode && this.endOffset == 0) return [];
-        let node = callback(startNode, index);
+        if (include) {
+            let node = callback(startNode, index);
+            if (node) nodes.push(node);
+        }
         index++;
-        if (node) nodes.push(node);
         if (startNode == endNode) return nodes;
         startNode = startNode.nextSibling;
         while (startNode) {
             if (startNode == endNode && this.endOffset == 0) break;
-            let node = callback(startNode, index);
+            if (!(startNode == endNode && !include)) {
+                let node = callback(startNode, index);
+                if (node) nodes.push(node);
+            }
             index++;
-            if (node) nodes.push(node);
             if (startNode == endNode) break;
+            let L = startNode.L;
             startNode = startNode.nextSibling;
+            // 切换到下一行
+            if (!startNode && L) {
+                startNode = L.nextLine ? L.nextLine.firstChild : null
+            }
         };
         return nodes;
     }

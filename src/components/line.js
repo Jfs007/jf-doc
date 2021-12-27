@@ -21,6 +21,17 @@ export default class Line extends Node {
     }
 
 
+    get nextLine() {
+        if(this.nextSibling) return this.nextSibling;
+        let S = this.parentNode;
+        if(S.nextSibling) {
+            S.nextSibling.firstChild;
+        }else {
+            return null;
+        }
+    }
+
+
     appendUnits(units) {
         let lastChild = this.lastChild
         units.map(unit => {

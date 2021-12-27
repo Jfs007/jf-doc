@@ -36,7 +36,13 @@ export default class Section extends Node {
         super.init(options);
     }
 
-
+    // 对指定进行文本替换
+    replaceText(area) {
+        let text = this.textContent;
+        let startNode = area.startNode;
+        let endNode = area.endNode;
+        // startNode.parentNode.removeChild(startNode);
+    }
 
     insetLine() {
 
@@ -158,13 +164,13 @@ export default class Section extends Node {
                         node
                     }) => {
                         if (x > blank) {
-                          
+
                             return true;
                         }
                     });
-                   
+
                     complement = nextLine.rectRange.endX - nextLine.rectRange.startX;
-                  
+
                     if (nextLine.rectRange.collapsed) {
                         isBlank = false;
                         renderQueue.map(queue => queue());
@@ -208,7 +214,7 @@ export default class Section extends Node {
                                 // node.__el__.__over__ = content_offset;
                                 clone.__x__ = complement;
                                 node.__offset__ = node.__offset__ ? node.__offset__ + content_offset : content_offset;
-                              
+
                                 renderQueue.push(_ => {
                                     node.__el__.__over__ = undefined;
                                     clone.__x__ = undefined;
@@ -248,13 +254,13 @@ export default class Section extends Node {
         let over = () => {
             breakword.type = 'overflow';
             let isOverflow = true;
-           
+
             this._console.info('====正在overflow====')
             let max = 0;
             while (isOverflow) {
                 if (max > 100) break;
                 let nextLine = Line.nextSibling;
-             
+
                 (Line).getAccordWithContentRect(({
                     x,
                     offset,
@@ -266,12 +272,12 @@ export default class Section extends Node {
                         return true;
                     }
                 }, 'desc');
-              
+
                 if (Line.rectRange.collapsed) {
                     isOverflow = false;
                     break;
                 }
-               
+
                 breakword.push(Line.rectRange.clone());
                 // let prev = content;
                 // overEle = prev[0]
@@ -282,7 +288,7 @@ export default class Section extends Node {
                         __x__ = node.__x__ - Line.rectRange.startX
                     }
                     __x__ = __x__ || 0;
-                   
+
                     if (!node.isText()) {
                         let clone = node.cloneNode();
                         clone.guid = node.guid;
@@ -295,7 +301,7 @@ export default class Section extends Node {
                         });
                         return clone;
                     }
-                 
+
                     if (node == Line.rectRange.startNode) {
                         if (Line.rectRange.startOffset == 0) {
                             Line.removeChild(node);
@@ -336,7 +342,7 @@ export default class Section extends Node {
                         return node;
                     }
                 });
-             
+
                 if (!nextLine) {
                     let newLine = Line.cloneNode();
                     newLine.emptyChildNodes();
@@ -349,7 +355,7 @@ export default class Section extends Node {
                         })
                     })
                     Section.appendChild(newLine);
-                   
+
                     nextLine = newLine;
 
                     // break;
@@ -359,13 +365,13 @@ export default class Section extends Node {
                     //     nextLine.startInsertUnits(nodes);
                     // });
                     nextLine.childNodes.map(node => {
-                      
+
                         node.__x__ = (Line.rectRange.endX - Line.rectRange.startX);
                         node.__overed__ = 1;
                         renderQueue.push(() => {
                             node.__overed__ = undefined;
                             node.__x__ = undefined;
-                           
+
                         });
                     });
                     let _units_ = nextLine.startInsertUnits(nodes);

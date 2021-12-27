@@ -168,13 +168,7 @@ export default class Node extends Base {
     }
 
 
-    // 对指定进行文本替换
-    replaceText(area) {
-        let text = this.textContent;
-        let startNode = area.startNode;
-        let endNode = area.endNode;
-        // startNode.parentNode.removeChild(startNode);
-    }
+
 
     isPlaceholder() {
         return this.textContent == Tabs.space;
