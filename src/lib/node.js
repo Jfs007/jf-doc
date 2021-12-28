@@ -30,6 +30,10 @@ export default class Node extends Base {
         this.__el__ = null;
         // 是否处于虚拟节点阶段
         this.__virtual__ = true;
+
+        // 是否处于自动换行中
+        this.__wraping__ = false;
+
         this.guid = guid();
         this.areas = [];
         // this.render_id = guid();
