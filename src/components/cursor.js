@@ -102,6 +102,7 @@ export default class Cursor extends Base {
         if(this.locked) return;
         this.empty();
         this.offset = offset;
+       
         let boundary = computedClientBoundaryByOffset(dom, offset);
         this.setByBoundary(boundary);
         // this.__el__.focus();
@@ -112,7 +113,9 @@ export default class Cursor extends Base {
     setByBoundary(boundary) {
         let { range } = boundary;
         if (range) {
+            
             this.dom = isTextNode(range.startContainer) ? range.startContainer.parentNode : range.startContainer;
+            // console.log(range.startContainer, 'range.startContainer', this.dom, this.dom.__unit__.text, '---', this.node&&this.node.text)
             this.node = this.dom.__unit__;
             this.node.__cursor__ = this;
 

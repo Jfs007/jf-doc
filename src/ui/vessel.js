@@ -26,6 +26,7 @@ export default {
         // this.unit.__el__ = null;
     },
     render(h) {
+       this.unit.onRender();  
        let unit = this.unit;
         return h(UIs['ui-' + this.type], {
             attrs: {

@@ -54,7 +54,6 @@ export default class Line extends Node {
             if (unit.isBlank()) return;
             if (firstChild) {
                 if (firstChild.guid == unit.guid) {
-                    let ft = firstChild.text;
                     firstChild.text = unit.text + firstChild.text;
                     firstChild.__offset__ = -unit.text.length;
                     _units_.push(firstChild);

@@ -206,6 +206,7 @@ export default class Section extends Node {
                                 let text = node.text;
                                 node.text = text.slice(content_offset);
                                 if (node.isBlank()) {
+                                    console.log('is-blank')
                                     nextLine.removeChild(node);
                                 }
                                 let clone = node.cloneNode();
@@ -255,9 +256,10 @@ export default class Section extends Node {
             breakword.type = 'overflow';
             let isOverflow = true;
 
-            this._console.info('====正在overflow====')
+          
             let max = 0;
             while (isOverflow) {
+                this._console.info('====正在overflow====1')
                 if (max > 100) break;
                 let nextLine = Line.nextSibling;
 
@@ -269,6 +271,7 @@ export default class Section extends Node {
                 }) => {
 
                     if (x <= clientWidth) {
+                        // this._console.info('hei', x, text[offset], offset, text, '---')
                         return true;
                     }
                 }, 'desc');
@@ -283,6 +286,7 @@ export default class Section extends Node {
                 // overEle = prev[0]
                 let content_offset = Line.rectRange.startOffset;
                 let nodes = Line.rectRange.getRange((node, index) => {
+                   
                     let __x__ = node.__overed__ ? (Line.rectRange.endElx - Line.rectRange.startElx) : -Line.rectRange.startElx;
                     if (node.__x__ && node.__overed__) {
                         __x__ = node.__x__ - Line.rectRange.startX
@@ -303,6 +307,7 @@ export default class Section extends Node {
                     }
 
                     if (node == Line.rectRange.startNode) {
+                        // 如果整个node发生over
                         if (Line.rectRange.startOffset == 0) {
                             Line.removeChild(node);
                             node.__x__ = __x__;
@@ -314,6 +319,7 @@ export default class Section extends Node {
                             // 使用overoffset的意义，由于over node是虚拟的 
                             let text = node.text;
                             node.text = text.slice(0, content_offset);
+                           
                             if (node.isBlank()) {
                                 Line.removeChild(node);
                             }
@@ -326,6 +332,7 @@ export default class Section extends Node {
                                 clone.__overed__ = undefined;
 
                             });
+                            // console.log(node.text, 'node-text', clone.text, 'clone-text');
 
                             clone.__offset__ = clone.__offset__ ? clone.__offset__ + content_offset : content_offset;
 
@@ -342,6 +349,7 @@ export default class Section extends Node {
                         return node;
                     }
                 });
+               
 
                 if (!nextLine) {
                     let newLine = Line.cloneNode();
@@ -384,8 +392,10 @@ export default class Section extends Node {
 
                 }
                 Line = nextLine;
+                this._console.info('====overflow结束====1')
                 max++;
             }
+           
 
             renderQueue.map(queue => queue());
             return breakword;

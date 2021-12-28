@@ -356,8 +356,9 @@ class Doc extends Node {
                 // 清空其余的composition 文档只允许存在一个composition?
                 // this._console.info('update', this.cursor.node.previousSibling.text, this.cursor.oldInput)
                 let cursorNode = this.cursor.node.compositioning(this.cursor, this.cursor.oldInput);
-                console.log(cursorNode, 'cur')
+               
                 this.cursor.setNode(cursorNode);
+                console.log(this.cursor.node.text, 'one', 'cur')
 
             } else {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
@@ -367,7 +368,7 @@ class Doc extends Node {
             this.nextTick(_ => {
                 let update_offset = offset + this.cursor.offset;
                 let composition = this.cursor.composition;
-             
+                console.log(this.cursor.node.text, 'next', 'cur')
                 if (composition == 'update') {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                     // this.cursor.unlock();
@@ -377,19 +378,18 @@ class Doc extends Node {
 
                 }
                 let _cursor = this.cursor;
+                // console.log(this.cursor.node.text, 'set-next', 'cur')
                 // return;
            
                 let breakwords= this.cursor.node.S.breakWord2(_cursor);
-             
                 if (breakwords.breaks.length) {
                     let breakword = breakwords.breaks;
                     let _break = breakword[0];
                     let startNode = _break.startNode;
                     let startOffset = _break.startOffset;
-                    console.log(this.cursor.offset, startOffset, 'startOff', startNode.text, this.cursor.node.text, breakwords.breaks, '---')
-                    
                     if (startOffset == this.cursor.offset - 1 && startNode == this.cursor.node) {
                         this.nextTick(() => {
+                            // console.log(this.cursor.node.text, 'next--brw', 'cur')
                             this.cursor.emptyInput();
                             this.cursor.set(this.cursor.node.L.nextSibling.childNodes[0].__el__, 1)
                         })

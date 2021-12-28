@@ -29,7 +29,7 @@ export default class Node extends Base {
         // dom渲染的时候会进行绑定真实dom
         this.__el__ = null;
         // 是否处于虚拟节点阶段
-        this.__virtual__ = false;
+        this.__virtual__ = true;
         this.guid = guid();
         this.areas = [];
         // this.render_id = guid();
@@ -96,11 +96,12 @@ export default class Node extends Base {
 
     onMount() {
         // this._console.info('mount', this.__el__);
-        this.__virtual__ = true;
+        this.__virtual__ = false;
     }
     onRender() {
+        // this._console.info('__virtual__正在render', this.__el__, this.text);
         if (!this.__virtual__) {
-
+            // this._console.info('正在render', this.__el__);
         }
     }
 

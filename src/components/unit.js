@@ -218,6 +218,7 @@ export default class Unit extends Node {
         }else {
             startNode.L.appendChild(clone)
         }
+        // console.log(clone.text, 'teext')
         return clone;
         // let { node } = cursor;
         // // 当前编辑的上一个node
