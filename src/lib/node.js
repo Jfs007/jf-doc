@@ -7,6 +7,7 @@ import {
     getTextNode,
     loopNodes
 } from "@/util/dom";
+import renderQueue from './render-queue';
 import {
     getRange
 } from '@/util/range';
@@ -17,7 +18,8 @@ export default class Node extends Base {
         super();
         this.class = '';
         this.nodeName = '';
-        this.text = '';
+        this.__text__ = '';
+        // this.text = '';
         this.style = '';
         this.parentNode = null;
         this.childNodes = [];
@@ -28,14 +30,15 @@ export default class Node extends Base {
         this._dirty = true;
         // dom渲染的时候会进行绑定真实dom
         this.__el__ = null;
-        // 是否处于虚拟节点阶段
-        this.__virtual__ = true;
+
+        // this.__virtual__ = true;
 
         // 是否处于自动换行中
         this.__wraping__ = false;
 
         this.guid = guid();
         this.areas = [];
+
         // this.render_id = guid();
         super.init(options);
         if (update) {
@@ -43,6 +46,35 @@ export default class Node extends Base {
         }
 
 
+    }
+    // 是否处于虚拟节点阶段
+    get __virtual__() {
+        if (!this.__el__) return true;
+        if (this.__wraping__) return true;
+        return false;
+    }
+    get text() {
+       
+        return this.__text__;
+    }
+
+    set text(value) {
+        this.__text__ = value;
+        let node = this;
+        if(!this.__virtual__) {
+            console.log('文案', this.text)
+            node.__mounted = () => {
+                renderQueue.releaseTicks(node);
+            }
+            node.__mounted.NODE = node;
+            renderQueue.push(node.__mounted)
+        }
+        setTimeout(_ => {
+            
+            node.__mounted&&node.__mounted();
+        }, 0)
+        
+     
     }
 
     get D() {
@@ -100,12 +132,31 @@ export default class Node extends Base {
 
     onMount() {
         // this._console.info('mount', this.__el__);
-        this.__virtual__ = false;
+        // this.__virtual__ = false;
+        this.__wraping__ = false;
+
+        // renderQueue.goTicks();
+        // this._console,o
+        this.__mounted && this.__mounted();
     }
     onRender() {
-        // this._console.info('__virtual__正在render', this.__el__, this.text);
+
         if (!this.__virtual__) {
             // this._console.info('正在render', this.__el__);
+        }
+    }
+
+    pushMount(node) {
+        if (node.parentNode && !node.parentNode.__virtual__) {
+            // 如果是虚拟节点则推入
+            if (node.__virtual__) {
+                node.__mounted = () => {
+                    renderQueue.releaseTicks(node);
+                }
+                node.__mounted.NODE = node;
+                renderQueue.push(node.__mounted)
+            }
+
         }
     }
 
@@ -229,14 +280,14 @@ export default class Node extends Base {
     }
     // 获取range内容的宽高
     getRangeRect(area) {
-        
+
     }
 
 
 
 
     // 搜索节点之前所有nodetype一样的node
-    getPreviousSameNodeTypeNodes(callback = () => {}) {
+    getPreviousSameNodeTypeNodes(callback = () => { }) {
         let _this = this;
         let node = _this.previousSibling;
         while (node) {
@@ -252,7 +303,7 @@ export default class Node extends Base {
         }
     }
 
-    getNextSameNodeTypeNodes(callback = () => {}) {
+    getNextSameNodeTypeNodes(callback = () => { }) {
         let _this = this;
         let node = _this.nextSibling;
         while (node) {
@@ -267,18 +318,18 @@ export default class Node extends Base {
             }
         }
     }
-    getNextNodes(callback = () => {}) {
+    getNextNodes(callback = () => { }) {
         let _this = this;
         let node = _this.nextSibling;
-        while(node) {
+        while (node) {
             callback(node);
             node = node.nextSibling;
         }
     }
-    getPreviousNodes(callback = () => {}) {
+    getPreviousNodes(callback = () => { }) {
         let _this = this;
         let node = _this.previousSibling;
-        while(node) {
+        while (node) {
             callback(node);
             node = node.previousSibling;
         }
@@ -308,7 +359,8 @@ export default class Node extends Base {
     cloneNode() {
         let node = new this.constructor(this, true);
         node.guid = guid();
-        node.__virtual__ = true;
+        // node.__virtual__ = true;
+        node.__el__ = null;
         return node;
     }
 
@@ -323,7 +375,7 @@ export default class Node extends Base {
         newNode._solveSibling();
         this._solveLastChild();
         this._solveFirstChild();
-        this.onRender();
+        this.pushMount(newNode);
 
         return newNode;
     }
@@ -335,14 +387,13 @@ export default class Node extends Base {
         node._solveSibling();
         this._solveLastChild();
         this._solveFirstChild();
-        this.onRender();
+        this.pushMount(node);
         return node;
     }
     appendChilds(nodes) {
         nodes.map(node => {
             this.appendChild(node);
         });
-        this.onRender();
         return this;
     }
     removeChild(dnode) {
@@ -362,7 +413,10 @@ export default class Node extends Base {
             // console.log('vw1', dnode.nextSibling.text)
             this._solveLastChild();
             this._solveFirstChild();
-            this.onRender();
+            this.pushMount(dnode);
+            setTimeout(() => {
+                dnode.__mounted && dnode.__mounted();
+            }, 0);
             return dnode;
         }
         this._console.error('不存在该节点');
@@ -377,7 +431,7 @@ export default class Node extends Base {
             newChild._solveSibling();
             this._solveLastChild();
             this._solveFirstChild();
-            this.onRender();
+            this.pushMount(newChild);
             return oldChild;
         }
         this._console.error('不存在该节点');

@@ -31,6 +31,8 @@ export default {
         return h(UIs['ui-' + this.type], {
             attrs: {
                 'data-id': `${unit.guid}`,
+                'data-__virtual__': `${unit.__virtual__}`,
+               
             },
             class: unit.class,
             props: {

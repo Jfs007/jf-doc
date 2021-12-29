@@ -179,9 +179,13 @@ export default class Section extends Node {
                     // breakword.push(prev);
                     let content_offset = nextLine.rectRange.endOffset;
                     let nodes = nextLine.rectRange.getRange((node) => {
+                        node.__wraping__ = true;
                         if (!node.isText()) {
                             let clone = node.cloneNode();
                             clone.guid = node.guid;
+                            node.__wraping__ = false;
+                            
+                            clone.__el__ = node.__el__;
                             nextLine.removeChild(node);
                             clone.__x__ = complement;
                             renderQueue.push(_ => {
@@ -205,6 +209,7 @@ export default class Section extends Node {
                             } else {
                                 let text = node.text;
                                 node.text = text.slice(content_offset);
+                                node.__wraping__ = false;
                                 if (node.isBlank()) {
                                     console.log('is-blank')
                                     nextLine.removeChild(node);
@@ -212,6 +217,7 @@ export default class Section extends Node {
                                 let clone = node.cloneNode();
                                 clone.guid = node.guid;
                                 clone.text = text.slice(0, content_offset);
+                                clone.__el__ = node.__el__;
                                 // node.__el__.__over__ = content_offset;
                                 clone.__x__ = complement;
                                 node.__offset__ = node.__offset__ ? node.__offset__ + content_offset : content_offset;
@@ -286,6 +292,7 @@ export default class Section extends Node {
                 // overEle = prev[0]
                 let content_offset = Line.rectRange.startOffset;
                 let nodes = Line.rectRange.getRange((node, index) => {
+                    node.__wraping__ = true;
                    
                     let __x__ = node.__overed__ ? (Line.rectRange.endElx - Line.rectRange.startElx) : -Line.rectRange.startElx;
                     if (node.__x__ && node.__overed__) {
@@ -298,11 +305,14 @@ export default class Section extends Node {
                         clone.guid = node.guid;
                         Line.removeChild(node);
                         clone.__x__ = __x__;
+                        clone.__el__ = node.__el__;
+                        
                         renderQueue.push(() => {
                             clone.__x__ = undefined;
                             clone.__overed__ = undefined;
                             clone.__offset__ = undefined;
                         });
+                        node.__wraping__ = false;
                         return clone;
                     }
 
@@ -319,17 +329,19 @@ export default class Section extends Node {
                             // 使用overoffset的意义，由于over node是虚拟的 
                             let text = node.text;
                             node.text = text.slice(0, content_offset);
-                           
+                            node.__wraping__ = false;
                             if (node.isBlank()) {
                                 Line.removeChild(node);
                             }
                             let clone = node.cloneNode();
                             clone.guid = node.guid;
+                            clone.__el__ = node.__el__;
                             clone.text = text.slice(content_offset);
                             renderQueue.push(() => {
                                 clone.__x__ = undefined;
                                 clone.__offset__ = undefined;
                                 clone.__overed__ = undefined;
+                                
 
                             });
                             // console.log(node.text, 'node-text', clone.text, 'clone-text');
@@ -354,6 +366,7 @@ export default class Section extends Node {
                 if (!nextLine) {
                     let newLine = Line.cloneNode();
                     newLine.emptyChildNodes();
+                    newLine.__el__ = Line.__el__;
 
                     let _units_ = newLine.startInsertUnits(nodes);
                     _units_.map(node => {

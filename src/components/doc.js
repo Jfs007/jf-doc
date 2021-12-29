@@ -9,6 +9,7 @@ import Unit from './unit';
 import Line from './line';
 import keyCode from '@/lib/keyCode';
 import UIs from '@/ui/ui.js';
+import RenderQueue from '../lib/render-queue';
 
 
 /**
@@ -33,6 +34,7 @@ class Doc extends Node {
         this.range = null;
         this.nodeType = 'doc';
         this.rect = null;
+
         // this.sections = [];
         this.cursor = new Cursor(this);
         // this.cursor.doc = this;
@@ -80,7 +82,8 @@ class Doc extends Node {
     }
 
     nextTick(callback = () => { }) {
-        setTimeout(callback, 0)
+        RenderQueue.nextTick(callback);
+        // setTimeout(callback, 0)
     }
 
     registered() {

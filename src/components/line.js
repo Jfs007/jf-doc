@@ -137,7 +137,6 @@ export default class Line extends Node {
 
             let node = this.childNodes[i];
             let text = node.getText();
-            // console.log(node.__virtual__, '__virtual__', node.__el__)
             let textLength = node.getTextLength();
 
 
