@@ -62,8 +62,9 @@ export default class Node extends Base {
         this.__text__ = value;
         let node = this;
         if(!this.__virtual__) {
-            console.log('文案', this.text)
+           
             node.__mounted = () => {
+                console.log('text....')
                 renderQueue.releaseTicks(node);
             }
             node.__mounted.NODE = node;
@@ -151,6 +152,7 @@ export default class Node extends Base {
             // 如果是虚拟节点则推入
             if (node.__virtual__) {
                 node.__mounted = () => {
+                    console.log('node....')
                     renderQueue.releaseTicks(node);
                 }
                 node.__mounted.NODE = node;

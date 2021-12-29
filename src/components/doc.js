@@ -371,7 +371,7 @@ class Doc extends Node {
             this.nextTick(_ => {
                 let update_offset = offset + this.cursor.offset;
                 let composition = this.cursor.composition;
-                console.log(this.cursor.node.text, 'next', 'cur')
+               
                 if (composition == 'update') {
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                     // this.cursor.unlock();
