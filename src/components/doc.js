@@ -357,11 +357,10 @@ class Doc extends Node {
                 // this.cursor.node.text = this.cursor.oldInput;
                 offset = 0;
                 // 清空其余的composition 文档只允许存在一个composition?
+                this._console.info('compositon - loading - update')
                 // this._console.info('update', this.cursor.node.previousSibling.text, this.cursor.oldInput)
                 let cursorNode = this.cursor.node.compositioning(this.cursor, this.cursor.oldInput);
-               
                 this.cursor.setNode(cursorNode);
-                console.log(this.cursor.node.text, 'one', 'cur')
 
             } else {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
@@ -373,6 +372,7 @@ class Doc extends Node {
                 let composition = this.cursor.composition;
                
                 if (composition == 'update') {
+                    this._console.info('compositon - cursor - update')
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                     // this.cursor.unlock();
                 } else {

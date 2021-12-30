@@ -206,18 +206,26 @@ export default class Unit extends Node {
         let clone = cursor.node.cloneNode();
         clone.guid = cursor.node.guid;
         clone.text = text;
-        let nodes = cursor.range.getRange(node => {
-            
+        // 判断当前光标所属node是否和clone后的 输入法节点位置重合
+        console.log(cursor.range.startNode.nextSibling.text, cursor.node.text)
+        // if(cursor.range.startNode.nextSibling == cursor.node) {
+            this._console.info('改动', cursor.node.__el__)
+            clone.__el__ = cursor.node.__el__;
+            // cursor.range.startNode = clone;
+        // }
+        cursor.range.getRange((node, index) => {
             node.L.removeChild(node);
             return node;
         }, false);
         let startNode = cursor.range.startNode;
         // console.log(nodes, 'nodes')
         if(startNode.nextSibling) {
+            
             startNode.L.insertBefore(clone, startNode.nextSibling)
         }else {
             startNode.L.appendChild(clone)
         }
+      
         // console.log(clone.text, 'teext')
         return clone;
         // let { node } = cursor;

@@ -1,5 +1,5 @@
 import Base from "./base";
-
+import RectRange from "./rectRange";
 class renderQueue extends Base {
     constructor(options) {
         super(options);
@@ -8,27 +8,42 @@ class renderQueue extends Base {
         super.init(options);
     }
 
-    push(render) {
-        this.lists.push(render);
+    push(node, type) {
+        let range = new RectRange();
+        range.setStart({ node: node.previousSibling });
+        range.setEnd({ node: node.nextSibling });
+        let renderObj = {
+            range,
+            node
+        }
+        let has = this.lists.find((render, index) => {
+            if (render.range.getRelation(renderObj.range) == 'conincide') {
+                this.lists.splice(index, 1)
+                return true;
+            }
+
+        });
+        if (!has && type!='text') {
+            this.lists.push(renderObj);
+        }
+
     }
     releaseTicks(node) {
         this.lists.find((render, index) => {
-            let NODE = render.NODE;
+            let NODE = render.node;
             if (NODE == node) {
-                render.NODE = undefined;
-                console.log('update')
+                render.node = undefined;
                 this.lists.splice(index, 1);
                 return true;
             };
         });
-        console.log(this.lists, 'lists');
         if (this.lists.length == 0) {
             this.ticks.map(tick => {
                 tick();
             });
             this.ticks = [];
         }
-        // console.log(node, this.lists)
+        console.log(this.lists)
     }
     nextTick(f) {
         this.ticks.push(f);

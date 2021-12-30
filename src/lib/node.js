@@ -39,6 +39,8 @@ export default class Node extends Base {
         this.guid = guid();
         this.areas = [];
 
+        this.mountedList = [];
+
         // this.render_id = guid();
         super.init(options);
         if (update) {
@@ -54,28 +56,24 @@ export default class Node extends Base {
         return false;
     }
     get text() {
-       
+
         return this.__text__;
     }
 
     set text(value) {
         this.__text__ = value;
         let node = this;
-        if(!this.__virtual__) {
-           
+        if (!this.__virtual__) {
             node.__mounted = () => {
-                console.log('text....')
                 renderQueue.releaseTicks(node);
             }
-            node.__mounted.NODE = node;
-            renderQueue.push(node.__mounted)
+            renderQueue.push(node, 'text')
         }
         setTimeout(_ => {
-            
-            node.__mounted&&node.__mounted();
+            node.__mounted && node.__mounted();
         }, 0)
-        
-     
+
+
     }
 
     get D() {
@@ -131,6 +129,11 @@ export default class Node extends Base {
         return this;
     }
 
+    mounted(c) {
+        this.mountedList.push(c);
+
+    }
+
     onMount() {
         // this._console.info('mount', this.__el__);
         // this.__virtual__ = false;
@@ -139,6 +142,8 @@ export default class Node extends Base {
         // renderQueue.goTicks();
         // this._console,o
         this.__mounted && this.__mounted();
+        this.mountedList.map(callback => callback());
+        this.mountedList = [];
     }
     onRender() {
 
@@ -148,15 +153,21 @@ export default class Node extends Base {
     }
 
     pushMount(node) {
+        // let rectRange = new RectRange();
+        // rectRange.setStart({ node: node.})
+        // let renderObj = {
+        //     range
+        // }
+
+
         if (node.parentNode && !node.parentNode.__virtual__) {
+
             // 如果是虚拟节点则推入
             if (node.__virtual__) {
                 node.__mounted = () => {
-                    console.log('node....')
                     renderQueue.releaseTicks(node);
                 }
-                node.__mounted.NODE = node;
-                renderQueue.push(node.__mounted)
+                renderQueue.push(node)
             }
 
         }
@@ -389,6 +400,7 @@ export default class Node extends Base {
         node._solveSibling();
         this._solveLastChild();
         this._solveFirstChild();
+
         this.pushMount(node);
         return node;
     }
