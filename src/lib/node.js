@@ -40,6 +40,7 @@ export default class Node extends Base {
         this.areas = [];
 
         this.mountedList = [];
+        this.renderList = [];
 
         // this.render_id = guid();
         super.init(options);
@@ -64,10 +65,12 @@ export default class Node extends Base {
         this.__text__ = value;
         let node = this;
         if (!this.__virtual__) {
+           
             node.__mounted = () => {
                 renderQueue.releaseTicks(node);
             }
-            renderQueue.push(node, 'text')
+            renderQueue.push(node, 'text');
+            this._console.info('text - change', renderQueue.lists.length)
         }
         setTimeout(_ => {
             node.__mounted && node.__mounted();
@@ -145,11 +148,17 @@ export default class Node extends Base {
         this.mountedList.map(callback => callback());
         this.mountedList = [];
     }
-    onRender() {
-
-        if (!this.__virtual__) {
+    onRender(el) {
+            if(!this.__el__&&el) {
+                this.__el__ = el;
+                this.__el__.__unit__ = this;
+            }
+            // this.__render &&     
+            // this.renderList.map(callback => callback());
+            // this.renderList = [];
+            
             // this._console.info('正在render', this.__el__);
-        }
+  
     }
 
     pushMount(node) {
@@ -158,10 +167,11 @@ export default class Node extends Base {
         // let renderObj = {
         //     range
         // }
+        
 
 
         if (node.parentNode && !node.parentNode.__virtual__) {
-
+            this._console.info('push')
             // 如果是虚拟节点则推入
             if (node.__virtual__) {
                 node.__mounted = () => {

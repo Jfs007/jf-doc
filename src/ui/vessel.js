@@ -1,4 +1,3 @@
-
 import UIs from './ui';
 
 export default {
@@ -8,7 +7,7 @@ export default {
             default: 'text'
         },
         unit: {
-            default() {
+            default () {
                 return {}
             }
         }
@@ -17,8 +16,8 @@ export default {
         // console.log(this.$el, '绑定' );
         this.$el.__unit__ = this.unit;
         this.unit.__el__ = this.$el;
-        this.unit.onMount();   
-        
+        this.unit.onMount();
+
     },
     beforeDestroy() {
         // console.log(this.$el, '解绑', this.unit.parentNode == this.unit)
@@ -26,13 +25,13 @@ export default {
         // this.unit.__el__ = null;
     },
     render(h) {
-       this.unit.onRender();  
-       let unit = this.unit;
+        this.unit.onRender(this.$el);
+        let unit = this.unit;
         return h(UIs['ui-' + this.type], {
             attrs: {
                 'data-id': `${unit.guid}`,
                 'data-__virtual__': `${unit.__virtual__}`,
-               
+
             },
             class: unit.class,
             props: {

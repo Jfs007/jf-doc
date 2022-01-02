@@ -16,6 +16,10 @@ class renderQueue extends Base {
             range,
             node
         }
+        if(type == 'text') {
+            this.lists.push(renderObj);
+            return;
+        }
         let has = this.lists.find((render, index) => {
             if (render.range.getRelation(renderObj.range) == 'conincide') {
                 this.lists.splice(index, 1)
@@ -23,7 +27,7 @@ class renderQueue extends Base {
             }
 
         });
-        if (!has && type!='text') {
+        if (!has) {
             this.lists.push(renderObj);
         }
 
@@ -37,15 +41,22 @@ class renderQueue extends Base {
                 return true;
             };
         });
+
+        // 跑完当前tick后 tick里面加入新tick， 但是当前tick会移除所有tick bug！！
         if (this.lists.length == 0) {
+            console.log(this.lists.length, 'len', this.ticks.length)
             this.ticks.map(tick => {
                 tick();
+                
             });
             this.ticks = [];
+            console.log('----------------------------------------------')
         }
-        console.log(this.lists)
+        
+        
     }
     nextTick(f) {
+       console.log('push')
         this.ticks.push(f);
     }
 }

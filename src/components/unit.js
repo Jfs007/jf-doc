@@ -1,6 +1,8 @@
-
 import Node from '../lib/node.js';
-import { guid, vSplit } from '../util/index';
+import {
+    guid,
+    vSplit
+} from '../util/index';
 
 import Tabs from '@/lib/tabs.js';
 import RectRange from '../lib/rectRange.js';
@@ -103,14 +105,21 @@ export default class Unit extends Node {
         let progress = [];
         if (start == end) return progress;
         if (start) {
-            progress.push({ sub: [0, start] });
+            progress.push({
+                sub: [0, start]
+            });
         } else {
             start = 0;
         }
 
-        progress.push({ sub: [start, end ? end - start : textLength - start], isRange: true });
+        progress.push({
+            sub: [start, end ? end - start : textLength - start],
+            isRange: true
+        });
         if (end && end != textLength) {
-            progress.push({ sub: [end] });
+            progress.push({
+                sub: [end]
+            });
         }
         return progress;
     }
@@ -127,7 +136,11 @@ export default class Unit extends Node {
         let modal = this.getFissionModal(start, end, text);
         let group_id = guid();
         modal = modal.map(_ => {
-            return { ..._, text: text.substr(..._.sub), group_id };
+            return {
+                ..._,
+                text: text.substr(..._.sub),
+                group_id
+            };
         });
         return modal;
     }
@@ -169,7 +182,9 @@ export default class Unit extends Node {
     }
 
     appendText(cursor, text) {
-        let { offset } = cursor;
+        let {
+            offset
+        } = cursor;
         let [left, right] = vSplit(this.text, offset);
         let value = left + text + right;
         this.text = value;
@@ -177,7 +192,9 @@ export default class Unit extends Node {
         return value;
     }
     deleteText(cursor, num = 1) {
-        let { offset } = cursor;
+        let {
+            offset
+        } = cursor;
         let [left, right] = vSplit(this.text, offset);
         left = left.slice(0, -1 * num);
         let value = left + right;
@@ -207,11 +224,11 @@ export default class Unit extends Node {
         clone.guid = cursor.node.guid;
         clone.text = text;
         // 判断当前光标所属node是否和clone后的 输入法节点位置重合
-        console.log(cursor.range.startNode.nextSibling.text, cursor.node.text)
+        // console.log(cursor.range.startNode.nextSibling.text, cursor.node.text)
         // if(cursor.range.startNode.nextSibling == cursor.node) {
-            this._console.info('改动', cursor.node.__el__)
-            clone.__el__ = cursor.node.__el__;
-            // cursor.range.startNode = clone;
+        // this._console.info('改动', cursor.node.__el__)
+        // clone.__el__ = cursor.node.__el__;
+        // cursor.range.startNode = clone;
         // }
         cursor.range.getRange((node, index) => {
             node.L.removeChild(node);
@@ -219,13 +236,13 @@ export default class Unit extends Node {
         }, false);
         let startNode = cursor.range.startNode;
         // console.log(nodes, 'nodes')
-        if(startNode.nextSibling) {
-            
+        if (startNode.nextSibling) {
+
             startNode.L.insertBefore(clone, startNode.nextSibling)
-        }else {
+        } else {
             startNode.L.appendChild(clone)
         }
-      
+
         // console.log(clone.text, 'teext')
         return clone;
         // let { node } = cursor;
@@ -263,7 +280,9 @@ export default class Unit extends Node {
     }
 
     composition(cursor) {
-        let { offset } = cursor;
+        let {
+            offset
+        } = cursor;
         let range = new RectRange();
         let [left, right] = vSplit(this.text, offset);
         // this.parentNode.removeChild(this);
@@ -279,8 +298,14 @@ export default class Unit extends Node {
         this.parentNode.insertBefore(composition, this);
         this.parentNode.insertBefore(noderight, this);
         this.parentNode.removeChild(this);
-        range.setStart({ node: nodeleft, offset: nodeleft.getTextLength() });
-        range.setEnd({ node: noderight, offset: 0 });
+        range.setStart({
+            node: nodeleft,
+            offset: nodeleft.getTextLength()
+        });
+        range.setEnd({
+            node: noderight,
+            offset: 0
+        });
         cursor.range = range;
         return composition;
         // this.parentNode

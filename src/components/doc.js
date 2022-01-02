@@ -358,7 +358,7 @@ class Doc extends Node {
                 offset = 0;
                 // 清空其余的composition 文档只允许存在一个composition?
                 this._console.info('compositon - loading - update')
-                // this._console.info('update', this.cursor.node.previousSibling.text, this.cursor.oldInput)
+                // this._console.info('update', this.cursor.node.previousSibling.text, this.cursor.oldInput)`
                 let cursorNode = this.cursor.node.compositioning(this.cursor, this.cursor.oldInput);
                 this.cursor.setNode(cursorNode);
 
@@ -372,8 +372,9 @@ class Doc extends Node {
                 let composition = this.cursor.composition;
                
                 if (composition == 'update') {
-                    this._console.info('compositon - cursor - update')
+                    // this._console.info('compositon - cursor - update', this.cursor.node.__el__, this.cursor.node.text)
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
+                    // this._console.info('compositon - cursor - updateend', this.cursor.node.__el__, this.cursor.node.text)
                     // this.cursor.unlock();
                 } else {
             
@@ -383,16 +384,19 @@ class Doc extends Node {
                 let _cursor = this.cursor;
                 // console.log(this.cursor.node.text, 'set-next', 'cur')
                 // return;
-           
+                console.log(_cursor.node.text, 'kaishi')
                 let breakwords= this.cursor.node.S.breakWord2(_cursor);
+                console.log(_cursor.node.text)
                 if (breakwords.breaks.length) {
                     let breakword = breakwords.breaks;
                     let _break = breakword[0];
                     let startNode = _break.startNode;
                     let startOffset = _break.startOffset;
+                    
                     if (startOffset == this.cursor.offset - 1 && startNode == this.cursor.node) {
+                        console.log(startNode.text, this.cursor.node.text, 'node', startOffset, this.cursor.offset-1, RenderQueue.lists.length)
                         this.nextTick(() => {
-                            // console.log(this.cursor.node.text, 'next--brw', 'cur')
+                            console.log(this.cursor.node.L.nextSibling.firstChild.__el__, 'next--brw', 'cur')
                             this.cursor.emptyInput();
                             this.cursor.set(this.cursor.node.L.nextSibling.childNodes[0].__el__, 1)
                         })

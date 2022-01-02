@@ -130,8 +130,6 @@ export default class Section extends Node {
 
     }
     breakWord2(cursor) {
-        let overOrBlankWidth = 0;
-
         let range = getRange();
         let node = cursor ? cursor.node : this.childNodes[0].childNodes[0];
         let Line = node.parentNode;
@@ -292,6 +290,10 @@ export default class Section extends Node {
                 // overEle = prev[0]
                 let content_offset = Line.rectRange.startOffset;
                 let nodes = Line.rectRange.getRange((node, index) => {
+                    // this._console.info('over node none none')
+                    if(node == (cursor&&cursor.node)) {
+                        this._console.info('over node')
+                    }
                     node.__wraping__ = true;
                    
                     let __x__ = node.__overed__ ? (Line.rectRange.endElx - Line.rectRange.startElx) : -Line.rectRange.startElx;
