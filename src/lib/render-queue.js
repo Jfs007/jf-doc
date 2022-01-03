@@ -42,15 +42,14 @@ class renderQueue extends Base {
             };
         });
 
-        // 跑完当前tick后 tick里面加入新tick， 但是当前tick会移除所有tick bug！！
+        // bug 跑完当前tick后 tick里面加入新tick， 但是当前tick会移除所有tick 
         if (this.lists.length == 0) {
-            console.log(this.lists.length, 'len', this.ticks.length)
+            this.constructor.Target = null;
             this.ticks.map(tick => {
                 tick();
                 
             });
             this.ticks = [];
-            console.log('----------------------------------------------')
         }
         
         

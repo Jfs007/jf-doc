@@ -66,6 +66,13 @@ empty -> in -> breakword
 
 
 
+关于nexttick队列
+nexttick -> 
+    nexttick()
+
+
+
+
 
 
 
