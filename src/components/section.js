@@ -138,6 +138,7 @@ export default class Section extends Node {
         let Section = Line.parentNode;
         let breakword = new breakWord();
         let renderQueue = [];
+        // let overOrBlankWidth = 0;
 
         let complement = () => {
             let isBlank = true;
@@ -248,7 +249,7 @@ export default class Section extends Node {
 
                 } else {
                     isBlank = false;
-                    overOrBlankWidth = -complement;
+                    // overOrBlankWidth = -complement;
                     over();
                 }
             }

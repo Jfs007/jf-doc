@@ -223,60 +223,41 @@ export default class Unit extends Node {
         let clone = cursor.node.cloneNode();
         clone.guid = cursor.node.guid;
         clone.text = text;
-        // 判断当前光标所属node是否和clone后的 输入法节点位置重合
-        // console.log(cursor.range.startNode.nextSibling.text, cursor.node.text)
-        // if(cursor.range.startNode.nextSibling == cursor.node) {
-        // this._console.info('改动', cursor.node.__el__)
-        // clone.__el__ = cursor.node.__el__;
-        // cursor.range.startNode = clone;
-        // }
+        console.log( cursor.range.startNode.text, 'text...compositioning')
+        // console.log(cursor.range.startNode.text, cursor.range.endNode.text, 'huabulai')
         cursor.range.getRange((node, index) => {
+           console.log(node.text, 'hello', text)
             node.L.removeChild(node);
             return node;
         }, false);
         let startNode = cursor.range.startNode;
-        // console.log(nodes, 'nodes')
+        console.log(startNode.nextSibling, 'nodes')
         if (startNode.nextSibling) {
 
             startNode.L.insertBefore(clone, startNode.nextSibling)
         } else {
             startNode.L.appendChild(clone)
         }
-
-        // console.log(clone.text, 'teext')
         return clone;
-        // let { node } = cursor;
-        // // 当前编辑的上一个node
-        // let firstCompositionPrev = node.previousSibling;
-        // // let posNode = null;
-        // // node.parentNode.removeChild(node);
-        // node.getPreviousSameNodeTypeNodes(node => {
-        //     if (node.isComposition()) {
-        //         firstCompositionPrev = node.previousSibling;
-        //         node.parentNode.removeChild(node);
-        //     } else {
-        //         // if(!posNode) {
-        //         //     posNode = node;
-        //         // }
-        //     }
-        // })
-        // node.getNextSameNodeTypeNodes(node => {
-        //     if (node.isComposition()) {
-        //         node.parentNode.removeChild(node);
-        //     }
-        // });
+    }
 
-        // // if(posNode) {
-
-        // // }
-        // node.text = text;
-
-
-        // return firstCompositionPrev;
-
-
-
-
+    updateCompositionRange(cursor) {
+        if(!cursor || !cursor.range) return;
+        // console.log(cursor.)
+        let startNode = cursor.range.startNode;
+        if(!startNode) return;
+        // startNode.ge
+        console.log(startNode.text, 'text...updateCompositionRange');
+        startNode.getNextSameNodeTypeNodes(node => {
+            if(!node.is_composition) {
+                console.log(node.text, 'node');
+                cursor.range.setEnd({
+                    node,
+                    offset: 0
+                })
+                return 'break';
+            }
+        })
     }
 
     composition(cursor) {
@@ -285,8 +266,6 @@ export default class Unit extends Node {
         } = cursor;
         let range = new RectRange();
         let [left, right] = vSplit(this.text, offset);
-        // this.parentNode.removeChild(this);
-
         let nodeleft = this.cloneNode();
         nodeleft.text = left
         let noderight = this.cloneNode();
@@ -302,6 +281,8 @@ export default class Unit extends Node {
             node: nodeleft,
             offset: nodeleft.getTextLength()
         });
+        this._console.warn(nodeleft.text, 'text..composition');
+       
         range.setEnd({
             node: noderight,
             offset: 0

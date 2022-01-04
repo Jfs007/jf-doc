@@ -66,9 +66,9 @@ class Doc extends Node {
                     this.cursor.place(e);
                 }
             } else {
-                // this.cursor.closeComposition();
-                // this.cursor.emptyInput();
-                // this.cursor.empty();
+                this.cursor.closeComposition();
+                this.cursor.emptyInput();
+                this.cursor.empty();
             }
 
         });
@@ -354,11 +354,8 @@ class Doc extends Node {
             offset = this.cursor.input.length;
             // let firstCompositionPrev = null;
             if (composition == 'update') {
-                // this.cursor.node.text = this.cursor.oldInput;
                 offset = 0;
                 // 清空其余的composition 文档只允许存在一个composition?
-                this._console.info('compositon - loading - update')
-                // this._console.info('update', this.cursor.node.previousSibling.text, this.cursor.oldInput)`
                 let cursorNode = this.cursor.node.compositioning(this.cursor, this.cursor.oldInput);
                 this.cursor.setNode(cursorNode);
 
@@ -366,39 +363,33 @@ class Doc extends Node {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
             }
             // return
-
             this.nextTick(_ => {
+               
                 let update_offset = offset + this.cursor.offset;
                 let composition = this.cursor.composition;
-               
                 if (composition == 'update') {
-                    // this._console.info('compositon - cursor - update', this.cursor.node.__el__, this.cursor.node.text)
                     this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
-                    // this._console.info('compositon - cursor - updateend', this.cursor.node.__el__, this.cursor.node.text)
-                    // this.cursor.unlock();
                 } else {
-            
                     this.cursor.update(update_offset);
 
                 }
                 let _cursor = this.cursor;
                 // console.log(this.cursor.node.text, 'set-next', 'cur')
                 // return;
-                console.log(_cursor.node.text, 'kaishi')
                 let breakwords= this.cursor.node.S.breakWord2(_cursor);
-                console.log(_cursor.node.text)
+               
+                this.cursor.node.updateCompositionRange(_cursor);
                 if (breakwords.breaks.length) {
                     let breakword = breakwords.breaks;
                     let _break = breakword[0];
                     let startNode = _break.startNode;
                     let startOffset = _break.startOffset;
-                    
-                    if (startOffset == this.cursor.offset - 1 && startNode == this.cursor.node) {
-                        console.log(startNode.text, this.cursor.node.text, 'node', startOffset, this.cursor.offset-1, RenderQueue.lists.length)
+                    if (startOffset <= this.cursor.offset - 1 && startNode == this.cursor.node) {
                         this.nextTick(() => {
-                            console.log(this.cursor.node.L.nextSibling.firstChild.__el__, 'next--brw', 'cur')
+                            let offset = composition == 'update' ? this.cursor.node.L.nextSibling.firstChild.getTextLength() : 1;
+                            this._console.warn('eeeee', offset, this.cursor.node.L.nextSibling.firstChild.text)
                             this.cursor.emptyInput();
-                            this.cursor.set(this.cursor.node.L.nextSibling.childNodes[0].__el__, 1)
+                            this.cursor.set(this.cursor.node.L.nextSibling.firstChild.__el__, offset)
                         })
 
                     }else {
@@ -412,9 +403,12 @@ class Doc extends Node {
             })
         });
         this.events.on(cursor, 'compositionstart', (e) => {
+            // 防止回流导致的compositionstart事件二次触发
+            if(this.cursor.composition == 'update') return;
             this.cursor.emptyInput()
             let composition = this.cursor.node.composition(this.cursor);
             this.cursor.composition = 'start';
+            this._console.warn('compositionstart');
             // let range = new RectRange();
             // range.setStart()
             // this.cursor.range = range;
@@ -425,7 +419,7 @@ class Doc extends Node {
             this.cursor.composition = 'update';
         })
         this.events.on(cursor, 'compositionend', (e) => {
-            return;
+            // return;
             this.cursor.composition = 'end';
             
             let previousSibling = this.cursor.node.previousSibling;

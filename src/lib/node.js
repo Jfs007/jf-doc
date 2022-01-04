@@ -70,7 +70,7 @@ export default class Node extends Base {
                 renderQueue.releaseTicks(node);
             }
             renderQueue.push(node, 'text');
-            this._console.info('text - change', renderQueue.lists.length)
+            this._console.info('text - change change1', renderQueue.lists.length)
         }
         setTimeout(_ => {
             node.__mounted && node.__mounted();
@@ -149,6 +149,7 @@ export default class Node extends Base {
         this.mountedList = [];
     }
     onRender(el) {
+        this._console.info('render -node')
             if(!this.__el__&&el) {
                 this.__el__ = el;
                 this.__el__.__unit__ = this;
@@ -314,7 +315,10 @@ export default class Node extends Base {
         let _this = this;
         let node = _this.previousSibling;
         while (node) {
-            callback(node);
+            let rs = callback(node);
+            if(rs == 'break') {
+                break;
+            }
             let parentNode = node.parentNode;
             node = node.previousSibling;
             if (!node) {
@@ -330,7 +334,10 @@ export default class Node extends Base {
         let _this = this;
         let node = _this.nextSibling;
         while (node) {
-            callback(node);
+            let rs = callback(node);
+            if(rs == 'break') {
+                break;
+            }
             let parentNode = node.parentNode;
             node = node.nextSibling;
             if (!node) {

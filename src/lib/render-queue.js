@@ -5,6 +5,7 @@ class renderQueue extends Base {
         super(options);
         this.lists = [];
         this.ticks = [];
+        this.nextTicks = [];
         super.init(options);
     }
 
@@ -14,14 +15,16 @@ class renderQueue extends Base {
         range.setEnd({ node: node.nextSibling });
         let renderObj = {
             range,
-            node
+            node,
+            type
         }
-        if(type == 'text') {
+        
+        if (type == 'text') {
             this.lists.push(renderObj);
             return;
         }
         let has = this.lists.find((render, index) => {
-            if (render.range.getRelation(renderObj.range) == 'conincide') {
+            if (render.range.getRelation(renderObj.range) == 'conincide' && render.type!='text') {
                 this.lists.splice(index, 1)
                 return true;
             }
@@ -43,20 +46,37 @@ class renderQueue extends Base {
         });
 
         // bug 跑完当前tick后 tick里面加入新tick， 但是当前tick会移除所有tick 
+        this._console.info('logo -lists', this.lists)
         if (this.lists.length == 0) {
-            this.constructor.Target = null;
-            this.ticks.map(tick => {
-                tick();
-                
-            });
-            this.ticks = [];
+           this.implementCallback();
         }
-        
-        
+
+
+    }
+
+    implementCallback() {
+    
+        this.locked = true;
+        this.ticks.map(tick => {
+            tick();
+        });
+        this.locked = false;
+        this.ticks = this.nextTicks;
+        this.nextTicks = [];
+
     }
     nextTick(f) {
-       console.log('push')
-        this.ticks.push(f);
+        if(this.locked) {
+            this.nextTicks.push(f);
+        }else {
+            this.ticks.push(f);
+        }
+        
+        if (this.lists.length == 0) {
+            this.implementCallback();
+           
+        }
+      
     }
 }
 
