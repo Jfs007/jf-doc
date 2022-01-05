@@ -13,7 +13,6 @@ export default class Unit extends Node {
 
         this.nodeType = 'unit';
         this.class = "jf-unit";
-        // console.log(options, 'opots')
         // 评论数组
         this.comments = [...(options.comments || [])];
         // 文本
@@ -223,15 +222,11 @@ export default class Unit extends Node {
         let clone = cursor.node.cloneNode();
         clone.guid = cursor.node.guid;
         clone.text = text;
-        console.log( cursor.range.startNode.text, 'text...compositioning')
-        // console.log(cursor.range.startNode.text, cursor.range.endNode.text, 'huabulai')
         cursor.range.getRange((node, index) => {
-           console.log(node.text, 'hello', text)
             node.L.removeChild(node);
             return node;
         }, false);
         let startNode = cursor.range.startNode;
-        console.log(startNode.nextSibling, 'nodes')
         if (startNode.nextSibling) {
 
             startNode.L.insertBefore(clone, startNode.nextSibling)
@@ -242,15 +237,11 @@ export default class Unit extends Node {
     }
 
     updateCompositionRange(cursor) {
-        if(!cursor || !cursor.range) return;
-        // console.log(cursor.)
+        if (!cursor || !cursor.range) return;
         let startNode = cursor.range.startNode;
-        if(!startNode) return;
-        // startNode.ge
-        console.log(startNode.text, 'text...updateCompositionRange');
+        if (!startNode) return;
         startNode.getNextSameNodeTypeNodes(node => {
-            if(!node.is_composition) {
-                console.log(node.text, 'node');
+            if (!node.is_composition) {
                 cursor.range.setEnd({
                     node,
                     offset: 0
@@ -281,8 +272,7 @@ export default class Unit extends Node {
             node: nodeleft,
             offset: nodeleft.getTextLength()
         });
-        this._console.warn(nodeleft.text, 'text..composition');
-       
+
         range.setEnd({
             node: noderight,
             offset: 0
@@ -293,6 +283,9 @@ export default class Unit extends Node {
     }
 
     compositionEnd(cursor) {
+        cursor.range.getRange((node, index) => {
+            node.is_composition = false;
+        }, false);
         let nextSibling = this.nextSibling;
         let previousSibling = this.previousSibling;
 
@@ -303,6 +296,8 @@ export default class Unit extends Node {
         this.parentNode.removeChild(nextSibling);
         this.text = leftText + text + rightText;
         this.is_composition = false;
+
+
         return this;
     }
 

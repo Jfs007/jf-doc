@@ -115,7 +115,6 @@ export default class Cursor extends Base {
         if (range) {
             
             this.dom = isTextNode(range.startContainer) ? range.startContainer.parentNode : range.startContainer;
-            // console.log(range.startContainer, 'range.startContainer', this.dom, this.dom.__unit__.text, '---', this.node&&this.node.text)
             this.node = this.dom.__unit__;
             this.node.__cursor__ = this;
 

@@ -75,7 +75,6 @@ export default class RectRange extends Base {
     getRange(callback = (node) => { }, include = true) {
         let startNode = this.startNode;
         let endNode = this.endNode;
-        // console.log(startNode.text, 'stt', endNode.text, 'hhdlsjfjdf')
         let index = 0;
         let nodes = [];
         // let collapsed

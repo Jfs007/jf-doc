@@ -74,7 +74,6 @@ export default {
     }
   },
   mounted() {
-    // console.log(this.$refs['input'])
     this.doc.cursor.__el__ = this.$refs['input'];
   },
   methods: {
@@ -84,7 +83,6 @@ export default {
     },
     keyDown(e) {
       this.cursor.keyCode = e.keyCode;
-      // console.log(value, 'e');
     },
     getInput() {
       return this.$refs['input'];

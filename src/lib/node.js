@@ -65,12 +65,11 @@ export default class Node extends Base {
         this.__text__ = value;
         let node = this;
         if (!this.__virtual__) {
-           
+
             node.__mounted = () => {
                 renderQueue.releaseTicks(node);
             }
             renderQueue.push(node, 'text');
-            this._console.info('text - change change1', renderQueue.lists.length)
         }
         setTimeout(_ => {
             node.__mounted && node.__mounted();
@@ -138,28 +137,17 @@ export default class Node extends Base {
     }
 
     onMount() {
-        // this._console.info('mount', this.__el__);
-        // this.__virtual__ = false;
         this.__wraping__ = false;
-
-        // renderQueue.goTicks();
-        // this._console,o
         this.__mounted && this.__mounted();
         this.mountedList.map(callback => callback());
         this.mountedList = [];
     }
     onRender(el) {
-        this._console.info('render -node')
-            if(!this.__el__&&el) {
-                this.__el__ = el;
-                this.__el__.__unit__ = this;
-            }
-            // this.__render &&     
-            // this.renderList.map(callback => callback());
-            // this.renderList = [];
-            
-            // this._console.info('正在render', this.__el__);
-  
+        if (!this.__el__ && el) {
+            this.__el__ = el;
+            this.__el__.__unit__ = this;
+        }
+
     }
 
     pushMount(node) {
@@ -168,11 +156,10 @@ export default class Node extends Base {
         // let renderObj = {
         //     range
         // }
-        
+
 
 
         if (node.parentNode && !node.parentNode.__virtual__) {
-            this._console.info('push')
             // 如果是虚拟节点则推入
             if (node.__virtual__) {
                 node.__mounted = () => {
@@ -212,7 +199,6 @@ export default class Node extends Base {
             childNodes
         } = this.parentNode;
         let idx = childNodes.findIndex(node => node == this);
-        // console.log(childNodes, 'childrem');
         this.nextSibling = childNodes[idx + 1];
         this.previousSibling = childNodes[idx - 1];
 
@@ -316,7 +302,7 @@ export default class Node extends Base {
         let node = _this.previousSibling;
         while (node) {
             let rs = callback(node);
-            if(rs == 'break') {
+            if (rs == 'break') {
                 break;
             }
             let parentNode = node.parentNode;
@@ -335,7 +321,7 @@ export default class Node extends Base {
         let node = _this.nextSibling;
         while (node) {
             let rs = callback(node);
-            if(rs == 'break') {
+            if (rs == 'break') {
                 break;
             }
             let parentNode = node.parentNode;
@@ -433,7 +419,6 @@ export default class Node extends Base {
             let node = this.childNodes.splice(idx, 1);
             let previousSibling = dnode.previousSibling;
             let nextSibling = dnode.nextSibling;
-            // console.log(previousSibling&&previousSibling.text, nextSibling&&nextSibling.text, 'vw', dnode.nextSibling.text)
             if (previousSibling) {
                 // pr
                 previousSibling._solveSibling();
@@ -441,7 +426,6 @@ export default class Node extends Base {
             if (nextSibling) {
                 nextSibling._solveSibling();
             }
-            // console.log('vw1', dnode.nextSibling.text)
             this._solveLastChild();
             this._solveFirstChild();
             this.pushMount(dnode);

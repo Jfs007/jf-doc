@@ -102,8 +102,6 @@ export default class Section extends Node {
         }
 
         let cLine = Line.nextSibling;
-
-        //    console.log(cLine)
         while (!!cLine) {
             let _cline_ = cLine;
             cLine = cLine.nextSibling;
@@ -210,7 +208,6 @@ export default class Section extends Node {
                                 node.text = text.slice(content_offset);
                                 node.__wraping__ = false;
                                 if (node.isBlank()) {
-                                    console.log('is-blank')
                                     nextLine.removeChild(node);
                                 }
                                 let clone = node.cloneNode();
@@ -291,10 +288,7 @@ export default class Section extends Node {
                 // overEle = prev[0]
                 let content_offset = Line.rectRange.startOffset;
                 let nodes = Line.rectRange.getRange((node, index) => {
-                    // this._console.info('over node none none')
-                    if(node == (cursor&&cursor.node)) {
-                        this._console.info('over node')
-                    }
+                   
                     node.__wraping__ = true;
                    
                     let __x__ = node.__overed__ ? (Line.rectRange.endElx - Line.rectRange.startElx) : -Line.rectRange.startElx;

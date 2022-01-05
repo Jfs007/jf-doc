@@ -60,12 +60,14 @@ class Doc extends Node {
                             offset = 0;
                         }
                         this.cursor.set(unit.__el__, offset);
+                        // this._console.warn('错误的进行了emptyInput')
                         this.cursor.emptyInput()
                     }
                 } else { 
                     this.cursor.place(e);
                 }
             } else {
+                
                 this.cursor.closeComposition();
                 this.cursor.emptyInput();
                 this.cursor.empty();
@@ -356,8 +358,9 @@ class Doc extends Node {
             if (composition == 'update') {
                 offset = 0;
                 // 清空其余的composition 文档只允许存在一个composition?
-                let cursorNode = this.cursor.node.compositioning(this.cursor, this.cursor.oldInput);
-                this.cursor.setNode(cursorNode);
+                // let cursorNode = this.cursor.node.compositioning(this.cursor, this.cursor.oldInput);
+                // this.cursor.setNode(cursorNode);
+                this.cursor.node.text = this.cursor.oldInput;
 
             } else {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
@@ -368,16 +371,14 @@ class Doc extends Node {
                 let update_offset = offset + this.cursor.offset;
                 let composition = this.cursor.composition;
                 if (composition == 'update') {
-                    this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
+                    // 关闭
+                    // this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                 } else {
                     this.cursor.update(update_offset);
 
                 }
                 let _cursor = this.cursor;
-                // console.log(this.cursor.node.text, 'set-next', 'cur')
-                // return;
                 let breakwords= this.cursor.node.S.breakWord2(_cursor);
-               
                 this.cursor.node.updateCompositionRange(_cursor);
                 if (breakwords.breaks.length) {
                     let breakword = breakwords.breaks;
@@ -387,9 +388,11 @@ class Doc extends Node {
                     if (startOffset <= this.cursor.offset - 1 && startNode == this.cursor.node) {
                         this.nextTick(() => {
                             let offset = composition == 'update' ? this.cursor.node.L.nextSibling.firstChild.getTextLength() : 1;
-                            this._console.warn('eeeee', offset, this.cursor.node.L.nextSibling.firstChild.text)
-                            this.cursor.emptyInput();
-                            this.cursor.set(this.cursor.node.L.nextSibling.firstChild.__el__, offset)
+                            if(!composition) {
+                                this.cursor.emptyInput();
+                                this.cursor.set(this.cursor.node.L.nextSibling.firstChild.__el__, offset)
+                            }
+                           
                         })
 
                     }else {
@@ -409,9 +412,6 @@ class Doc extends Node {
             let composition = this.cursor.node.composition(this.cursor);
             this.cursor.composition = 'start';
             this._console.warn('compositionstart');
-            // let range = new RectRange();
-            // range.setStart()
-            // this.cursor.range = range;
             this.cursor.node = composition;
             this.cursor.offset = 0;
         });
@@ -421,14 +421,16 @@ class Doc extends Node {
         this.events.on(cursor, 'compositionend', (e) => {
             // return;
             this.cursor.composition = 'end';
-            
-            let previousSibling = this.cursor.node.previousSibling;
+            this._console.error('end========');
             this.cursor.composition = '';
             this.cursor.offset = 0;
-            let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
+            // let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
             this.cursor.node.compositionEnd(this.cursor);
             this.cursor.closeComposition();
             this.nextTick(_ => {
+                let previousSibling = this.cursor.node.previousSibling;
+                let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
+                this._console.error('compositionend，update========');
                 this.cursor.update(offset);
             })
         })

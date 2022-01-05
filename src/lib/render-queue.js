@@ -46,7 +46,6 @@ class renderQueue extends Base {
         });
 
         // bug 跑完当前tick后 tick里面加入新tick， 但是当前tick会移除所有tick 
-        this._console.info('logo -lists', this.lists)
         if (this.lists.length == 0) {
            this.implementCallback();
         }

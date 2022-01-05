@@ -29,7 +29,7 @@ export let getRectNodePos = (textNode, pos) => {
     let rect = range.getBoundingClientRect();
     return rect;
 }
-export let computedLineFeed = (line, callback = () => {}) => {
+export let computedLineFeed = (line, callback = () => { }) => {
     console.time('st')
     let range = getRange();
     let textNodes = getTextNodes(line);
@@ -66,23 +66,23 @@ export let computedLineFeed = (line, callback = () => {}) => {
     let SingleLineActuator = (Line) => {
         let end = false;
         Line.find(({ node, start, copyNode }, index) => {
-            
+
             if (end) return true;
             let value = node.nodeValue;
             let originStart = start || 0;
-            start = start == undefined ? 0 : start ;
+            start = start == undefined ? 0 : start;
             for (let i = start; i < value.length; i++) {
                 range.setStart(node, i);
                 range.setEnd(node, i + 1);
-        
+
                 let rect = range.getBoundingClientRect();
                 let _isLf = isLineFeed({ rect, node });
                 // 是否换行
                 if (_isLf && base) {
-                    cut(index, i, { rect, node },  i - originStart);
+                    cut(index, i, { rect, node }, i - originStart);
                     end = true;
                     SingleLineActuator(Lines[LineNumber])
-                  
+
                     return true;
                     break;
                 }
@@ -90,7 +90,7 @@ export let computedLineFeed = (line, callback = () => {}) => {
                 base = {
                     rect,
                     node
-                }; 
+                };
             }
         })
     }
@@ -116,16 +116,16 @@ export let computedLineFeed = (line, callback = () => {}) => {
  * 
  * 
  */
-export let computedLineFeed2 = (line, callback = () => {}) => {
+export let computedLineFeed2 = (line, callback = () => { }) => {
     // let Line
-    
+
 }
 
 
 export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) => {
     let textNode = getTextNode(dom);
     range = range || getRange();
-    if(!textNode || !textNode.textContent.length) {
+    if (!textNode || !textNode.textContent.length) {
         let node = dom;
         let rect = node.getBoundingClientRect();
         range.setStart(node, 0);
@@ -140,11 +140,11 @@ export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) 
             }
         }
     }
-    
+
     range.setStart(textNode, offset);
     range.setEnd(textNode, offset);
-   
-    
+
+
     let rect = range.getBoundingClientRect();
     let boundary = {
         dir,
