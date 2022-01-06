@@ -52,7 +52,7 @@ class Doc extends Node {
             if (this.__el__.contains(e.target)) {
                 let __unit__ = e.target.__unit__;
                 if (__unit__ && __unit__.nodeType != 'unit') {
-                    
+
                     let unit = __unit__.lastChild;
                     if (unit.nodeType == 'unit') {
                         let offset = unit.getTextLength();
@@ -63,11 +63,11 @@ class Doc extends Node {
                         // this._console.warn('错误的进行了emptyInput')
                         this.cursor.emptyInput()
                     }
-                } else { 
+                } else {
                     this.cursor.place(e);
                 }
             } else {
-                
+
                 this.cursor.closeComposition();
                 this.cursor.emptyInput();
                 this.cursor.empty();
@@ -84,8 +84,8 @@ class Doc extends Node {
     }
 
     nextTick(callback = () => { }) {
-        RenderQueue.nextTick(callback);
-        // setTimeout(callback, 0)
+        // RenderQueue.nextTick(callback);
+        setTimeout(callback, 0)
     }
 
     registered() {
@@ -149,7 +149,7 @@ class Doc extends Node {
         line2.appendChild(unit22);
         line2.appendChild(unit5);
         line2.appendChild(unit23);
-    
+
         section1.appendChild(line2);
         this.appendChild(section1);
         // this.appendChild(section1);
@@ -255,14 +255,14 @@ class Doc extends Node {
                 accord = false;
                 stopBreakWord = true;
                 let Line = this.cursor.node.S.insetSection(this.cursor);
-             
-                if(!Line.childNodes.length) {
+
+                if (!Line.childNodes.length) {
                     this.cursor.set(Line.nextSibling.childNodes[0].__el__, 0);
                     return;
-                } 
-                
+                }
+
                 // this.cursor.node.S.breakWord2(this.cursor);
-                
+
                 // return;
                 this.nextTick(_ => {
                     this.cursor.reset();
@@ -355,65 +355,101 @@ class Doc extends Node {
             let offset = 0;
             offset = this.cursor.input.length;
             // let firstCompositionPrev = null;
-            if (composition == 'update') {
-                offset = 0;
-                // 清空其余的composition 文档只允许存在一个composition?
-                // let cursorNode = this.cursor.node.compositioning(this.cursor, this.cursor.oldInput);
-                // this.cursor.setNode(cursorNode);
-                
-                this.cursor.node.text = this.cursor.oldInput;
+            if (!composition) {
 
-            } else {
                 this.cursor.node.appendText(this.cursor, this.cursor.input);
+
             }
             // return
             this.nextTick(_ => {
-               
+
                 let update_offset = offset + this.cursor.offset;
                 let composition = this.cursor.composition;
-                if (composition == 'update') {
+
+                if (!composition) {
+                    this._console.error('baogao')
                     // 关闭
-                    this.cursor.node.compositioning(this.cursor);
+                    // this.cursor.node.compositioning(this.cursor);
                     // this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
-                } else {
+
                     this.cursor.update(update_offset);
+                    let _cursor = this.cursor;
 
-                }
-                let _cursor = this.cursor;
-               
-                // if()
-                let breakwords = this.cursor.node.S.breakWord2(_cursor);
-                // this.cursor.node.updateCompositionRange(_cursor);
-                this._console.info('breaks', breakwords.breaks);
-                // this.cursor.node.compositioning2(_cursor, breakwords.breaks)
-                if (breakwords.breaks.length) {
-                    let breakword = breakwords.breaks;
-                    let _break = breakword[0];
-                    let startNode = _break.startNode;
-                    let startOffset = _break.startOffset;
-                    if (startOffset <= this.cursor.offset - 1 && startNode == this.cursor.node) {
-                        this.nextTick(() => {
-                            let offset = composition == 'update' ? this.cursor.node.L.nextSibling.firstChild.getTextLength() : 1;
-                            if(!composition) {
-                                this.cursor.emptyInput();
-                                this.cursor.set(this.cursor.node.L.nextSibling.firstChild.__el__, offset)
-                            }
-                           
-                        })
+                    // if()
+                    let breakwords = this.cursor.node.S.breakWord2(_cursor);
+                    // this.cursor.node.updateCompositionRange(_cursor);
+                    this._console.info('breaks', breakwords.breaks);
+                    // this.cursor.node.compositioning2(_cursor, breakwords.breaks)
+                    if (breakwords.breaks.length) {
+                        let breakword = breakwords.breaks;
+                        let _break = breakword[0];
+                        let startNode = _break.startNode;
+                        let startOffset = _break.startOffset;
+                        if (startOffset <= this.cursor.offset - 1 && startNode == this.cursor.node) {
+                            this.nextTick(() => {
+                                let offset = composition == 'update' ? this.cursor.node.L.nextSibling.firstChild.getTextLength() : 1;
+                                if (!composition) {
+                                    this.cursor.emptyInput();
+                                    this.cursor.set(this.cursor.node.L.nextSibling.firstChild.__el__, offset)
+                                }
 
-                    }else {
-                        this.nextTick(() => {
-                            // this.cursor.update(update_offset);
-                        })
-                        
-                        
+                            })
+
+                        } else {
+                            this.nextTick(() => {
+                                // this.cursor.update(update_offset);
+                            })
+
+
+                        }
                     }
                 }
             })
         });
+
+        let compositionupdate = e => {
+            this._console.error('buduangengx');
+            let offset = 0;
+            // this._console.warn('compositionupdate');
+            this.cursor.range.startNode.nextSibling.text = e.data;
+            this.nextTick(_ => {
+
+                this._console.warn('compositionupdate --- nexttick', this.cursor.composition, e.data, 'data', _);
+                this.cursor.node.compositioning(this.cursor);
+                let breakwords = this.cursor.node.S.breakWord2(this.cursor);
+                this.cursor.node.updateCompositionRange(this.cursor);
+                this.nextTick(_ => {
+                //     if (this.cursor.composition == 'end') {
+                //         // this.cursor.node.compositionEnd(this.cursor);
+                //         // this.cursor.closeComposition();
+                //     }
+
+                })
+               
+            })
+
+        }
+        let compositionend = e => {
+            // this._console.warn('compositionend');
+            // this.cursor.composition = 'end';
+            // compositionupdate(e);
+            // this.cursor.composition = 'end';
+            // this._console.error('end========', e);
+            // this.cursor.composition = '';
+            // this.cursor.offset = 0;
+            // this.nextTick(_ => {
+            //     // this.cursor.node.compositionEnd(this.cursor);
+            //     // this.cursor.closeComposition();
+            //     // let previousSibling = this.cursor.node.previousSibling;
+            //     // let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
+            //     this._console.error('compositionend，update========');
+            //     // this.cursor.update(offset);
+            // })
+        }
+
         this.events.on(cursor, 'compositionstart', (e) => {
             // 防止回流导致的compositionstart事件二次触发
-            if(this.cursor.composition == 'update') return;
+            if (this.cursor.composition == 'update') return;
             this.cursor.emptyInput()
             let composition = this.cursor.node.composition(this.cursor);
             this.cursor.composition = 'start';
@@ -422,23 +458,18 @@ class Doc extends Node {
             this.cursor.offset = 0;
         });
         this.events.on(cursor, 'compositionupdate', (e) => {
+            this._console.warn('compositionupdate');
+            this._console.warn('compositionupdate-===============================---');
             this.cursor.composition = 'update';
-        })
+            compositionupdate(e);
+
+        });
         this.events.on(cursor, 'compositionend', (e) => {
-            // return;
+            this._console.warn('compositionend');
+            this._console.warn('compositionend-===============================---');
             this.cursor.composition = 'end';
-            this._console.error('end========');
-            this.cursor.composition = '';
-            this.cursor.offset = 0;
-            // let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
-            this.cursor.node.compositionEnd(this.cursor);
-            this.cursor.closeComposition();
-            this.nextTick(_ => {
-                let previousSibling = this.cursor.node.previousSibling;
-                let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
-                this._console.error('compositionend，update========');
-                this.cursor.update(offset);
-            })
+            // compositionupdate(e) 
+
         })
 
     }

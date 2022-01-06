@@ -227,14 +227,16 @@ export default class Unit extends Node {
     compositioning(cursor, text) {
         let startNode = cursor.range.startNode;
         let range = getRange();
+        console.log(startNode.text)
         cursor.range.getRange(node => {
-            if(node!=startNode.nextSibling) {
-
+            console.log(node.text, '__x__', node.__el__.innerText)
+            if(node!=startNode.nextSibling && node.is_composition) {
+                // console.log(node.text, '__x__', node.__el__.innerText)
                 let start = computedClientBoundaryByOffset(node.__el__, 0, 'right', range);
                 let end = computedClientBoundaryByOffset(node.__el__, node.getTextLength(), 'right', range);
-                
+                        
                 let __x__ = end.rect.x - start.rect.x;
-                console.log(__x__, '__x__')
+               
                 node.L.childNodes.map(node => {
                     node.__x__ = -__x__;
                 })

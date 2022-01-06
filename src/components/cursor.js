@@ -44,6 +44,7 @@ export default class Cursor extends Base {
         this.top = undefined;
         this.dom = null;
         this.node = null;
+        console.log(this.node, 'node---')
         // this.composition = '';
         this.input = '';
         this.oldInput = '';

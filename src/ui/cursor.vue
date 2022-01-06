@@ -13,7 +13,7 @@
 .jf-editor__cursor {
   opacity: 1;
   position: absolute;
-  background: #F56C6C;
+  background: #f56c6c;
   animation: cursor 1.3s infinite;
   animation-fill-mode: forwards;
   overflow: hidden;
@@ -30,7 +30,12 @@
 </style>
 <template>
   <i class="jf-editor__cursor" :style="place" v-show="cursor.offset > -1">
-    <input class="jf-editor__cursor--input" ref="input" @input="updateInput" @keydown="keyDown"/>
+    <input
+      class="jf-editor__cursor--input"
+      ref="input"
+      @input="updateInput"
+      @keydown="keyDown"
+    />
   </i>
 </template>
 <script>
@@ -41,40 +46,43 @@ export default {
   props: {
     cursor: {
       default() {
-        return {}
-      }
+        return {};
+      },
     },
-    doc: {}
+    doc: {},
   },
   data() {
-    return {
-      
-    };
+    return {};
   },
   watch: {
-    'cursor.offset'(v) {
-      if(v > -1) {
+    "cursor.offset"(v) {
+      if (v > -1) {
         this.$nextTick(() => {
-           this.$refs['input'].focus()
-        })
-       
+          this.$refs["input"].focus();
+        });
       }
-    }
-    
+    },
   },
   computed: {
     place() {
-      let { width, height, left, top } = this.cursor;
-      return {
-        width: width + 'px',
-        height: height + 'px',
-        left: left + 'px',
-        top: top + 'px'
+      let { width, height, left, top, node } = this.cursor;
+      // console.log(node, 'node....', node&&node.is_composition, left, top)
+      if (node && node.is_composition) {
+        return {
+          width: 0,
+          height: 0,
+        };
       }
-    }
+      return {
+        width: width + "px",
+        height: height + "px",
+        left: left + "px",
+        top: top + "px",
+      };
+    },
   },
   mounted() {
-    this.doc.cursor.__el__ = this.$refs['input'];
+    this.doc.cursor.__el__ = this.$refs["input"];
   },
   methods: {
     updateInput(e) {
@@ -85,10 +93,8 @@ export default {
       this.cursor.keyCode = e.keyCode;
     },
     getInput() {
-      return this.$refs['input'];
+      return this.$refs["input"];
     },
-    
-   
   },
 };
 </script>

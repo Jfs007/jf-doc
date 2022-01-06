@@ -70,8 +70,9 @@ class renderQueue extends Base {
         }else {
             this.ticks.push(f);
         }
-        
+       
         if (this.lists.length == 0) {
+            this._console.warn('报告!!!')
             this.implementCallback();
            
         }

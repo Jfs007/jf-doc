@@ -194,7 +194,7 @@ export default class Node extends Base {
         this.mountedList = [];
     }
     onRender(el) {
-        if (!this.__el__ && el) {
+        if (el) {
             this.__el__ = el;
             this.__el__.__unit__ = this;
         }

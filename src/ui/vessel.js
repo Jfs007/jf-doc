@@ -16,6 +16,7 @@ export default {
         this.$el.__unit__ = this.unit;
         this.unit.__el__ = this.$el;
         this.unit.onMount();
+      
 
     },
     beforeDestroy() {
@@ -27,6 +28,7 @@ export default {
             attrs: {
                 'data-id': `${unit.guid}`,
                 'data-__virtual__': `${unit.__virtual__}`,
+                'data-is_composition': `${unit.is_composition}`,
 
             },
             class: unit.class,
