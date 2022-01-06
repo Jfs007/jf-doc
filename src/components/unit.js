@@ -6,6 +6,12 @@ import {
 
 import Tabs from '@/lib/tabs.js';
 import RectRange from '../lib/rectRange.js';
+import {
+    getRange
+} from '@/util/range';
+import {
+    computedClientBoundaryByOffset
+} from '@/util/computed';
 // import DocStyle from './doc-style';
 export default class Unit extends Node {
     constructor(options = {}, update) {
@@ -219,21 +225,50 @@ export default class Unit extends Node {
 
 
     compositioning(cursor, text) {
-        let clone = cursor.node.cloneNode();
-        clone.guid = cursor.node.guid;
-        clone.text = text;
-        cursor.range.getRange((node, index) => {
-            node.L.removeChild(node);
-            return node;
-        }, false);
         let startNode = cursor.range.startNode;
-        if (startNode.nextSibling) {
+        let range = getRange();
+        cursor.range.getRange(node => {
+            if(node!=startNode.nextSibling) {
 
-            startNode.L.insertBefore(clone, startNode.nextSibling)
-        } else {
-            startNode.L.appendChild(clone)
-        }
-        return clone;
+                let start = computedClientBoundaryByOffset(node.__el__, 0, 'right', range);
+                let end = computedClientBoundaryByOffset(node.__el__, node.getTextLength(), 'right', range);
+                
+                let __x__ = end.rect.x - start.rect.x;
+                console.log(__x__, '__x__')
+                node.L.childNodes.map(node => {
+                    node.__x__ = -__x__;
+                })
+                // 为节点打个标记
+                node.L.removeChild(node);
+                
+
+            }
+        }, false)
+        // let clone = cursor.node.cloneNode();
+        // clone.guid = cursor.node.guid;
+        // clone.text = text;
+        // cursor.range.getRange((node, index) => {
+        //     node.L.removeChild(node);
+        //     return node;
+        // }, false);
+        // let startNode = cursor.range.startNode;
+        // if (startNode.nextSibling) {
+
+        //     startNode.L.insertBefore(clone, startNode.nextSibling)
+        // } else {
+        //     startNode.L.appendChild(clone)
+        // }
+        // return clone;
+    }
+    compositioning2(cursor, breaks) {
+        // ------------ 
+        let range = new RectRange();
+        breaks.map(_break => {
+            // 判断是否为输入法
+            if(_break.startNode&&_break.startNode.is_composition) {
+                
+            }
+        })
     }
 
     updateCompositionRange(cursor) {

@@ -1,18 +1,12 @@
 import Node from '@/lib/node';
-// import { guid } from '../util/index';
 import {
     getRange
 } from '@/util/range';
 import {
     computedClientBoundaryByOffset
 } from '@/util/computed';
-import {
-    getTextNode
-} from '@/util/dom';
 import Base from '../lib/base';
-import LineBase from './line';
 import Tabs from '@/lib/tabs.js';
-
 
 class breakWord extends Base {
     constructor(options) {
@@ -136,8 +130,6 @@ export default class Section extends Node {
         let Section = Line.parentNode;
         let breakword = new breakWord();
         let renderQueue = [];
-        // let overOrBlankWidth = 0;
-
         let complement = () => {
             let isBlank = true;
             breakword.type = 'blank'
@@ -156,9 +148,6 @@ export default class Section extends Node {
 
                     nextLine.getAccordWithContentRect(({
                         x,
-                        text,
-                        offset,
-                        node
                     }) => {
                         if (x > blank) {
 
@@ -193,6 +182,12 @@ export default class Section extends Node {
                             return clone;
 
                         }
+                        // 表示进行补充的node需要进行字符串切割
+                        /**
+                         * <span>||||||</span>
+                         * <span>a|||||||||</span>
+                         * a||| 为 a|||||||||的一部分，无需直接删除，而是进行节点切割
+                         */
                         if (node == nextLine.rectRange.endNode) {
                             if (content_offset == node.getTextLength()) {
                                 nextLine.removeChild(node);
@@ -214,7 +209,6 @@ export default class Section extends Node {
                                 clone.guid = node.guid;
                                 clone.text = text.slice(0, content_offset);
                                 clone.__el__ = node.__el__;
-                                // node.__el__.__over__ = content_offset;
                                 clone.__x__ = complement;
                                 node.__offset__ = node.__offset__ ? node.__offset__ + content_offset : content_offset;
 
@@ -246,19 +240,15 @@ export default class Section extends Node {
 
                 } else {
                     isBlank = false;
-                    // overOrBlankWidth = -complement;
                     over();
                 }
             }
             return breakword;
-
         }
 
         let over = () => {
             breakword.type = 'overflow';
             let isOverflow = true;
-
-          
             let max = 0;
             while (isOverflow) {
                 this._console.info('====正在overflow====1')
@@ -267,13 +257,8 @@ export default class Section extends Node {
 
                 (Line).getAccordWithContentRect(({
                     x,
-                    offset,
-                    text,
-                    elx
                 }) => {
-
                     if (x <= clientWidth) {
-                        // this._console.info('hei', x, text[offset], offset, text, '---')
                         return true;
                     }
                 }, 'desc');
@@ -282,15 +267,10 @@ export default class Section extends Node {
                     isOverflow = false;
                     break;
                 }
-
                 breakword.push(Line.rectRange.clone());
-                // let prev = content;
-                // overEle = prev[0]
                 let content_offset = Line.rectRange.startOffset;
                 let nodes = Line.rectRange.getRange((node, index) => {
-                   
                     node.__wraping__ = true;
-                   
                     let __x__ = node.__overed__ ? (Line.rectRange.endElx - Line.rectRange.startElx) : -Line.rectRange.startElx;
                     if (node.__x__ && node.__overed__) {
                         __x__ = node.__x__ - Line.rectRange.startX
@@ -323,7 +303,6 @@ export default class Section extends Node {
                             });
                             return node;
                         } else {
-                            // 使用overoffset的意义，由于over node是虚拟的 
                             let text = node.text;
                             node.text = text.slice(0, content_offset);
                             node.__wraping__ = false;
@@ -338,11 +317,7 @@ export default class Section extends Node {
                                 clone.__x__ = undefined;
                                 clone.__offset__ = undefined;
                                 clone.__overed__ = undefined;
-                                
-
                             });
-                            // console.log(node.text, 'node-text', clone.text, 'clone-text');
-
                             clone.__offset__ = clone.__offset__ ? clone.__offset__ + content_offset : content_offset;
 
                             clone.__x__ = __x__;
@@ -358,8 +333,6 @@ export default class Section extends Node {
                         return node;
                     }
                 });
-               
-
                 if (!nextLine) {
                     let newLine = Line.cloneNode();
                     newLine.emptyChildNodes();
@@ -373,23 +346,15 @@ export default class Section extends Node {
                         })
                     })
                     Section.appendChild(newLine);
-
                     nextLine = newLine;
-
-                    // break;
                 } else {
-                    // nextLine.__over__ = nodes;
-                    // renderQueue.push(() => {
-                    //     nextLine.startInsertUnits(nodes);
-                    // });
                     nextLine.childNodes.map(node => {
-
-                        node.__x__ = (Line.rectRange.endX - Line.rectRange.startX);
+                        let nx = node.__x__ || 0;
+                        node.__x__ = (Line.rectRange.endX - Line.rectRange.startX) + nx;
                         node.__overed__ = 1;
                         renderQueue.push(() => {
                             node.__overed__ = undefined;
                             node.__x__ = undefined;
-
                         });
                     });
                     let _units_ = nextLine.startInsertUnits(nodes);
@@ -398,15 +363,11 @@ export default class Section extends Node {
                             node.__offset__ = undefined;
                         })
                     })
-
-
                 }
                 Line = nextLine;
                 this._console.info('====overflow结束====1')
                 max++;
             }
-           
-
             renderQueue.map(queue => queue());
             return breakword;
         }

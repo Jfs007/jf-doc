@@ -360,6 +360,7 @@ class Doc extends Node {
                 // 清空其余的composition 文档只允许存在一个composition?
                 // let cursorNode = this.cursor.node.compositioning(this.cursor, this.cursor.oldInput);
                 // this.cursor.setNode(cursorNode);
+                
                 this.cursor.node.text = this.cursor.oldInput;
 
             } else {
@@ -372,14 +373,19 @@ class Doc extends Node {
                 let composition = this.cursor.composition;
                 if (composition == 'update') {
                     // 关闭
+                    this.cursor.node.compositioning(this.cursor);
                     // this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
                 } else {
                     this.cursor.update(update_offset);
 
                 }
                 let _cursor = this.cursor;
-                let breakwords= this.cursor.node.S.breakWord2(_cursor);
-                this.cursor.node.updateCompositionRange(_cursor);
+               
+                // if()
+                let breakwords = this.cursor.node.S.breakWord2(_cursor);
+                // this.cursor.node.updateCompositionRange(_cursor);
+                this._console.info('breaks', breakwords.breaks);
+                // this.cursor.node.compositioning2(_cursor, breakwords.breaks)
                 if (breakwords.breaks.length) {
                     let breakword = breakwords.breaks;
                     let _break = breakword[0];
