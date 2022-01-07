@@ -12,14 +12,11 @@
     left: 0;
     bottom: 0;
     right: 0;
-    
   }
 
   .ui-image-container:hover {
-     box-shadow: 0 0 0 2px rgba(48, 98, 242, 40%);
+    box-shadow: 0 0 0 2px rgba(48, 98, 242, 40%);
   }
-
-
 }
 </style>
 <template>
@@ -31,9 +28,8 @@
       <span class="ui-image__squarehandleselectionbo-handle"></span>
     </div>
     <div class="ui-image-container">
-    <img :src="unit.url" @click="cursor" />
+      <img :src="unit.url" @click="cursor" />
     </div>
-    
   </span>
 </template>
 <script>
@@ -48,14 +44,31 @@ export default {
   name: "ui-image",
   data() {
     return {
-      isSelect: false
-    }
+      isSelect: false,
+    };
   },
-  created() {},
-  methods: {
-    cursor() {
-      
+  created() {
+    this.load();
+  },
+  watch: {
+    "unit.url"() {
+      this.load();
     },
+  },
+  methods: {
+    load() {
+      this.$nextTick((_) => {
+        let image = new Image();
+        image.src = this.unit.url;
+        image.onload = () => {
+          this.unit.S.breakWord2({ node: this.unit });
+        };
+        image.onerror = () => {
+          this.unit.S.breakWord2({ node: this.unit });
+        };
+      });
+    },
+    cursor() {},
   },
 };
 </script>

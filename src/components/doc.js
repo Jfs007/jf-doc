@@ -108,7 +108,7 @@ class Doc extends Node {
         });
         let unit4 = new Unit({
             type: 'image',
-            url: 'http://doc2.tongmingmedia.com/uploads/201811/avatar_1566a6c28504c915_small.jpeg'
+            url: 'http://doc2.tongmingmedia.com/uploads/201811/avatar_1566a6c28504c915#_small.jpeg'
             // text: '1'
         });
         let unit5 = new Unit({
