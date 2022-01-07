@@ -3,7 +3,7 @@
 
 
    
-![image](https://github.com/Jfs007/jf-doc/blob/main/screenshot/demo.gif)
+![image](http://r5bupxbkf.hn-bkt.clouddn.com/jf-doc-demo.gif)
 
 
 
