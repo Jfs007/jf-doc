@@ -108,12 +108,13 @@ class Doc extends Node {
         });
         let unit4 = new Unit({
             type: 'image',
-            url: 'http://doc2.tongmingmedia.com/uploads/201811/avatar_1566a6c28504c915#_small.jpeg'
+            url: 'http://dsmall.jpeg'
             // text: '1'
         });
         let unit5 = new Unit({
             type: 'image',
-            url: 'https://starorange.xingju.top/static/img/login_logo.3c478d98.png',
+            width: 160,
+            url: 'http://r5bupxbkf.hn-bkt.clouddn.com/1461631846131_.pic_hd.jpg',
             // text: '2'
         })
         let unit3 = new Unit({
