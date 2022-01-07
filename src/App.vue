@@ -1,14 +1,8 @@
 <template>
   <div id="app">
+    <div style="text-align: center">demo版本 换行出现问题，尝试刷新解决</div>
     <doc style="width: 430px;height: 400px;margin: 20px auto;">
-      <ui-section>
-        <ui-text>我改动一下好多东西</ui-text>
-        <ui-text>我真的好烦啊看撒短发开始看</ui-text>
-      </ui-section>
-      <ui-section>
-        <ui-text>第二行哈哈哈哈哈</ui-text>
-        <ui-text>上飞机阿斯顿激发绝地反击啊大煞风景</ui-text>
-      </ui-section>
+     
     </doc>
   </div>
 </template>
