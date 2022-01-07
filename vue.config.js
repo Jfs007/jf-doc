@@ -8,7 +8,7 @@ function resolve(dir) {
 
 
 module.exports = {
-    publicPath: '/',
+    publicPath: './',
     lintOnSave: false,
     configureWebpack: {
 
