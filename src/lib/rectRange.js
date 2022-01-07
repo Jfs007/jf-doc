@@ -81,16 +81,16 @@ export default class RectRange extends Base {
         // 如果在同一个节点
         if (startNode == endNode && this.endOffset == 0) return [];
         if (include) {
-            let node = callback(startNode, index);
+            let node = callback(startNode, index, this);
             if (node) nodes.push(node);
         }
         index++;
         if (startNode == endNode) return nodes;
         startNode = startNode.nextSibling;
         while (startNode) {
-            if (startNode == endNode && this.endOffset == 0) break;
+            // if (startNode == endNode && this.endOffset == 0) break;
             if (!(startNode == endNode && !include)) {
-                let node = callback(startNode, index);
+                let node = callback(startNode, index, this);
                 if (node) nodes.push(node);
             }
             index++;

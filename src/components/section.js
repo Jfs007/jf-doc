@@ -164,7 +164,8 @@ export default class Section extends Node {
                     };
                     // breakword.push(prev);
                     let content_offset = nextLine.rectRange.endOffset;
-                    let nodes = nextLine.rectRange.getRange((node) => {
+                    let nodes = nextLine.rectRange.getRange((node, index, range) => {
+                        if(range.endOffset == 0 && range.endNode == node) return null;
                         node.__wraping__ = true;
                         if (!node.isText()) {
                             let clone = node.cloneNode();
@@ -269,7 +270,9 @@ export default class Section extends Node {
                 }
                 breakword.push(Line.rectRange.clone());
                 let content_offset = Line.rectRange.startOffset;
-                let nodes = Line.rectRange.getRange((node, index) => {
+                let nodes = Line.rectRange.getRange((node, index, range) => {
+
+                    if(range.endOffset == 0 && range.endNode == node) return null;
                     node.__wraping__ = true;
                     let __x__ = node.__overed__ ? (Line.rectRange.endElx - Line.rectRange.startElx) : -Line.rectRange.startElx;
                     if (node.__x__ && node.__overed__) {

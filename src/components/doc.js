@@ -191,7 +191,7 @@ class Doc extends Node {
 
         // 
         this.events.on(cursor, 'keydown', (e) => {
-            return;
+            // return;
 
             let {
                 composition
@@ -266,10 +266,6 @@ class Doc extends Node {
                 // return;
                 this.nextTick(_ => {
                     this.cursor.reset();
-                    // this.cursor.reset();
-                    // this.cursor.set(Line.childNodes[0].__el__, 0);
-                    // this.cursor.node.S.breakWord2(this.cursor);
-                    // return;
                     Line.childNodes[0].S.breakWord2({ node: Line.childNodes[0] });
                     this.nextTick(() => {
                         this.cursor.set(Line.childNodes[0].__el__, 0);
@@ -362,16 +358,9 @@ class Doc extends Node {
             }
             // return
             this.nextTick(_ => {
-
                 let update_offset = offset + this.cursor.offset;
                 let composition = this.cursor.composition;
-
                 if (!composition) {
-                    this._console.error('baogao')
-                    // 关闭
-                    // this.cursor.node.compositioning(this.cursor);
-                    // this.cursor.set(this.cursor.node.__el__, this.cursor.node.text.length);
-
                     this.cursor.update(update_offset);
                     let _cursor = this.cursor;
 
@@ -408,43 +397,28 @@ class Doc extends Node {
         });
 
         let compositionupdate = e => {
-            this._console.error('buduangengx');
-            let offset = 0;
-            // this._console.warn('compositionupdate');
             this.cursor.range.startNode.nextSibling.text = e.data;
             this.nextTick(_ => {
-
-                this._console.warn('compositionupdate --- nexttick', this.cursor.composition, e.data, 'data', _);
                 this.cursor.node.compositioning(this.cursor);
                 let breakwords = this.cursor.node.S.breakWord2(this.cursor);
                 this.cursor.node.updateCompositionRange(this.cursor);
-                this.nextTick(_ => {
-                //     if (this.cursor.composition == 'end') {
-                //         // this.cursor.node.compositionEnd(this.cursor);
-                //         // this.cursor.closeComposition();
-                //     }
+                // this.nextTick(_ => {
+                if (this.cursor.composition == 'end') {
+                    let _cursor = this.cursor.node.compositionEnd(this.cursor);
+                    this.cursor.closeComposition();
+                    this.nextTick(_ => {
+                        if(_cursor.node) {
+                            this.cursor.set(_cursor.node.__el__, _cursor.offset)
+                        }
+                    })
 
-                })
-               
+                }
+
+
+                // })
+
             })
 
-        }
-        let compositionend = e => {
-            // this._console.warn('compositionend');
-            // this.cursor.composition = 'end';
-            // compositionupdate(e);
-            // this.cursor.composition = 'end';
-            // this._console.error('end========', e);
-            // this.cursor.composition = '';
-            // this.cursor.offset = 0;
-            // this.nextTick(_ => {
-            //     // this.cursor.node.compositionEnd(this.cursor);
-            //     // this.cursor.closeComposition();
-            //     // let previousSibling = this.cursor.node.previousSibling;
-            //     // let offset = this.cursor.oldInput.length + (previousSibling ? previousSibling.text.length : 0);
-            //     this._console.error('compositionend，update========');
-            //     // this.cursor.update(offset);
-            // })
         }
 
         this.events.on(cursor, 'compositionstart', (e) => {
@@ -453,20 +427,15 @@ class Doc extends Node {
             this.cursor.emptyInput()
             let composition = this.cursor.node.composition(this.cursor);
             this.cursor.composition = 'start';
-            this._console.warn('compositionstart');
             this.cursor.node = composition;
             this.cursor.offset = 0;
         });
         this.events.on(cursor, 'compositionupdate', (e) => {
-            this._console.warn('compositionupdate');
-            this._console.warn('compositionupdate-===============================---');
             this.cursor.composition = 'update';
             compositionupdate(e);
 
         });
         this.events.on(cursor, 'compositionend', (e) => {
-            this._console.warn('compositionend');
-            this._console.warn('compositionend-===============================---');
             this.cursor.composition = 'end';
             // compositionupdate(e) 
 

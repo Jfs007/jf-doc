@@ -8,7 +8,7 @@
   color: #F56C6C
 }
 .jf-unit {
-  outline: 1px solid red;;
+  // outline: 1px solid rgb(118, 228, 197);
 }
 </style>
 <template>

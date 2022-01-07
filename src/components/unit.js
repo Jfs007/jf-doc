@@ -227,22 +227,20 @@ export default class Unit extends Node {
     compositioning(cursor, text) {
         let startNode = cursor.range.startNode;
         let range = getRange();
-        console.log(startNode.text)
         cursor.range.getRange(node => {
-            console.log(node.text, '__x__', node.__el__.innerText)
-            if(node!=startNode.nextSibling && node.is_composition) {
+            if (node != startNode.nextSibling && node.is_composition) {
                 // console.log(node.text, '__x__', node.__el__.innerText)
                 let start = computedClientBoundaryByOffset(node.__el__, 0, 'right', range);
                 let end = computedClientBoundaryByOffset(node.__el__, node.getTextLength(), 'right', range);
-                        
+
                 let __x__ = end.rect.x - start.rect.x;
-               
+
                 node.L.childNodes.map(node => {
                     node.__x__ = -__x__;
                 })
                 // 为节点打个标记
                 node.L.removeChild(node);
-                
+
 
             }
         }, false)
@@ -267,8 +265,8 @@ export default class Unit extends Node {
         let range = new RectRange();
         breaks.map(_break => {
             // 判断是否为输入法
-            if(_break.startNode&&_break.startNode.is_composition) {
-                
+            if (_break.startNode && _break.startNode.is_composition) {
+
             }
         })
     }
@@ -278,7 +276,9 @@ export default class Unit extends Node {
         let startNode = cursor.range.startNode;
         if (!startNode) return;
         startNode.getNextSameNodeTypeNodes(node => {
+
             if (!node.is_composition) {
+
                 cursor.range.setEnd({
                     node,
                     offset: 0
@@ -320,22 +320,59 @@ export default class Unit extends Node {
     }
 
     compositionEnd(cursor) {
+        // let text = 
+        let removeNodes = [];
+        let cursorNode = null;
+        let offset = 0;
+        let startNode = cursor.range.startNode;
+        let endNode = cursor.range.endNode;
+        if (startNode.L == endNode.L) {
+            offset = startNode.getTextLength() + startNode.nextSibling.getTextLength();
+        }
+        if (startNode.L != endNode.L) {
+            endNode.previousSibling && (offset = endNode.previousSibling.getTextLength())
+
+        }
+
         cursor.range.getRange((node, index) => {
+            if (!node.is_composition) {
+                if (index == 0 && node.nextSibling) {
+                    node.nextSibling.text = node.text + node.nextSibling.text;
+
+                    removeNodes.push(node);
+                    cursorNode = node.nextSibling;
+                    // this.parentNode.removeChild(node);
+                }
+                if (index != 0 && node.previousSibling) {
+                    node.previousSibling.text = node.previousSibling.text + node.text;
+                    removeNodes.push(node);
+                    cursorNode = node.previousSibling;
+
+                    // this.parentNode.removeChild(node);
+                }
+
+            }
             node.is_composition = false;
-        }, false);
-        let nextSibling = this.nextSibling;
-        let previousSibling = this.previousSibling;
+        });
+        removeNodes.map(node => {
+            node.parentNode.removeChild(node);
+        });
+        removeNodes = [];
 
-        let leftText = previousSibling ? previousSibling.text : '';
-        let rightText = nextSibling ? nextSibling.text : '';
-        let text = cursor.oldInput;
-        this.parentNode.removeChild(previousSibling);
-        this.parentNode.removeChild(nextSibling);
-        this.text = leftText + text + rightText;
-        this.is_composition = false;
+        // let nextSibling = this.nextSibling;
+        // let previousSibling = this.previousSibling;
 
-
-        return this;
+        // let leftText = previousSibling ? previousSibling.text : '';
+        // let rightText = nextSibling ? nextSibling.text : '';
+        // let text = cursor.oldInput;
+        // this.parentNode.removeChild(previousSibling);
+        // this.parentNode.removeChild(nextSibling);
+        // this.text = leftText + text + rightText;
+        // this.is_composition = false;
+        return {
+            node: cursorNode,
+            offset
+        };
     }
 
 
