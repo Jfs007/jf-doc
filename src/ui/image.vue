@@ -28,7 +28,7 @@
       <span class="ui-image__squarehandleselectionbo-handle"></span>
     </div>
     <div class="ui-image-container">
-      <img :src="unit.url" @click="cursor" />
+      <img :src="unit.url" @click="cursor" :width="unit.width"/>
     </div>
   </span>
 </template>
