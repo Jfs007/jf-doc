@@ -215,10 +215,18 @@ class Doc extends Node {
                         // 判断上一个node是否存在
                         if (previousSibling) {
                             // 删除当前的，move到上一个node位置
-                            if (this.cursor.node.isBlank()) {
-                                this.cursor.node.L.removeChild(this.cursor.node);
+                            // 不是文本类型
+                            if(!previousSibling.isText()) {
+                                this.cursor.node.L.removeChild(previousSibling);
+                                offset = 0;
+                            }else {
+                                if (this.cursor.node.isBlank()) {
+                                    this.cursor.node.L.removeChild(this.cursor.node);
+                                }
+                                this.cursor.set(previousSibling.__el__, previousSibling.text.length);
+
                             }
-                            this.cursor.set(previousSibling.__el__, previousSibling.text.length);
+                           
                         } else {
                             // 不存在move至上一行
                             let node = this.cursor.node.getPreviousSameNodeTypeNode();
