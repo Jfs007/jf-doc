@@ -125,6 +125,7 @@ export default class Section extends Node {
         let range = getRange();
         let node = cursor ? cursor.node : this.childNodes[0].childNodes[0];
         let Line = node.parentNode;
+       
         let lineRect = Line.__el__.getBoundingClientRect();
         let clientWidth = Line.__el__.clientWidth;
         let Section = Line.parentNode;
