@@ -25,14 +25,33 @@ function isMobile() {
 }
 // index 表示需要分割的index 左侧位置 
 function vSplit(array, index) {
-    if(Array.isArray(array)) {
+    if (Array.isArray(array)) {
         array = [].concat([], array);
     }
     return [array.slice(0, index), array.slice(index)]
 }
 
 
+function each(array, callback = () => { }) {
+    if (Object.prototype.toString.call(array) != '[object Object]') {
+        for (let i = 0; i <= array.length - 1; i++) {
+            let rs = callback(array[i], i);
+            if (rs == 'break') {
+                break;
+            }
+        }
+    } else {
+        for (let key in array) {
+            let rs = callback(array[key], key);
+            if (rs == 'break') {
+                break;
+            }
+        }
+    }
+}
+
 export {
+    each,
     isMobile,
     getProperty,
     guid,

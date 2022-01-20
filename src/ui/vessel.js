@@ -31,6 +31,10 @@ export default {
                 'data-is_composition': `${unit.is_composition}`,
 
             },
+            style: {
+                'z-index': 1,
+                position: 'relative'
+            },
             class: unit.class,
             props: {
                 type: this.type,

@@ -41,31 +41,33 @@
 
     <div class="jf-doc" id="jf-doc">
       <div v-show="false">
-        <slot ></slot>
+        <slot></slot>
       </div>
-      
+
       <ui-cursor :cursor="doc.cursor" :doc="doc" ref="cursor"></ui-cursor>
-      <Vessel
-        :key="section.guid"
-        v-for="section in doc.childNodes"
-        :class="[section.class]"
-        :unit="section"
-        type="section"
-      >
+      <div class="jf-doc__sections" id="jf-doc__sections">
         <Vessel
-          :key="line.guid"
-          type="line"
-          :unit="line"
-          v-for="line in section.childNodes"
+          :key="section.guid"
+          v-for="section in doc.childNodes"
+          :class="[section.class]"
+          :unit="section"
+          type="section"
         >
           <Vessel
-            :key="unit.guid"
-            :unit="unit"
-            :type="unit.type"
-            v-for="unit in line.childNodes"
-          ></Vessel>
+            :key="line.guid"
+            type="line"
+            :unit="line"
+            v-for="line in section.childNodes"
+          >
+            <Vessel
+              :key="unit.guid"
+              :unit="unit"
+              :type="unit.type"
+              v-for="unit in line.childNodes"
+            ></Vessel>
+          </Vessel>
         </Vessel>
-      </Vessel>
+      </div>
     </div>
   </div>
 </template>
@@ -94,7 +96,7 @@ export default {
     let doc = new Doc();
     this.doc = doc;
     this.$nextTick(() => {
-      doc.render({ doc: this.$el, cursor: this.$refs["cursor"].getInput() });
+      doc.render({ doc: this.$el, cursor: this.$refs["cursor"].getInput(), rangeScope: document.getElementById('jf-doc__sections') });
     });
   },
 };

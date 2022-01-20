@@ -19,6 +19,7 @@ export default class Node extends Base {
         this.class = '';
         this.nodeName = '';
         this.__text__ = '';
+        this.ranges = [];
         // this.text = '';
         this.style = '';
         this.parentNode = null;
@@ -430,6 +431,7 @@ export default class Node extends Base {
     cloneNode() {
         let node = new this.constructor(this, true);
         node.guid = guid();
+        node.ranges = [];
         // node.__virtual__ = true;
         node.__el__ = null;
         return node;

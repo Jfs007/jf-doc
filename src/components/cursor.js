@@ -44,7 +44,7 @@ export default class Cursor extends Base {
         this.top = undefined;
         this.dom = null;
         this.node = null;
-        console.log(this.node, 'node---')
+      
         // this.composition = '';
         this.input = '';
         this.oldInput = '';
@@ -142,6 +142,8 @@ export default class Cursor extends Base {
         this.emptyInput();
         this.empty();
         let textNode = getTextNode(e.target);
+        // console.log(textNode, 'tex');
+        if(!textNode) return;
         let boundary = computedRangeClientBoundary(
             {
                 x: e.clientX,

@@ -1,5 +1,6 @@
 import Validate from "./validate";
 import Console from './console';
+import { each } from '@/util/index.js';
 export default class Base {
     constructor(options) {
         // this.init(options)
@@ -10,6 +11,13 @@ export default class Base {
         for (let key in options) {
             this[key] = options[key];
         }
-
+       
     }
+
+
+    _each(...args) { return each(...args) }
+
+    
+
 }
+// Base.prototype.util = Util;

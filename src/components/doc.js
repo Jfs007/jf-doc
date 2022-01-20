@@ -3,6 +3,7 @@ import Range from './range';
 import History from '@/lib/history';
 import Version from '@/lib/version'
 import Section from './section';
+
 import Cursor from './cursor';
 import Events from '@/lib/events';
 import Unit from './unit';
@@ -10,6 +11,9 @@ import Line from './line';
 import keyCode from '@/lib/keyCode';
 import UIs from '@/ui/ui.js';
 import RenderQueue from '../lib/render-queue';
+
+
+import Selection from './selection';
 
 
 /**
@@ -28,22 +32,23 @@ class Doc extends Node {
     // static Components() {
     //     return 
     // }
+
+
+    
     constructor(config = {}) {
         super();
         this.history = new History();
         this.range = null;
         this.nodeType = 'doc';
         this.rect = null;
+        
 
         // this.sections = [];
         this.cursor = new Cursor(this);
-        // this.cursor.doc = this;
-
         this.events = new Events();
         this.version = new Version();
+        
         this.__el__ = null;
-
-
         this.events.on(document, 'mouseup', (e) => {
             if (this.cursor.composition) {
                 this.cursor.node.parentNode.removeChild(this.cursor.node);
@@ -81,6 +86,10 @@ class Doc extends Node {
         super.init(config);
         this.registered(config.Components);
         this.init(config);
+    }
+
+    getSelection() {
+        return new Selection();
     }
 
     nextTick(callback = () => { }) {
@@ -169,13 +178,21 @@ class Doc extends Node {
 
     render({
         doc,
-        cursor
+        cursor,
+        rangeScope
     }) {
         this.__el__ = doc;
         this.cursor.__el__ = cursor;
+        this.range = new Range({
+            scope: rangeScope,
+            $el: doc,
+            window: this
+        });
+        
         this.breakWord();
         this.drawRect();
         this.bind();
+       
 
     }
     drawRect() {
@@ -266,7 +283,7 @@ class Doc extends Node {
                 let Line = this.cursor.node.S.insetSection(this.cursor);
 
                 if (!Line.childNodes.length) {
-                    this.cursor.set(Line.nextSibling.childNodes[0].__el__, 0);
+                    this.cursor.set(Line.nextSibling.firstChild.__el__, 0);
                     return;
                 }
 
@@ -275,9 +292,9 @@ class Doc extends Node {
                 // return;
                 this.nextTick(_ => {
                     this.cursor.reset();
-                    Line.childNodes[0].S.breakWord2({ node: Line.childNodes[0] });
+                    Line.firstChild.S.breakWord2({ node: Line.childNodes[0] });
                     this.nextTick(() => {
-                        this.cursor.set(Line.childNodes[0].__el__, 0);
+                        this.cursor.set(Line.firstChild.__el__, 0);
                     })
                 })
 

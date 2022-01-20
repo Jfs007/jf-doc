@@ -129,7 +129,6 @@ export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) 
         let node = dom;
         let rect = node.getBoundingClientRect();
         range.setStart(node, 0);
-        console.log('0000', window.getComputedStyle(node).width, node.offsetWidth)
         return {
             dir,
             offset,
@@ -161,6 +160,9 @@ export let computedClientBoundaryByOffset = (dom, offset, dir = 'right', range) 
     };
     return boundary;
 }
+
+
+
 
 
 export let computedRangeClientBoundary = (e, textNode) => {
