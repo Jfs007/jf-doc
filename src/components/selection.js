@@ -31,16 +31,19 @@ export default class Range extends Base {
         let boundary = computedClientBoundaryByOffset(node, offset, 'right', _range );
         let startLine = node.__unit__.L;
         let { x, width } = startLine.lastChild.__el__.getBoundingClientRect();
-        let { height } = startLine.__el__.getBoundingClientRect();
+        let { height, x: lineX } = startLine.__el__.getBoundingClientRect();
         area.width = x+width - boundary.rect.x;
-        area.x = boundary.rect.x - x;
+        area.x = boundary.rect.x - lineX;
         area.height = height;
-        console.log(boundary, width, area.x, height, startLine, '-----')
+        console.log(x + width,  startLine.lastChild.__el__)
         startLine.ranges.push(area);
         
 
 
     }
+
+
+
 
    
 
