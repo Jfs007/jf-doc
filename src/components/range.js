@@ -40,6 +40,7 @@ export default class Range extends Base {
         super(options);
         this.$el = document.body;
         this.scope = document.body;
+        this.Selection = null;
         // this._doc = this.$el.__el__;
         // this.__el__ = this.$e
         // this._doc = options.ctx;
@@ -54,8 +55,6 @@ export default class Range extends Base {
         this.startOffset = null;
         this.endOffset = null;
         this.endContainerNode = null;
-
-        console.log(options, 'params')
         super.init(options);
         // let selection = window.getSelection();
         // if (selection) {
@@ -72,20 +71,23 @@ export default class Range extends Base {
     _handleTap(events) {
 
         this.tap = new SelectionPointer(events);
+        this.Selection = this.window.getSelection();
     }
     _handleOver(events) {
         if (!this.tap) return;
         this.over = new SelectionPointer(events);
+        this.matchNode();
        
     }
     _handleEnd() {
         
         if(this.over) {
-            this.matchNode();
+            // this.matchNode();
         }
         this.tap = null;
         this.over = null;
         this.end = null;
+        // this.Selection = null;
        
     }
 
@@ -106,15 +108,6 @@ export default class Range extends Base {
     matchNode() {
         let { tap, over } = this;
         if (!over) return;
-
-
-
-
-
-
-
-
-
         let startPoint = null;
         let endPoint = null;
         if (tap.x > over.x && tap.y > over.y) {
@@ -155,24 +148,25 @@ export default class Range extends Base {
         // console.log(v, 'v');
 
 
-        let _startNode = null;
-        let _endNode = null;
+        // let _startNode = null;
+        // let _endNode = null;
 
-        this._each(this.scope.childNodes, node => {
-            // console.log(node, 'node');
-            let { y, height } = node.getBoundingClientRect();
-            // 符合
-            if (startPoint.y >= y && startPoint.y <= y + height && !_startNode) {
-                _startNode = node;
+        // this._each(this.scope.childNodes, node => {
+        //     // console.log(node, 'node');
+        //     let { y, height } = node.getBoundingClientRect();
+        //     // 符合
+        //     if (startPoint.y >= y && startPoint.y <= y + height && !_startNode) {
+        //         _startNode = node;
 
-            }
-            // if(endPoint.y )
-            if (_startNode && _endNode) return 'break';
+        //     }
+        //     // if(endPoint.y )
+        //     if (_startNode && _endNode) return 'break';
 
-        });
+        // });
         // console.log(this.doc, 'doc')
+       
         let Selection = this.window.getSelection();
-        console.log(Selection, 'Selec')
+        Selection.removeAllRanges(this);
         Selection.addRange(this)
 
 
@@ -181,6 +175,9 @@ export default class Range extends Base {
 
 
     }
+
+
+    
 
     setStart(node, offset) {
         this.startNode = node;

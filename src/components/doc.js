@@ -47,6 +47,7 @@ class Doc extends Node {
         this.cursor = new Cursor(this);
         this.events = new Events();
         this.version = new Version();
+        this.Selections = [];
         
         this.__el__ = null;
         this.events.on(document, 'mouseup', (e) => {
@@ -89,7 +90,11 @@ class Doc extends Node {
     }
 
     getSelection() {
-        return new Selection();
+        let _Selection =  new Selection({
+            window: this
+        });
+        this.Selections.push(_Selection);
+        return _Selection;
     }
 
     nextTick(callback = () => { }) {

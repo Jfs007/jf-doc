@@ -6,7 +6,7 @@
 <script>
 export default {
     props: {
-        range: {
+        selection: {
             default() {
                 return {}
             }
@@ -14,12 +14,12 @@ export default {
     },
     computed: {
         areaStyle() {
-            let range = this.range;
+            let selection = this.selection || {};
             return {
-                width: range.width + 'px',
-                left: range.x + 'px',
+                width: selection.width + 'px',
+                left: selection.x + 'px',
                 top: 0,
-                height: range.height + 'px'
+                height: selection.height + 'px'
             }
         }
     }

@@ -20,6 +20,7 @@ export default class Node extends Base {
         this.nodeName = '';
         this.__text__ = '';
         this.ranges = [];
+        this.selection = null;
         // this.text = '';
         this.style = '';
         this.parentNode = null;

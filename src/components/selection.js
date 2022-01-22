@@ -8,40 +8,127 @@ import { computedClientBoundaryByOffset } from '@/util/computed';
 
 import Event from '@/lib/events';
 
-export default class Range extends Base {
+export default class Selection extends Base {
     constructor(options = {}) {
        
         super(options);
         
         super.init(options);
-        this.doc = options.window;
-      
+        this.ranges = [];
+       
 
+    }
+
+    removeAllRanges() {
+        this.window.Selections.map(selection => {
+            this.ranges.map(Range => {
+                console.log(Range)
+                selection.removeRange(Range);
+            })
+           
+        });
+       
+        this.window.Selections = [];
+    }
+    removeRange(Range) {
+        // this.getLineRange()
+        this.getLineRange(Range, line => {
+            line.selection = {};
+        }, true)
     }
 
 
     addRange(Range) {
+        this.ranges.push(Range);    
+     
         let _range = getRange();
+       
         // let Range
-        let { startContainerNode, startOffset, startNode,  endNode, endOffset } = Range;
+        let { startContainerNode, startOffset,  endContainerNode, endOffset } = Range;
+
         let area = {};
         let node = startContainerNode;
         let offset = startOffset;
-        let textNode = startNode;
         let boundary = computedClientBoundaryByOffset(node, offset, 'right', _range );
         let startLine = node.__unit__.L;
-        let { x, width } = startLine.lastChild.__el__.getBoundingClientRect();
+        let endLine = endContainerNode.__unit__.L;
+        let startRect = null;
+        let startSelection = {};
+        let endSelection = {};
+        // 在同一行
+        if(endLine == startLine) {
+            let boundary = computedClientBoundaryByOffset(endContainerNode, endOffset, 'right', _range );
+            startRect = boundary.rect;
+        } else {
+            startRect = startLine.lastChild.__el__.getBoundingClientRect();
+            startRect.x = startRect.x + startRect.width;
+            let rect = endLine.firstChild.__el__.getBoundingClientRect();
+            let { height, x: lineX } = endLine.__el__.getBoundingClientRect();
+            let boundary = computedClientBoundaryByOffset(endContainerNode, endOffset, 'right', _range );
+           
+            endSelection.x = rect.x - lineX;
+            endSelection.width = boundary.rect.x - rect.x;
+            endSelection.height = height;
+            endLine.selection = endSelection;
+        }
         let { height, x: lineX } = startLine.__el__.getBoundingClientRect();
-        area.width = x+width - boundary.rect.x;
-        area.x = boundary.rect.x - lineX;
-        area.height = height;
-        console.log(x + width,  startLine.lastChild.__el__)
-        startLine.ranges.push(area);
-        
+        startSelection.width = startRect.x - boundary.rect.x;
+        startSelection.x = boundary.rect.x - lineX;
+        startSelection.height = height;
+        startLine.selection = (startSelection);
 
+
+        this.getLineRange(Range, line => {
+            let lineRect = line.__el__.getBoundingClientRect();
+            let startRect = line.firstChild.__el__.getBoundingClientRect();
+            let endRect = line.lastChild.__el__.getBoundingClientRect();
+            line.selection = {
+                x: startRect.x - lineRect.x,
+                width: endRect.x + endRect.width - startRect.x,
+                height: lineRect.height
+            }
+        })
+        
 
     }
 
+    getLineRange(Range, callback, include = false) {
+        let startLine = Range.startContainerNode.__unit__.L;
+        let endLine = Range.endContainerNode.__unit__.L;
+        if(include) {
+            callback(startLine);
+            
+        }
+        let nextLine = startLine;
+        if(startLine == endLine) return;
+    
+        while(nextLine) {
+            let _currentLine = nextLine;
+            nextLine = nextLine.nextSibling;
+            // console.log(nextLine, endLine, 'eend')
+            if(nextLine == endLine) break;
+            if(!nextLine) {
+                let nextSection = _currentLine.S.nextSibling;
+                if(!nextSection) break;
+                nextLine = nextSection.firstChild;
+            }
+            if(!nextLine) break;
+            if(nextLine == endLine) {
+                if(include) {
+                    callback(endLine);
+                    
+                }
+                break;
+            };
+            callback(nextLine);
+        }
+
+
+
+
+       
+        
+    }
 
 
 

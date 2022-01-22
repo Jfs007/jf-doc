@@ -6,7 +6,7 @@
 </style>
 <template>
   <div class="jf-line">
-    <ui-area v-for="item in unit.ranges" :range="item"/>
+    <ui-area :selection="unit.selection"/>
     <slot></slot>
   </div>
 </template>
