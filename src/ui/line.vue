@@ -6,7 +6,7 @@
 </style>
 <template>
   <div class="jf-line">
-    <ui-area :selection="unit.selection"/>
+    <ui-area :selection="unit.selection" v-if="unit.selection" />
     <slot></slot>
   </div>
 </template>

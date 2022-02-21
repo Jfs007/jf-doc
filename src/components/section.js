@@ -136,7 +136,7 @@ export default class Section extends Node {
             breakword.type = 'blank'
             let blank = 0;
             let complement = 0;
-            this._console.info('====正在complement====')
+            // this._console.info('====正在complement====')
             while (isBlank && Line) {
                 let nextLine = Line.nextSibling;
                 if (nextLine) {
@@ -253,7 +253,7 @@ export default class Section extends Node {
             let isOverflow = true;
             let max = 0;
             while (isOverflow) {
-                this._console.info('====正在overflow====1')
+                // this._console.info('====正在overflow====1')
                 if (max > 100) break;
                 let nextLine = Line.nextSibling;
 
@@ -369,7 +369,7 @@ export default class Section extends Node {
                     })
                 }
                 Line = nextLine;
-                this._console.info('====overflow结束====1')
+                // this._console.info('====overflow结束====1')
                 max++;
             }
             renderQueue.map(queue => queue());

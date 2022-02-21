@@ -2,13 +2,14 @@
 import Base from '@/lib/base';
 var EventEmitter = require('events')
 
+
 // import { guid } from '../util/index';
 export default class Events extends Base {
     constructor(doc, params) {
         super(params);
-        this._doc = doc;
+        this.doc = doc;
         this._listener = [];
-        this.e = EventEmitter;
+        this.e = new EventEmitter();
         
     }
     
@@ -29,11 +30,11 @@ export default class Events extends Base {
             let _callback = name;
             callback = _callback;
             name = dom;
-            EventEmitter.on(name, callback)
+            this.e.on(name, callback);
         }
     }
     emit(name, value) {
-        EventEmitter.emit(name, value);
+        this.e.emit(name, value);
     }
 
 

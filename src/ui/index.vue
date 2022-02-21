@@ -99,6 +99,7 @@ export default {
       doc.render({ doc: this.$el, cursor: this.$refs["cursor"].getInput(), rangeScope: document.getElementById('jf-doc__sections') });
     });
   },
+  
 };
 </script>
 

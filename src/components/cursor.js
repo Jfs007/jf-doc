@@ -172,6 +172,7 @@ export default class Cursor extends Base {
         this.left = x + scrollLeft - docRect.left;
         this.top = top - docRect.top;
         this.offset = boundary.offset;
+        this.doc.E.emit('cursor:change', { left: this.left, top: this.top, offset: this.offset}, this.boundary)
         
 
 

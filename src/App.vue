@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <div style="text-align: center">demo版本 换行出现问题，尝试刷新解决(移动端未做兼容)</div>
-    <doc style="width: 340px;height: 400px;margin: 20px auto;">
+    <doc style="width: 340px;height: 400px;margin: 20px auto;" ref="doc">
      
     </doc>
   </div>
@@ -9,6 +9,7 @@
 
 <script>
 import doc from './ui/index.vue';
+
 export default {
   name: 'App',
   components: {
@@ -16,6 +17,14 @@ export default {
 
     [doc.UIs['ui-section'].name]: doc.UIs['ui-section'],
     [doc.UIs['ui-text'].name]: doc.UIs['ui-text']
+  },
+  mounted() {
+    this.$refs['doc'].doc.E.on('cursor:change', (payload) => {
+      console.log('cursor', payload);
+    })
+  },
+  methods: {
+    
   }
 }
 </script>

@@ -58,12 +58,19 @@ export function removeClass(obj, className) {
 // export let isBlock
 export let getTextNode = (el) => {
     let textNode = null;
+    if(isTextNode(el)) return el;
     let child = el.childNodes;
     for (let i = 0; i < child.length; i++) {
         let node = child[i];
         if (isTextNode(node)) {
             textNode = node;
             break;
+        }else {
+          let _node = getTextNode(node);
+          if(_node) {
+              textNode = _node;
+              break;
+          }
         }
     }
     return textNode;

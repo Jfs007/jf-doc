@@ -433,6 +433,7 @@ export default class Node extends Base {
         let node = new this.constructor(this, true);
         node.guid = guid();
         node.ranges = [];
+        node.selection = null;
         // node.__virtual__ = true;
         node.__el__ = null;
         return node;

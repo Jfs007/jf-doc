@@ -6,6 +6,7 @@ import Section from './section';
 
 import Cursor from './cursor';
 import Events from '@/lib/events';
+import Select from '@/events/select';
 import Unit from './unit';
 import Line from './line';
 import keyCode from '@/lib/keyCode';
@@ -34,21 +35,21 @@ class Doc extends Node {
     // }
 
 
-    
+
     constructor(config = {}) {
         super();
         this.history = new History();
         this.range = null;
         this.nodeType = 'doc';
         this.rect = null;
-        
+
 
         // this.sections = [];
         this.cursor = new Cursor(this);
         this.events = new Events();
         this.version = new Version();
         this.Selections = [];
-        
+
         this.__el__ = null;
         this.events.on(document, 'mouseup', (e) => {
             if (this.cursor.composition) {
@@ -89,12 +90,22 @@ class Doc extends Node {
         this.init(config);
     }
 
+    get E() {
+        return this.events;
+    }
+
     getSelection() {
-        let _Selection =  new Selection({
+        let _Selection = new Selection({
             window: this
         });
         this.Selections.push(_Selection);
         return _Selection;
+    }
+    removeAllRanges() {
+        this.Selections.map(Selection => {
+            Selection.removeAllRanges();
+        });
+        this.Selections = [];
     }
 
     nextTick(callback = () => { }) {
@@ -188,16 +199,17 @@ class Doc extends Node {
     }) {
         this.__el__ = doc;
         this.cursor.__el__ = cursor;
-        this.range = new Range({
+
+        this.Select = new Select({
             scope: rangeScope,
             $el: doc,
             window: this
-        });
-        
+        })
+
         this.breakWord();
         this.drawRect();
         this.bind();
-       
+
 
     }
     drawRect() {
@@ -239,17 +251,17 @@ class Doc extends Node {
                         if (previousSibling) {
                             // 删除当前的，move到上一个node位置
                             // 不是文本类型
-                            if(!previousSibling.isText()) {
+                            if (!previousSibling.isText()) {
                                 this.cursor.node.L.removeChild(previousSibling);
                                 offset = 0;
-                            }else {
+                            } else {
                                 if (this.cursor.node.isBlank()) {
                                     this.cursor.node.L.removeChild(this.cursor.node);
                                 }
                                 this.cursor.set(previousSibling.__el__, previousSibling.text.length);
 
                             }
-                           
+
                         } else {
                             // 不存在move至上一行
                             let node = this.cursor.node.getPreviousSameNodeTypeNode();
@@ -394,12 +406,7 @@ class Doc extends Node {
                 if (!composition) {
                     this.cursor.update(update_offset);
                     let _cursor = this.cursor;
-
-                    // if()
                     let breakwords = this.cursor.node.S.breakWord2(_cursor);
-                    // this.cursor.node.updateCompositionRange(_cursor);
-                    this._console.info('breaks', breakwords.breaks);
-                    // this.cursor.node.compositioning2(_cursor, breakwords.breaks)
                     if (breakwords.breaks.length) {
                         let breakword = breakwords.breaks;
                         let _break = breakword[0];
@@ -412,7 +419,6 @@ class Doc extends Node {
                                     this.cursor.emptyInput();
                                     this.cursor.set(this.cursor.node.L.nextSibling.firstChild.__el__, offset)
                                 }
-
                             })
 
                         } else {
@@ -438,7 +444,7 @@ class Doc extends Node {
                     let _cursor = this.cursor.node.compositionEnd(this.cursor);
                     this.cursor.closeComposition();
                     this.nextTick(_ => {
-                        if(_cursor.node) {
+                        if (_cursor.node) {
                             this.cursor.set(_cursor.node.__el__, _cursor.offset)
                         }
                     })

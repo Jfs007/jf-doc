@@ -10,62 +10,55 @@ import Event from '@/lib/events';
 
 export default class Selection extends Base {
     constructor(options = {}) {
-       
+
         super(options);
-        
+
         super.init(options);
         this.ranges = [];
-       
+
 
     }
 
     removeAllRanges() {
-        this.window.Selections.map(selection => {
-            this.ranges.map(Range => {
-                console.log(Range)
-                selection.removeRange(Range);
-            })
-           
-        });
-       
-        this.window.Selections = [];
+
+        this.ranges.map(Range => {
+
+            this.removeRange(Range);
+        })
+        this.ranges = [];
+
     }
     removeRange(Range) {
-        // this.getLineRange()
         this.getLineRange(Range, line => {
-            line.selection = {};
+            line.selection = null;
         }, true)
     }
 
 
     addRange(Range) {
-        this.ranges.push(Range);    
-     
+        this.ranges.push(Range);
         let _range = getRange();
-       
         // let Range
-        let { startContainerNode, startOffset,  endContainerNode, endOffset } = Range;
-
-        let area = {};
+        let { startContainerNode, startOffset, endContainerNode, endOffset } = Range;
         let node = startContainerNode;
         let offset = startOffset;
-        let boundary = computedClientBoundaryByOffset(node, offset, 'right', _range );
+        let boundary = computedClientBoundaryByOffset(node, offset, 'right', _range);
         let startLine = node.__unit__.L;
         let endLine = endContainerNode.__unit__.L;
         let startRect = null;
         let startSelection = {};
         let endSelection = {};
         // 在同一行
-        if(endLine == startLine) {
-            let boundary = computedClientBoundaryByOffset(endContainerNode, endOffset, 'right', _range );
+        if (endLine == startLine) {
+            let boundary = computedClientBoundaryByOffset(endContainerNode, endOffset, 'right', _range);
             startRect = boundary.rect;
         } else {
             startRect = startLine.lastChild.__el__.getBoundingClientRect();
             startRect.x = startRect.x + startRect.width;
             let rect = endLine.firstChild.__el__.getBoundingClientRect();
             let { height, x: lineX } = endLine.__el__.getBoundingClientRect();
-            let boundary = computedClientBoundaryByOffset(endContainerNode, endOffset, 'right', _range );
-           
+            let boundary = computedClientBoundaryByOffset(endContainerNode, endOffset, 'right', _range);
+
             endSelection.x = rect.x - lineX;
             endSelection.width = boundary.rect.x - rect.x;
             endSelection.height = height;
@@ -76,8 +69,6 @@ export default class Selection extends Base {
         startSelection.x = boundary.rect.x - lineX;
         startSelection.height = height;
         startLine.selection = (startSelection);
-
-
         this.getLineRange(Range, line => {
             let lineRect = line.__el__.getBoundingClientRect();
             let startRect = line.firstChild.__el__.getBoundingClientRect();
@@ -88,37 +79,47 @@ export default class Selection extends Base {
                 height: lineRect.height
             }
         })
-        
+
 
     }
 
     getLineRange(Range, callback, include = false) {
+        // console.log(Range.startContainerNode, Range.endContainerNode, '---get-line---')
         let startLine = Range.startContainerNode.__unit__.L;
         let endLine = Range.endContainerNode.__unit__.L;
-        if(include) {
+
+        if (include) {
             callback(startLine);
-            
+
         }
         let nextLine = startLine;
-        if(startLine == endLine) return;
-    
-        while(nextLine) {
+        if (startLine == endLine) return;
+        while (nextLine) {
             let _currentLine = nextLine;
             nextLine = nextLine.nextSibling;
-            // console.log(nextLine, endLine, 'eend')
-            if(nextLine == endLine) break;
-            if(!nextLine) {
+            if (nextLine == endLine) {
+                if (include) {
+                    callback(endLine);
+                } else {
+                    break;
+                }
+
+            };
+            if (!nextLine) {
                 let nextSection = _currentLine.S.nextSibling;
-                if(!nextSection) break;
+                if (!nextSection) break;
                 nextLine = nextSection.firstChild;
             }
-            if(!nextLine) break;
-            if(nextLine == endLine) {
-                if(include) {
+            if (!nextLine) break;
+
+            if (nextLine == endLine) {
+
+                if (include) {
                     callback(endLine);
-                    
+                } else {
+                    break;
                 }
-                break;
+
             };
             callback(nextLine);
         }
@@ -126,13 +127,13 @@ export default class Selection extends Base {
 
 
 
-       
-        
+
+
     }
 
 
 
-   
+
 
 
 
