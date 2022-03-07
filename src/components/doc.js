@@ -1,5 +1,4 @@
 import Node from '@/lib/node';
-import Range from './range';
 import History from '@/lib/history';
 import Version from '@/lib/version'
 import Section from './section';
@@ -11,10 +10,11 @@ import Unit from './unit';
 import Line from './line';
 import keyCode from '@/lib/keyCode';
 import UIs from '@/ui/ui.js';
-import RenderQueue from '../lib/render-queue';
-
-
 import Selection from './selection';
+
+
+import Range from './range';
+import RenderQueue from '../lib/render-queue';
 
 
 /**

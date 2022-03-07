@@ -42,6 +42,7 @@ export default class Select extends Event {
         this.tap = null;
         this.over = null;
         this.end = null;
+        this.window = null;
         
 
         super.init(options);
@@ -97,6 +98,41 @@ export default class Select extends Event {
     }
 
 
+    getNodeByPointer(pointer) {
+        let doc = this.window;
+
+        let docEl = doc.__el__;
+        
+        doc.childNodes.map(node => {
+            let el = node.__el__;
+            let boundary = el.getBoundingClientRect();
+            // boundary
+            // boundary.
+        })
+    }
+
+
+
+    /**
+     * 
+     * @returns 
+     * 
+     * 
+     *  |||||||||||||||||
+     * 
+     * 
+     * 
+     */
+
+    boundaryCatch(boundary, reference) {
+        boundary
+
+
+    }
+
+    
+
+
 
 
 
@@ -128,6 +164,8 @@ export default class Select extends Event {
                 range.setStart(textNode, boundary.offset);
 
             }
+        }else {
+
         }
         let endIn = this.isInScoped(endPoint.target);
         if (endIn) {
@@ -136,22 +174,11 @@ export default class Select extends Event {
                 let boundary = computedRangeClientBoundary(endPoint, textNode);
                 range.setEnd(textNode, boundary.offset);
             }
+        }else {
+            console.log(endPoint.target, 'target')
         }
-        // let Selection = this.Selection || this.window.getSelection();
-
-        if (!range.startContainerNode || !range.endContainerNode) {
-            window.__node__ = endPoint.target;
-            this._console.info('range', endPoint, startPoint, startIn, endIn, getTextNode(startPoint.target), getTextNode(endPoint.target), endPoint.target.textContent)
-        }
-        // console.log(range.startContainerNode, range.endContainerNode, 'se')
-        // this.Selection = Selection;
         this._Selection.removeAllRanges();
         this._Selection.addRange(range);
-
-
-
-        // console.log(_startNode, 'start')
-
 
     }
 

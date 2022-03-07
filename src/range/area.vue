@@ -2,6 +2,7 @@
   <div class="jf-ui-area" :style="areaStyle"></div>
 </template>
 <script>
+
 export default {
   props: {
     selection: {

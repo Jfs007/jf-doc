@@ -18,6 +18,7 @@ export default class Unit extends Node {
         super(options, update);
 
         this.nodeType = 'unit';
+        
         this.class = "jf-unit";
         // 评论数组
         this.comments = [...(options.comments || [])];

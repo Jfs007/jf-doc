@@ -11,8 +11,10 @@
   </div>
 </template>
 <script>
-import UiArea from './area.vue';
+import UiArea from '@/range/area.vue';
+
 export default {
+
   components: {
     UiArea
   },
